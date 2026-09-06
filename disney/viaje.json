@@ -218,17 +218,7 @@
       "top": false,
       "fuente": "Disneyland Paris oficial/app"
     },
-    {
-      "parque": "Disney Adventure World",
-      "zona": "World of Frozen",
-      "nombre": "Frozen Ever After",
-      "horario": "Confirmar en la app",
-      "descripcion": "Paseo musical en barco por Arendelle, con Anna, Elsa y Olaf; incluye bajadas en oscuridad.",
-      "consejo": "puede salpicar y puede asustar a niños pequeños.",
-      "aplicacion": "11–14 septiembre 2026",
-      "top": false,
-      "fuente": "Disneyland Paris oficial/app"
-    },
+
     {
       "parque": "Disney Adventure World",
       "zona": "World of Frozen · fiordo frente al castillo de Arendelle",
@@ -376,9 +366,9 @@
       "atraccion": "Frozen Ever After",
       "parque": "Disney Adventure World",
       "zona": "World of Frozen",
-      "descripcion": "Paseo musical en barco por Arendelle.",
+      "descripcion": "Paseo musical en barco por Arendelle, con Anna, Elsa y Olaf; incluye bajadas en oscuridad.",
       "altura_minima_publicada": "Cualquier altura",
-      "advertencia": "Puede ser complicado por edad/intensidad",
+      "advertencia": "Puede ser complicado por edad/intensidad; puede salpicar y puede asustar a niños pequeños.",
       "categoria": "TOP TODOS"
     },
     {
