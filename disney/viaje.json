@@ -4,6 +4,11 @@
   "descripcion": "Cuatro días para entrar en el ambiente sin correr: una base junto al lago, parques distintos y los momentos que merece la pena guardar.",
   "zona_horaria": "Europe/Madrid",
   "actualizado": "2026-09-06",
+  "leyenda_top": "TOP = prioridad para nuestra familia",
+  "fuentes_horarios": {
+    "oficial": "https://www.disneylandparis.com/en-int/entertainment/shows-and-parades",
+    "secundaria": "https://www.dlpstats.com/dlp/entertainment"
+  },
   "hotel": "Newport Bay Club",
   "mapas": [
     {
@@ -77,7 +82,9 @@
       "horario": "Confirmar en la app",
       "descripcion": "Espectáculo interior de Mickey con magia, música y personajes Disney.",
       "consejo": "Llegar con margen; el aforo es limitado.",
-      "aplicacion": "11–14 septiembre 2026"
+      "aplicacion": "11–14 septiembre 2026",
+      "top": true,
+      "fuente": "Disneyland Paris oficial/app"
     },
     {
       "nombre": "Meet the Characters of Alice in Wonderland",
@@ -86,7 +93,9 @@
       "horario": "Confirmar en la app",
       "descripcion": "Experiencia vigente de personajes inspirada en Alicia; consultar el nombre y ubicación que muestre la app.",
       "consejo": "Buscarla en la app al entrar.",
-      "aplicacion": "11–14 septiembre 2026"
+      "aplicacion": "11–14 septiembre 2026",
+      "top": false,
+      "fuente": "Disneyland Paris oficial/app"
     },
     {
       "parque": "Disneyland Park",
@@ -95,25 +104,31 @@
       "horario": "Confirmar en la app",
       "descripcion": "Espectáculo musical con danza y acrobacias inspirado en El Rey León.",
       "consejo": "Prioridad alta; llegar con margen o reservar acceso garantizado si está disponible.",
-      "aplicacion": "11–14 septiembre 2026"
+      "aplicacion": "11–14 septiembre 2026",
+      "top": true,
+      "fuente": "Disneyland Paris oficial/app"
     },
     {
       "parque": "Disneyland Park",
       "zona": "Recorrido de la cabalgata",
       "nombre": "Disney Stars on Parade",
-      "horario": "Confirmar en la app",
+      "horario": "Orientativo, no garantizado: referencia secundaria DLP Stats/calendario; no confirma 11–14 sep; confirmar en la app",
       "descripcion": "Desfile de personajes Disney en carrozas, con música y vestuario colorido.",
       "consejo": "Buscar sitio con antelación.",
-      "aplicacion": "11–14 septiembre 2026"
+      "aplicacion": "11–14 septiembre 2026",
+      "top": true,
+      "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)"
     },
     {
       "parque": "Disneyland Park",
       "zona": "Castillo de la Bella Durmiente y Main Street U.S.A.",
       "nombre": "Disney Tales of Magic",
-      "horario": "Confirmar en la app",
+      "horario": "Orientativo, no garantizado: referencia secundaria DLP Stats/calendario; no confirma 11–14 sep; confirmar en la app",
       "descripcion": "Espectáculo nocturno de proyecciones, efectos y fuegos sobre el castillo.",
       "consejo": "Puede cambiar por meteorología; las salidas se congestionan.",
-      "aplicacion": "11–14 septiembre 2026"
+      "aplicacion": "11–14 septiembre 2026",
+      "top": true,
+      "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)"
     },
     {
       "parque": "Disney Adventure World",
@@ -122,7 +137,9 @@
       "horario": "Confirmar en la app",
       "descripcion": "Área temática de Arendelle con Frozen Ever After, encuentros, restauración y tiendas.",
       "consejo": "Comprobar en la app si se establece acceso escalonado o cola de entrada.",
-      "aplicacion": "11–14 septiembre 2026"
+      "aplicacion": "11–14 septiembre 2026",
+      "top": false,
+      "fuente": "Disneyland Paris oficial/app"
     },
     {
       "parque": "Disney Adventure World",
@@ -131,7 +148,9 @@
       "horario": "Confirmar en la app",
       "descripcion": "Paseo musical en barco por Arendelle, con Anna, Elsa y Olaf; incluye bajadas en oscuridad.",
       "consejo": "Prioridad alta; puede salpicar y puede asustar a niños pequeños.",
-      "aplicacion": "11–14 septiembre 2026"
+      "aplicacion": "11–14 septiembre 2026",
+      "top": false,
+      "fuente": "Disneyland Paris oficial/app"
     },
     {
       "parque": "Disney Adventure World",
@@ -140,7 +159,9 @@
       "horario": "Confirmar en la app",
       "descripcion": "Espectáculo exterior con Anna, Elsa, Olaf, Kristoff y habitantes de Arendelle.",
       "consejo": "Exterior: el sitio y la sesión pueden cambiar por meteorología.",
-      "aplicacion": "11–14 septiembre 2026"
+      "aplicacion": "11–14 septiembre 2026",
+      "top": true,
+      "fuente": "Disneyland Paris oficial/app"
     },
     {
       "parque": "Disney Adventure World",
@@ -149,7 +170,9 @@
       "horario": "Confirmar en la app",
       "descripcion": "Espectáculo nocturno con fuegos, pantallas de agua, drones, proyecciones y efectos visuales.",
       "consejo": "Se celebra a la vez que Disney Tales of Magic; elegir parque y comprobar la hora en la app.",
-      "aplicacion": "11–14 septiembre 2026"
+      "aplicacion": "11–14 septiembre 2026",
+      "top": true,
+      "fuente": "Disneyland Paris oficial/app"
     }
   ],
   "atracciones": [
