@@ -200,13 +200,6 @@
       "altura_minima_publicada": "81 cm para montar"
     },
     {
-      "atraccion": "Peter Pan’s Flight",
-      "parque": "Disneyland Park",
-      "zona": "Fantasyland",
-      "descripcion": "Vuelo en galeón sobre Londres y Nunca Jamás. Estado futuro no confirmado en el calendario consultado; comprobar estado en la app.",
-      "altura_minima_publicada": "Cualquier altura"
-    },
-    {
       "atraccion": "Alice’s Curious Labyrinth",
       "parque": "Disneyland Park",
       "zona": "Fantasyland",
@@ -275,14 +268,6 @@
       "advertencia": "Puede ser complicado por edad/intensidad"
     },
     {
-      "atraccion": "Crush’s Coaster",
-      "parque": "Disney Adventure World",
-      "zona": "Worlds of Pixar",
-      "descripcion": "Montaña rusa en una tortuga marina, con vehículos que giran.",
-      "altura_minima_publicada": "1,07 m",
-      "advertencia": "Puede ser complicado por edad/intensidad"
-    },
-    {
       "atraccion": "Ratatouille: L’Aventure Totalement Toquée de Rémy",
       "parque": "Disney Adventure World",
       "zona": "Worlds of Pixar",
@@ -332,7 +317,7 @@
       "fecha": "2026-09-11",
       "dia": "viernes 11",
       "titulo": "Disneyland Park por la tarde",
-      "texto": "Abrir la app y comprobar colas, cierres y horarios. Priorizar Peter Pan, Big Thunder Mountain, Buzz, Pirates y Fantasyland según colas. Buscar Meet the Characters of Alice in Wonderland."
+      "texto": "Abrir la app y comprobar colas, cierres y horarios. Priorizar Big Thunder Mountain, Buzz, Pirates y Fantasyland según colas. Buscar Meet the Characters of Alice in Wonderland."
     },
     {
       "fecha": "2026-09-12",
@@ -344,7 +329,7 @@
       "fecha": "2026-09-13",
       "dia": "domingo 13",
       "titulo": "Disney Adventure World",
-      "texto": "Con Extra Magic Time confirmado en la app, prioridad a World of Frozen y Frozen Ever After. Después, A Celebration in Arendelle, Ratatouille, Crush’s Coaster y Spider-Man. Mirar la Virtual Queue de Anna y Elsa. Por la noche, Disney Cascade of Lights."
+      "texto": "Con Extra Magic Time confirmado en la app, prioridad a World of Frozen y Frozen Ever After. Después, A Celebration in Arendelle, Ratatouille y Spider-Man. Mirar la Virtual Queue de Anna y Elsa. Por la noche, Disney Cascade of Lights."
     },
     {
       "fecha": "2026-09-14",
