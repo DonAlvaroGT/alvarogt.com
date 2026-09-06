@@ -182,7 +182,8 @@
       "zona": "Adventureland",
       "descripcion": "Recorrido en barco por escenas de piratas; puede salpicar y asustar.",
       "altura_minima_publicada": "Cualquier altura",
-      "advertencia": "Puede ser complicado por edad/intensidad"
+      "advertencia": "Puede ser complicado por edad/intensidad",
+      "categoria": "TOP TODOS"
     },
     {
       "atraccion": "Indiana Jones and the Temple of Peril",
@@ -190,7 +191,8 @@
       "zona": "Adventureland",
       "descripcion": "Montaña rusa de aventura con curvas intensas e inversión.",
       "altura_minima_publicada": "1,40 m",
-      "advertencia": "No pueden subir"
+      "advertencia": "No pueden subir",
+      "categoria": "TOP MAYORES"
     },
     {
       "atraccion": "Star Wars Hyperspace Mountain",
@@ -198,14 +200,16 @@
       "zona": "Discoveryland",
       "descripcion": "Montaña rusa rápida ambientada en una batalla espacial.",
       "altura_minima_publicada": "1,20 m",
-      "advertencia": "No pueden subir"
+      "advertencia": "No pueden subir",
+      "categoria": "TOP MAYORES"
     },
     {
       "atraccion": "Buzz Lightyear Laser Blast",
       "parque": "Disneyland Park",
       "zona": "Discoveryland",
       "descripcion": "Recorrido interactivo de disparos láser.",
-      "altura_minima_publicada": "Cualquier altura"
+      "altura_minima_publicada": "Cualquier altura",
+      "categoria": "TOP TODOS"
     },
     {
       "atraccion": "Star Tours: The Adventures Continue",
@@ -213,35 +217,40 @@
       "zona": "Discoveryland",
       "descripcion": "Simulador 3D de viaje por la galaxia Star Wars.",
       "altura_minima_publicada": "1,02 m",
-      "advertencia": "Puede ser complicado por edad/intensidad"
+      "advertencia": "Puede ser complicado por edad/intensidad",
+      "categoria": "TOP TODOS"
     },
     {
       "atraccion": "Autopia",
       "parque": "Disneyland Park",
       "zona": "Discoveryland",
       "descripcion": "Conducción de coches pequeños por un circuito.",
-      "altura_minima_publicada": "81 cm para montar"
+      "altura_minima_publicada": "81 cm para montar",
+      "categoria": "TOP NIÑOS"
     },
     {
       "atraccion": "Alice’s Curious Labyrinth",
       "parque": "Disneyland Park",
       "zona": "Fantasyland",
       "descripcion": "Recorrido a pie por un laberinto inspirado en Alicia.",
-      "altura_minima_publicada": "Cualquier altura"
+      "altura_minima_publicada": "Cualquier altura",
+      "categoria": "TOP NIÑOS"
     },
     {
       "atraccion": "Dumbo the Flying Elephant",
       "parque": "Disneyland Park",
       "zona": "Fantasyland",
       "descripcion": "Vuelo circular en elefante.",
-      "altura_minima_publicada": "Cualquier altura"
+      "altura_minima_publicada": "Cualquier altura",
+      "categoria": "TOP NIÑOS"
     },
     {
       "atraccion": "it’s a small world",
       "parque": "Disneyland Park",
       "zona": "Fantasyland",
       "descripcion": "Paseo tranquilo en barco por escenas del mundo.",
-      "altura_minima_publicada": "Cualquier altura"
+      "altura_minima_publicada": "Cualquier altura",
+      "categoria": "TOP NIÑOS"
     },
     {
       "atraccion": "Big Thunder Mountain",
@@ -249,7 +258,8 @@
       "zona": "Frontierland",
       "descripcion": "Tren minero rápido por una montaña del Oeste, con curvas y movimiento.",
       "altura_minima_publicada": "1,02 m",
-      "advertencia": "Puede ser complicado por edad/intensidad"
+      "advertencia": "Puede ser complicado por edad/intensidad",
+      "categoria": "TOP TODOS"
     },
     {
       "atraccion": "Phantom Manor",
@@ -257,7 +267,8 @@
       "zona": "Frontierland",
       "descripcion": "Recorrido oscuro de mansión encantada.",
       "altura_minima_publicada": "Cualquier altura",
-      "advertencia": "Puede ser complicado por edad/intensidad"
+      "advertencia": "Puede ser complicado por edad/intensidad",
+      "categoria": "TOP TODOS"
     },
     {
       "atraccion": "The Twilight Zone Tower of Terror",
@@ -265,7 +276,8 @@
       "zona": "Hollywood Boulevard",
       "descripcion": "Ascensor con caídas inesperadas.",
       "altura_minima_publicada": "1,02 m",
-      "advertencia": "Puede ser complicado por edad/intensidad"
+      "advertencia": "Puede ser complicado por edad/intensidad",
+      "categoria": "TOP MAYORES"
     },
     {
       "atraccion": "Avengers Assemble: Flight Force",
@@ -273,14 +285,16 @@
       "zona": "Marvel Avengers Campus",
       "descripcion": "Montaña rusa rápida con Iron Man y Capitana Marvel.",
       "altura_minima_publicada": "1,20 m",
-      "advertencia": "No pueden subir"
+      "advertencia": "No pueden subir",
+      "categoria": "TOP MAYORES"
     },
     {
       "atraccion": "Spider-Man W.E.B. Adventure",
       "parque": "Disney Adventure World",
       "zona": "Marvel Avengers Campus",
       "descripcion": "Experiencia interactiva para lanzar telarañas.",
-      "altura_minima_publicada": "Cualquier altura"
+      "altura_minima_publicada": "Cualquier altura",
+      "categoria": "TOP TODOS"
     },
     {
       "atraccion": "Frozen Ever After",
@@ -288,7 +302,8 @@
       "zona": "World of Frozen",
       "descripcion": "Paseo musical en barco por Arendelle.",
       "altura_minima_publicada": "Cualquier altura",
-      "advertencia": "Puede ser complicado por edad/intensidad"
+      "advertencia": "Puede ser complicado por edad/intensidad",
+      "categoria": "TOP TODOS"
     },
     {
       "atraccion": "Ratatouille: L’Aventure Totalement Toquée de Rémy",
@@ -296,14 +311,16 @@
       "zona": "Worlds of Pixar",
       "descripcion": "Aventura inmersiva siguiendo a Rémy por una cocina gigante.",
       "altura_minima_publicada": "Cualquier altura",
-      "advertencia": "Puede ser complicado por edad/intensidad"
+      "advertencia": "Puede ser complicado por edad/intensidad",
+      "categoria": "TOP TODOS"
     },
     {
       "atraccion": "Cars ROAD TRIP",
       "parque": "Disney Adventure World",
       "zona": "Worlds of Pixar",
       "descripcion": "Recorrido familiar en vehículo por escenas y efectos de Cars.",
-      "altura_minima_publicada": "Cualquier altura"
+      "altura_minima_publicada": "Cualquier altura",
+      "categoria": "TOP NIÑOS"
     },
     {
       "atraccion": "RC Racer",
@@ -311,22 +328,25 @@
       "zona": "Worlds of Pixar · Toy Story Playland",
       "descripcion": "Vehículo que sube y baja por una pista en U.",
       "altura_minima_publicada": "1,20 m",
-      "advertencia": "No pueden subir"
+      "advertencia": "No pueden subir",
+      "categoria": "TOP MAYORES"
     },
     {
       "atraccion": "Slinky Dog Zigzag Spin",
       "parque": "Disney Adventure World",
       "zona": "Worlds of Pixar · Toy Story Playland",
       "descripcion": "Recorrido giratorio familiar.",
-      "altura_minima_publicada": "Cualquier altura"
+      "altura_minima_publicada": "Cualquier altura",
+      "categoria": "TOP NIÑOS"
     },
     {
       "atraccion": "Toy Soldiers Parachute Drop",
       "parque": "Disney Adventure World",
       "zona": "Worlds of Pixar · Toy Story Playland",
-      "descripcion": "Caída y subida en paracaídas tematizados. Estado actual no permite confirmar las fechas del viaje; comprobar estado en la app.",
+      "descripcion": "Caída y subida en paracaídas tematizados. Cerrada actualmente según la fuente consultada; no recomendarla como operativa.",
       "altura_minima_publicada": "81 cm",
-      "advertencia": "Puede ser complicado por edad/intensidad"
+      "advertencia": "Cerrada actualmente; comprobar reapertura en la app. Puede ser complicado por edad/intensidad",
+      "categoria": "TOP NIÑOS"
     }
   ],
   "alturas_niños": {
