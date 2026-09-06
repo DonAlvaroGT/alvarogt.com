@@ -4,7 +4,7 @@
   "descripcion": "Cuatro días para entrar en el ambiente sin correr: una base junto al lago, parques distintos y los momentos que merece la pena guardar.",
   "zona_horaria": "Europe/Madrid",
   "actualizado": "2026-09-06",
-  "leyenda_top": "TOP = prioridad para nuestra familia",
+  "leyenda_top": "Badges solo para prioridades claras: TOP NIÑOS, TOP TODOS y TOP MAYORES.",
   "fuentes_horarios": {
     "oficial": "https://www.disneylandparis.com/en-int/entertainment/shows-and-parades",
     "secundaria": "https://www.dlpstats.com/dlp/entertainment"
@@ -84,7 +84,9 @@
       "consejo": "Llegar con margen; el aforo es limitado.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
-      "fuente": "Disneyland Paris oficial/app"
+      "fuente": "Disneyland Paris oficial/app",
+      "categoria": "TOP TODOS",
+      "motivo_top": "Gran espectáculo interior compartido, con Mickey, música y magia."
     },
     {
       "nombre": "Meet the Characters of Alice in Wonderland",
@@ -106,7 +108,9 @@
       "consejo": "Prioridad alta; llegar con margen o reservar acceso garantizado si está disponible.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
-      "fuente": "Disneyland Paris oficial/app"
+      "fuente": "Disneyland Paris oficial/app",
+      "categoria": "TOP TODOS",
+      "motivo_top": "Espectáculo musical de gran nivel y prioridad familiar."
     },
     {
       "parque": "Disneyland Park",
@@ -117,7 +121,9 @@
       "consejo": "Buscar sitio con antelación.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
-      "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)"
+      "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)",
+      "categoria": "TOP NIÑOS",
+      "motivo_top": "Desfile especialmente atractivo para niños por personajes y carrozas."
     },
     {
       "parque": "Disneyland Park",
@@ -128,7 +134,9 @@
       "consejo": "Puede cambiar por meteorología; las salidas se congestionan.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
-      "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)"
+      "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)",
+      "categoria": "TOP TODOS",
+      "motivo_top": "Nocturno visual de gran prioridad compartida, si se confirma."
     },
     {
       "parque": "Disney Adventure World",
@@ -161,7 +169,9 @@
       "consejo": "Exterior: el sitio y la sesión pueden cambiar por meteorología.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
-      "fuente": "Disneyland Paris oficial/app"
+      "fuente": "Disneyland Paris oficial/app",
+      "categoria": "TOP NIÑOS",
+      "motivo_top": "Opción prioritaria para niños aficionados a Frozen, si se confirma."
     },
     {
       "parque": "Disney Adventure World",
@@ -172,7 +182,9 @@
       "consejo": "Se celebra a la vez que Disney Tales of Magic; elegir parque y comprobar la hora en la app.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
-      "fuente": "Disneyland Paris oficial/app"
+      "fuente": "Disneyland Paris oficial/app",
+      "categoria": "TOP TODOS",
+      "motivo_top": "Nocturno visual de gran prioridad compartida, si se confirma."
     }
   ],
   "atracciones": [
@@ -183,7 +195,8 @@
       "descripcion": "Recorrido en barco por escenas de piratas; puede salpicar y asustar.",
       "altura_minima_publicada": "Cualquier altura",
       "advertencia": "Puede ser complicado por edad/intensidad",
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "motivo_top": "Gran prioridad familiar compartida."
     },
     {
       "atraccion": "Indiana Jones and the Temple of Peril",
@@ -192,7 +205,8 @@
       "descripcion": "Montaña rusa de aventura con curvas intensas e inversión.",
       "altura_minima_publicada": "1,40 m",
       "advertencia": "No pueden subir",
-      "categoria": "TOP MAYORES"
+      "categoria": "TOP MAYORES",
+      "motivo_top": "Prioridad por intensidad para adultos y mayores."
     },
     {
       "atraccion": "Star Wars Hyperspace Mountain",
@@ -201,7 +215,8 @@
       "descripcion": "Montaña rusa rápida ambientada en una batalla espacial.",
       "altura_minima_publicada": "1,20 m",
       "advertencia": "No pueden subir",
-      "categoria": "TOP MAYORES"
+      "categoria": "TOP MAYORES",
+      "motivo_top": "Prioridad por intensidad para adultos y mayores."
     },
     {
       "atraccion": "Buzz Lightyear Laser Blast",
@@ -209,7 +224,8 @@
       "zona": "Discoveryland",
       "descripcion": "Recorrido interactivo de disparos láser.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "motivo_top": "Gran prioridad familiar compartida."
     },
     {
       "atraccion": "Star Tours: The Adventures Continue",
@@ -217,16 +233,14 @@
       "zona": "Discoveryland",
       "descripcion": "Simulador 3D de viaje por la galaxia Star Wars.",
       "altura_minima_publicada": "1,02 m",
-      "advertencia": "Puede ser complicado por edad/intensidad",
-      "categoria": "TOP TODOS"
+      "advertencia": "Puede ser complicado por edad/intensidad"
     },
     {
       "atraccion": "Autopia",
       "parque": "Disneyland Park",
       "zona": "Discoveryland",
       "descripcion": "Conducción de coches pequeños por un circuito.",
-      "altura_minima_publicada": "81 cm para montar",
-      "categoria": "TOP NIÑOS"
+      "altura_minima_publicada": "81 cm para montar"
     },
     {
       "atraccion": "Alice’s Curious Labyrinth",
@@ -234,7 +248,8 @@
       "zona": "Fantasyland",
       "descripcion": "Recorrido a pie por un laberinto inspirado en Alicia.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS"
+      "categoria": "TOP NIÑOS",
+      "motivo_top": "Prioridad infantil e intensidad asumible."
     },
     {
       "atraccion": "Dumbo the Flying Elephant",
@@ -242,7 +257,8 @@
       "zona": "Fantasyland",
       "descripcion": "Vuelo circular en elefante.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS"
+      "categoria": "TOP NIÑOS",
+      "motivo_top": "Prioridad infantil e intensidad asumible."
     },
     {
       "atraccion": "it’s a small world",
@@ -250,7 +266,8 @@
       "zona": "Fantasyland",
       "descripcion": "Paseo tranquilo en barco por escenas del mundo.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS"
+      "categoria": "TOP NIÑOS",
+      "motivo_top": "Prioridad infantil e intensidad asumible."
     },
     {
       "atraccion": "Big Thunder Mountain",
@@ -259,7 +276,8 @@
       "descripcion": "Tren minero rápido por una montaña del Oeste, con curvas y movimiento.",
       "altura_minima_publicada": "1,02 m",
       "advertencia": "Puede ser complicado por edad/intensidad",
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "motivo_top": "Gran prioridad familiar compartida."
     },
     {
       "atraccion": "Phantom Manor",
@@ -267,8 +285,7 @@
       "zona": "Frontierland",
       "descripcion": "Recorrido oscuro de mansión encantada.",
       "altura_minima_publicada": "Cualquier altura",
-      "advertencia": "Puede ser complicado por edad/intensidad",
-      "categoria": "TOP TODOS"
+      "advertencia": "Puede ser complicado por edad/intensidad"
     },
     {
       "atraccion": "The Twilight Zone Tower of Terror",
@@ -277,7 +294,8 @@
       "descripcion": "Ascensor con caídas inesperadas.",
       "altura_minima_publicada": "1,02 m",
       "advertencia": "Puede ser complicado por edad/intensidad",
-      "categoria": "TOP MAYORES"
+      "categoria": "TOP MAYORES",
+      "motivo_top": "Prioridad por intensidad para adultos y mayores."
     },
     {
       "atraccion": "Avengers Assemble: Flight Force",
@@ -286,7 +304,8 @@
       "descripcion": "Montaña rusa rápida con Iron Man y Capitana Marvel.",
       "altura_minima_publicada": "1,20 m",
       "advertencia": "No pueden subir",
-      "categoria": "TOP MAYORES"
+      "categoria": "TOP MAYORES",
+      "motivo_top": "Prioridad por intensidad para adultos y mayores."
     },
     {
       "atraccion": "Spider-Man W.E.B. Adventure",
@@ -294,7 +313,8 @@
       "zona": "Marvel Avengers Campus",
       "descripcion": "Experiencia interactiva para lanzar telarañas.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "motivo_top": "Gran prioridad familiar compartida."
     },
     {
       "atraccion": "Frozen Ever After",
@@ -303,7 +323,8 @@
       "descripcion": "Paseo musical en barco por Arendelle.",
       "altura_minima_publicada": "Cualquier altura",
       "advertencia": "Puede ser complicado por edad/intensidad",
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "motivo_top": "Gran prioridad familiar compartida."
     },
     {
       "atraccion": "Ratatouille: L’Aventure Totalement Toquée de Rémy",
@@ -312,7 +333,8 @@
       "descripcion": "Aventura inmersiva siguiendo a Rémy por una cocina gigante.",
       "altura_minima_publicada": "Cualquier altura",
       "advertencia": "Puede ser complicado por edad/intensidad",
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "motivo_top": "Gran prioridad familiar compartida."
     },
     {
       "atraccion": "Cars ROAD TRIP",
@@ -320,7 +342,8 @@
       "zona": "Worlds of Pixar",
       "descripcion": "Recorrido familiar en vehículo por escenas y efectos de Cars.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS"
+      "categoria": "TOP NIÑOS",
+      "motivo_top": "Prioridad infantil e intensidad asumible."
     },
     {
       "atraccion": "RC Racer",
@@ -328,8 +351,7 @@
       "zona": "Worlds of Pixar · Toy Story Playland",
       "descripcion": "Vehículo que sube y baja por una pista en U.",
       "altura_minima_publicada": "1,20 m",
-      "advertencia": "No pueden subir",
-      "categoria": "TOP MAYORES"
+      "advertencia": "No pueden subir"
     },
     {
       "atraccion": "Slinky Dog Zigzag Spin",
@@ -337,7 +359,8 @@
       "zona": "Worlds of Pixar · Toy Story Playland",
       "descripcion": "Recorrido giratorio familiar.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS"
+      "categoria": "TOP NIÑOS",
+      "motivo_top": "Prioridad infantil e intensidad asumible."
     },
     {
       "atraccion": "Toy Soldiers Parachute Drop",
@@ -345,8 +368,25 @@
       "zona": "Worlds of Pixar · Toy Story Playland",
       "descripcion": "Caída y subida en paracaídas tematizados. Cerrada actualmente según la fuente consultada; no recomendarla como operativa.",
       "altura_minima_publicada": "81 cm",
-      "advertencia": "Cerrada actualmente; comprobar reapertura en la app. Puede ser complicado por edad/intensidad",
-      "categoria": "TOP NIÑOS"
+      "advertencia": "Cerrada actualmente; comprobar reapertura en la app. Puede ser complicado por edad/intensidad"
+    },
+    {
+      "atraccion": "Les Voyages de Pinocchio",
+      "parque": "Disneyland Park",
+      "zona": "Fantasyland",
+      "descripcion": "Paseo oscuro por la historia de Pinocho.",
+      "altura_minima_publicada": "Cualquier altura",
+      "categoria": "TOP NIÑOS",
+      "motivo_top": "Prioridad infantil e intensidad asumible."
+    },
+    {
+      "atraccion": "Le Pays des Contes de Fées",
+      "parque": "Disneyland Park",
+      "zona": "Fantasyland",
+      "descripcion": "Paseo tranquilo en barco por cuentos de hadas.",
+      "altura_minima_publicada": "Cualquier altura",
+      "categoria": "TOP NIÑOS",
+      "motivo_top": "Prioridad infantil e intensidad asumible."
     }
   ],
   "alturas_niños": {

@@ -85,7 +85,17 @@
     th, td { border-bottom: 1px solid var(--line); padding: 14px; text-align: left; vertical-align: top; font-size: .82rem; line-height: 1.45; }
     th { background: var(--sky); color: var(--navy); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
     td strong { color: var(--navy); }
-    .top-badge { display: inline-block; margin-left: 7px; padding: 2px 6px; border-radius: 999px; background: var(--gold); color: white; font-size: .64rem; letter-spacing: .08em; vertical-align: middle; }
+    .top-badge { display: inline-block; margin-left: 7px; padding: 3px 7px; border-radius: 999px; color: #fff; font-size: .64rem; font-weight: 800; letter-spacing: .04em; line-height: 1.2; vertical-align: middle; }
+    .top-badge.ninos { background: #197a45; }
+    .top-badge.todos { background: #155c9c; }
+    .top-badge.mayores { background: #a64b17; }
+    .why-layout { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 18px; align-items: start; }
+    .why-top { background: var(--paper); border: 1px solid var(--line); padding: 20px; box-shadow: var(--shadow); }
+    .why-top h3 { color: var(--navy); font: 400 1.5rem/1.05 Georgia, "Times New Roman", serif; margin: 0 0 12px; }
+    .why-top p { color: var(--ink-soft); font-size: .82rem; line-height: 1.5; margin: 0 0 12px; }
+    .why-top p:last-child { margin-bottom: 0; }
+    .why-item { margin-top: 8px !important; padding-top: 8px; border-top: 1px solid var(--line); }
+    .why-item strong { color: var(--navy); }
     .legend { display: inline-block; margin: 0 0 18px; color: var(--navy); font-size: .82rem; font-weight: 600; }
     .tips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
     .tip { background: var(--paper); border: 1px solid var(--line); padding: 18px; }
@@ -106,6 +116,9 @@
       .day:nth-child(2) { border-right: 0; }
       .day:nth-child(3) { border-right: 1px solid var(--line); }
       .day { min-height: 280px; }
+    }
+    @media (max-width: 800px) {
+      .why-layout { grid-template-columns: 1fr; }
     }
     @media (max-width: 500px) {
       h1 { font-size: clamp(3.3rem, 18vw, 5.6rem); }
@@ -139,8 +152,8 @@
     <section class="status"><div><p class="eyebrow">Base</p><p id="hotel">—</p></div><div><p id="mode">Cargando el plan…</p><p class="weather" id="weather">Tiempo en Disneyland Paris: consultando…</p></div></section>
     <section id="plan"><p class="section-label">Agenda</p><div class="days" id="days"></div></section>
     <noscript>Referencia del viaje: Mickey and the Magician · Frozen Ever After · Big Thunder Mountain · Molletito · Nacho · Alex</noscript>
-    <section class="data-section" id="shows"><p class="section-label">Tabla 1 · Espectáculos y experiencias</p><h2>Qué ver</h2><p class="data-note"><strong>HORARIOS: Disney no publica todos los horarios en la web; confirmar siempre en la app oficial el día de la visita.</strong></p><p class="legend">TOP = prioridad para nuestra familia</p><p class="data-note">Las experiencias de la tabla aplican al periodo del 11 al 14 de septiembre de 2026 salvo cambios de operación. Disneyland Park y Disney Adventure World son parques distintos.</p><div class="table-scroll"><table><thead><tr><th>Evento</th><th>Parque</th><th>Área/zona</th><th>Horario</th><th>Descripción</th><th>Consejo</th></tr></thead><tbody id="shows-table"></tbody></table></div></section>
-    <section class="data-section" id="attractions"><p class="section-label">Tabla 2 · Atracciones principales</p><h2>Qué montar</h2><p class="data-note" id="height-note"></p><p class="legend">Criterio orientativo; Álvaro puede cambiarlo · Clasificación de Otto, briefing 6 septiembre 2026 · Badges: TOP NIÑOS · TOP TODOS · TOP MAYORES</p><div class="table-scroll"><table><thead><tr><th>Atracción</th><th>Parque</th><th>Área/zona</th><th>Descripción</th><th>Altura mínima publicada</th><th>Advertencia</th></tr></thead><tbody id="attractions-table"></tbody></table></div></section>
+    <section class="data-section" id="shows"><p class="section-label">Tabla 1 · Espectáculos y experiencias</p><h2>Qué ver</h2><p class="data-note"><strong>HORARIOS: Disney no publica todos los horarios en la web; confirmar siempre en la app oficial el día de la visita.</strong></p><p class="legend">Tres badges: TOP NIÑOS · TOP TODOS · TOP MAYORES</p><p class="data-note">Las experiencias de la tabla aplican al periodo del 11 al 14 de septiembre de 2026 salvo cambios de operación. Disneyland Park y Disney Adventure World son parques distintos.</p><div class="why-layout"><div class="table-scroll"><table><thead><tr><th>Evento</th><th>Parque</th><th>Área/zona</th><th>Horario</th><th>Descripción</th><th>Consejo</th></tr></thead><tbody id="shows-table"></tbody></table></div><aside class="why-top" id="shows-why"><h3>Por qué es TOP</h3></aside></div></section>
+    <section class="data-section" id="attractions"><p class="section-label">Tabla 2 · Atracciones principales</p><h2>Qué montar</h2><p class="data-note" id="height-note"></p><p class="legend">Criterio orientativo; Álvaro puede cambiarlo · Clasificación de Otto, briefing 6 septiembre 2026 · Badges: TOP NIÑOS · TOP TODOS · TOP MAYORES</p><div class="why-layout"><div class="table-scroll"><table><thead><tr><th>Atracción</th><th>Parque</th><th>Área/zona</th><th>Descripción</th><th>Altura mínima publicada</th><th>Advertencia</th></tr></thead><tbody id="attractions-table"></tbody></table></div><aside class="why-top" id="attractions-why"><h3>Por qué es TOP</h3></aside></div></section>
     <section class="data-section" id="daily-advice"><p class="section-label">Consejo práctico por día</p><div class="tips" id="tips"></div></section>
     <section><p class="section-label">Vuelos</p><div class="flights" id="flights"></div></section>
     <footer>Fuente de datos del viaje: viaje.json · Tiempo: Open-Meteo · Reloj y cuenta atrás: Europe/Madrid.<br>Creado por Álvaro GT y sus minions</footer>
@@ -166,14 +179,19 @@
     document.querySelector('#mode').textContent = inTrip ? 'Hoy manda el día actual. El resto queda como referencia.' : 'Vista de conjunto para preparar el viaje.';
     document.querySelector('#trip-dates').textContent=data.fechas; document.querySelector('#trip-title').innerHTML=esc(data.titulo).replace(' ','<br>'); document.querySelector('#trip-description').textContent=data.descripcion; document.querySelector('#hotel').textContent=data.hotel; document.querySelector('#updated').textContent=data.actualizado || '—';
     document.querySelector('#maps').innerHTML=data.mapas.map(m=>`<a class="map-card" href="${esc(m.url)}" target="_blank" rel="noopener"><img src="${esc(m.url)}" alt="${esc(m.texto)}"><span>${esc(m.texto)}</span></a>`).join('');
-    const topShows = new Set(['Mickey and the Magician','The Lion King: Rhythms of the Pride Lands','Disney Stars on Parade','Disney Tales of Magic','A Celebration in Arendelle','Disney Cascade of Lights']);
+    const badgeClass = category => ({'TOP NIÑOS':'ninos','TOP TODOS':'todos','TOP MAYORES':'mayores'}[category] || '');
+    const badge = category => category ? `<span class="top-badge ${badgeClass(category)}">${esc(category)}</span>` : '';
     const schedule = s => s.nombre === 'Disney Stars on Parade' ? 'Orientativo, no garantizado: 17:30 · referencia secundaria DLP Stats/calendario; no confirma 11–14 sep; confirmar en la app' : s.nombre === 'Disney Tales of Magic' ? 'Orientativo, no garantizado: 21:00–22:00 · referencia secundaria DLP Stats/calendario; no confirma 11–14 sep; confirmar en la app' : 'Confirmar en la app';
     const source = s => s.nombre === 'Disney Stars on Parade' || s.nombre === 'Disney Tales of Magic' ? 'Disneyland Paris oficial/app + DLP Stats (secundaria)' : 'Disneyland Paris oficial/app';
-    document.querySelector('#shows-table').innerHTML=data.espectaculos.map(s=>`<tr><td><strong>${esc(s.nombre)}</strong>${topShows.has(s.nombre)?'<span class="top-badge">TOP</span>':''}</td><td>${esc(s.parque)}</td><td>${esc(s.zona)}</td><td>${esc(schedule(s))}<br><small>${esc(source(s))}</small></td><td>${esc(s.descripcion)}</td><td>${esc(s.consejo)}</td></tr>`).join('');
+    const liveShowCategory = s => s.categoria && !schedule(s).includes('no confirma') ? s.categoria : '';
+    const showRows = data.espectaculos.map(s=>`<tr><td><strong>${esc(s.nombre)}</strong>${badge(liveShowCategory(s))}</td><td>${esc(s.parque)}</td><td>${esc(s.zona)}</td><td>${esc(schedule(s))}<br><small>${esc(source(s))}</small></td><td>${esc(s.descripcion)}</td><td>${esc(s.consejo)}</td></tr>`).join('');
+    document.querySelector('#shows-table').innerHTML=showRows;
+    document.querySelector('#shows-why').innerHTML='<h3>Por qué es TOP</h3><p>TOP NIÑOS = prioridad infantil e intensidad asumible. TOP TODOS = gran prioridad familiar compartida. TOP MAYORES = prioridad por intensidad para adultos y mayores.</p>'+data.espectaculos.filter(s=>liveShowCategory(s)).map(s=>`<p class="why-item"><strong>${esc(s.nombre)}</strong> · ${esc(s.motivo_top || '')}</p>`).join('');
     document.querySelector('#height-note').textContent=`Alturas: Molletito ${data.alturas_niños.Molletito}, Nacho ${data.alturas_niños.Nacho}, Alex ${data.alturas_niños.Alex}. ${data.nota_alturas}`;
     const categoryRank = {'TOP TODOS':0,'TOP NIÑOS':1,'TOP MAYORES':2};
     const orderedAttractions = [...data.atracciones].filter(a=>a.incluida !== false).sort((a,b)=>`${a.parque}|${a.zona}|${categoryRank[a.categoria] ?? 9}|${a.atraccion}`.localeCompare(`${b.parque}|${b.zona}|${categoryRank[b.categoria] ?? 9}|${b.atraccion}`));
-    document.querySelector('#attractions-table').innerHTML=orderedAttractions.map(a=>`<tr><td><strong>${esc(a.atraccion)}</strong><span class="top-badge">${esc(a.categoria)}</span></td><td>${esc(a.parque)}</td><td>${esc(a.zona)}</td><td>${esc(a.descripcion)}</td><td>${esc(a.altura_minima_publicada)}</td><td>${esc(a.advertencia || '')}</td></tr>`).join('');
+    document.querySelector('#attractions-table').innerHTML=orderedAttractions.map(a=>`<tr><td><strong>${esc(a.atraccion)}</strong>${badge(a.categoria)}</td><td>${esc(a.parque)}</td><td>${esc(a.zona)}</td><td>${esc(a.descripcion)}</td><td>${esc(a.altura_minima_publicada)}</td><td>${esc(a.advertencia || '')}</td></tr>`).join('');
+    document.querySelector('#attractions-why').innerHTML='<h3>Por qué es TOP</h3><p>TOP NIÑOS = prioridad infantil e intensidad asumible. TOP TODOS = gran prioridad familiar compartida. TOP MAYORES = prioridad por intensidad para adultos y mayores.</p>'+orderedAttractions.filter(a=>a.categoria).map(a=>`<p class="why-item"><strong>${esc(a.atraccion)}</strong> · ${esc(a.motivo_top || '')}</p>`).join('');
     document.querySelector('#tips').innerHTML=data.consejos_practicos.map(t=>`<article class="tip"><h3>${esc(t.dia)} · ${esc(t.titulo)}</h3><p>${esc(t.texto)}</p></article>`).join('');
     const visible = inTrip ? data.dias.filter(d=>d.fecha===today) : data.dias;
     document.querySelector('#days').innerHTML=visible.map(d=>`<article class="day ${d.fecha===today?'today':''}"><div class="date">${esc(d.etiqueta)} · ${d.fecha}</div><h3>${d.fecha===today?'Hoy':esc(d.etiqueta)}</h3><div class="park">${esc(d.parque)}</div><p class="plan">${esc(d.plan)}</p><div class="day-weather" data-date="${d.fecha}">Tiempo: consultando…</div></article>`).join('');
