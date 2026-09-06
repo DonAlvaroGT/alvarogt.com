@@ -17,18 +17,19 @@
 <body>
   <header class="wrap">
     <div class="kicker">Casa · Madrid</div>
-    <div><h1>García<br>Olivas</h1><p class="intro">Lo de hoy y lo de mañana, sin vueltas. El tiempo se consulta al abrir.</p></div>
+    <div><h1>García<br>Olivas</h1><p class="intro"><span id="updated">Actualizado: —</span></p></div>
     <div class="clock" id="clock">—</div>
   </header>
   <main class="wrap">
     <section class="days" id="days" aria-live="polite"><p style="padding:24px">Cargando…</p></section>
-    <footer><span class="source">Fuente del tiempo: Open-Meteo</span><br>La página se actualiza sola al abrirla.</footer>
+    <footer><span class="source">Fuente del tiempo: Open-Meteo</span><br>La página se actualiza sola al abrirla.<br>Creado por Álvaro GT y sus minions</footer>
   </main>
 <script>
   const zone='Europe/Madrid';
   const dateFmt=new Intl.DateTimeFormat('en-CA',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'});
   const dayFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,weekday:'long',day:'numeric',month:'long'});
   const clockFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+  const updatedFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,dateStyle:'long',timeStyle:'short'});
   const today=()=>dateFmt.format(new Date());
   const addDay=(key,n)=>{const d=new Date(key+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
   const pretty=d=>dayFmt.format(new Date(d+'T12:00:00Z'));
@@ -38,7 +39,9 @@
   function activities(d,rules){const w=weekday(d),out=[];if(w==='miércoles')out.push('<strong>Molletito (Luz):</strong> natación, 18:30–19:00.');if(rules.extraescolares.futbol.dias.includes(w)&&d>=rules.extraescolares.futbol.desde)out.push('<strong>Nacho:</strong> fútbol.');return out.length?out.join(' '):'<span class="empty">No hay extraescolares apuntadas.</span>'}
   function card(d,w,i,rules){const n=w.daily.time.indexOf(d);if(n<0)return `<article><div class="date">${safe(pretty(d))}</div><p class="error">No hay previsión disponible para este día.</p></article>`;const min=w.daily.temperature_2m_min[n],max=w.daily.temperature_2m_max[n];return `<article><div class="date">${i===0?'Hoy': 'Mañana'} · ${safe(pretty(d))}</div><h2 class="day-name">${i===0?'Hoy':'Mañana'}</h2><p class="copy">En Madrid, ${safe(min)}–${safe(max)} °C y ${safe(clothes(min,max))}.</p><div class="activities">${activities(d,rules)}</div></article>`}
   async function start(){const rules=await fetch('condiciones.json').then(r=>r.json());const a=today(),b=addDay(a,1);const t=rules.tiempo;const url=`https://api.open-meteo.com/v1/forecast?latitude=${t.latitud}&longitude=${t.longitud}&daily=temperature_2m_min,temperature_2m_max&timezone=${encodeURIComponent(t.zona_horaria)}&forecast_days=2`;const w=await fetch(url).then(r=>{if(!r.ok)throw Error('weather');return r.json()});document.querySelector('#days').innerHTML=card(a,w,0,rules)+card(b,w,1,rules)}
-  const tick=()=>document.querySelector('#clock').textContent=clockFmt.format(new Date());tick();setInterval(tick,1000);start().catch(()=>document.querySelector('#days').innerHTML='<p class="error">Ahora mismo no se puede consultar el tiempo.</p>');
+  const tick=()=>document.querySelector('#clock').textContent=clockFmt.format(new Date());
+  document.querySelector('#updated').textContent=`Actualizado: ${updatedFmt.format(new Date())}`;
+  tick();setInterval(tick,1000);start().catch(()=>document.querySelector('#days').innerHTML='<p class="error">Ahora mismo no se puede consultar el tiempo.</p>');
 </script>
 </body>
 </html>
