@@ -53,25 +53,98 @@
       "fecha": "2026-09-11",
       "etiqueta": "Vie 11",
       "parque": "grande (Disneyland)",
-      "plan": "Llegamos al parque grande a las 15:00. Main Street, Piratas, Phantom y Star Tours dejan una primera tarde con sabor a parque. Disney Stars on Parade pasa a las 17:30 (anuncio de Pixie Dust para el 7–25 de septiembre; confirmar en la app). Al cierre, Disney Tales of Magic, previsto sobre las 21:00 según Thrill Data."
+      "plan": "Llegamos al parque grande a las 15:00. Main Street, Piratas, Phantom y Star Tours dejan una primera tarde con sabor a parque. Disney Stars on Parade pasa a las 17:30 (anuncio de Pixie Dust para el 7–25 de septiembre; confirmar en la app). Al cierre, Disney Tales of Magic, previsto sobre las 21:00 según Thrill Data.",
+      "agenda": [
+        {
+          "hora": "15:00",
+          "texto": "Llegada al **parque grande (Disneyland)**; Main Street, Piratas, Phantom y Star Tours.",
+          "confirmar": false
+        },
+        {
+          "hora": "17:30",
+          "texto": "Disney Stars on Parade.",
+          "confirmar": true
+        },
+        {
+          "hora": "21:00",
+          "texto": "Disney Tales of Magic, al cierre.",
+          "confirmar": true
+        }
+      ]
     },
     {
       "fecha": "2026-09-12",
       "etiqueta": "Sáb 12",
       "parque": "grande (Disneyland)",
-      "plan": "Por el hotel podemos entrar a las 8:30, una hora antes de que abra el parque (Extra Magic Time). Empezamos por Big Thunder. Al mediodía, si las colas están en su momento más alto, puede apetecer volver al hotel a descansar un rato, sin obligación. Por la tarde, personajes. Disney Stars on Parade está prevista a las 17:30 (confirmar en la app) y Disney Tales of Magic, al cierre previsto a las 22:00 según Thrill Data."
+      "plan": "Por el hotel podemos entrar a las 8:30, una hora antes de que abra el parque (Extra Magic Time). Empezamos por Big Thunder. Al mediodía, si las colas están en su momento más alto, puede apetecer volver al hotel a descansar un rato, sin obligación. Por la tarde, personajes. Disney Stars on Parade está prevista a las 17:30 (confirmar en la app) y Disney Tales of Magic, al cierre previsto a las 22:00 según Thrill Data.",
+      "agenda": [
+        {
+          "hora": "8:30",
+          "texto": "Entrada por Extra Magic Time y prioridad a Big Thunder.",
+          "confirmar": true
+        },
+        {
+          "hora": "13:30",
+          "texto": "Si suben las **colas**, **volver al hotel** a descansar.",
+          "confirmar": false
+        },
+        {
+          "hora": "17:30",
+          "texto": "Disney Stars on Parade.",
+          "confirmar": true
+        },
+        {
+          "hora": "22:00",
+          "texto": "Disney Tales of Magic, al cierre.",
+          "confirmar": true
+        }
+      ]
     },
     {
       "fecha": "2026-09-13",
       "etiqueta": "Dom 13",
       "parque": "pequeño (Adventure World)",
-      "plan": "Por el hotel podemos entrar a las 8:30, una hora antes de que abra el parque (Extra Magic Time). El domingo empezamos por Remy’s / Ratatouille y dejamos sitio para World of Frozen, abierto desde marzo de 2026, además de los espectáculos centrales. Al mediodía, si las colas están en su momento más alto, puede apetecer volver al hotel a descansar un rato, sin obligación. A las 10:00 toca la cola virtual de Hero Training. El nocturno es Disney Cascade of Lights, al cierre previsto a las 22:00 según Thrill Data."
+      "plan": "Por el hotel podemos entrar a las 8:30, una hora antes de que abra el parque (Extra Magic Time). El domingo empezamos por Remy’s / Ratatouille y dejamos sitio para World of Frozen, abierto desde marzo de 2026, además de los espectáculos centrales. Al mediodía, si las colas están en su momento más alto, puede apetecer volver al hotel a descansar un rato, sin obligación. A las 10:00 toca la cola virtual de Hero Training. El nocturno es Disney Cascade of Lights, al cierre previsto a las 22:00 según Thrill Data.",
+      "agenda": [
+        {
+          "hora": "8:30",
+          "texto": "Entrada por Extra Magic Time; prioridad a Remy / Ratatouille y World of Frozen.",
+          "confirmar": true
+        },
+        {
+          "hora": "10:00",
+          "texto": "Cola virtual de Hero Training.",
+          "confirmar": true
+        },
+        {
+          "hora": "13:30",
+          "texto": "Si suben las **colas**, **volver al hotel** a descansar.",
+          "confirmar": false
+        },
+        {
+          "hora": "22:00",
+          "texto": "Disney Cascade of Lights, al cierre.",
+          "confirmar": true
+        }
+      ]
     },
     {
       "fecha": "2026-09-14",
       "etiqueta": "Lun 14",
       "parque": "parque, mañana",
-      "plan": "La mañana es de parque, de 8:30 a 13:30. A las 13:45 recogemos las maletas y después toca el vuelo de vuelta. No hay nocturno: salimos a las 13:45."
+      "plan": "La mañana es de parque, de 8:30 a 13:30. A las 13:45 recogemos las maletas y después toca el vuelo de vuelta. No hay nocturno: salimos a las 13:45.",
+      "agenda": [
+        {
+          "hora": "8:30–13:30",
+          "texto": "Mañana de parque; parque y horario por confirmar.",
+          "confirmar": true
+        },
+        {
+          "hora": "13:45",
+          "texto": "Recoger las maletas y salir hacia el vuelo de vuelta.",
+          "confirmar": false
+        }
+      ]
     }
   ],
   "espectaculos": [
@@ -421,5 +494,5 @@
       "texto": "No cierro el parque: confirmar en la app Disneyland Park o Disney Adventure World, horarios, atracciones abiertas y Extra Magic Time de esa mañana. Todo puede cambiar por operación o meteorología."
     }
   ],
-  "nota_operativa": "Horarios, cierres, reaperturas, Extra Magic Time y espectáculos pueden cambiar. Confirmar siempre en la app oficial el mismo día. El calendario consultado no permite confirmar cierres de todo el periodo; si una atracción aparece con estado temporal o incierto, comprobar estado en la app."
+  "nota_operativa": "Horarios, cierres, reaperturas, Extra Magic Time y espectáculos pueden cambiar. Confirmar siempre en la app oficial el mismo día. El calendario consultado no permite confirmar cierres de todo el periodo; si una atracción aparece con estado temporal o incierto, comprobar estado en la app. La agenda destacada se limita al día actual del viaje; fuera de las fechas, se muestra como referencia."
 }

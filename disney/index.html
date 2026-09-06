@@ -60,6 +60,14 @@
     .weather-day { padding: 14px; background: var(--sky); min-height: 105px; }
     .weather-day strong { display:block; color: var(--navy); margin-bottom: 8px; }
     .weather-day span { display:block; color: var(--ink-soft); font-size: .82rem; line-height: 1.45; }
+    .daily-focus { margin: 0 0 54px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .daily-card { background: var(--paper); border: 1px solid var(--line); padding: 24px; box-shadow: var(--shadow); }
+    .daily-card h2 { color: var(--navy); font: 400 clamp(1.7rem, 3vw, 2.6rem)/1 Georgia, "Times New Roman", serif; margin: 0 0 8px; }
+    .daily-card h3 { color: var(--gold); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; margin: 0 0 18px; }
+    .daily-card p { color: var(--ink-soft); font-size: .9rem; line-height: 1.58; margin: 0 0 12px; }
+    .daily-card p:last-child { margin-bottom: 0; }
+    .daily-card strong { color: var(--navy); }
+    .daily-card[hidden] { display: none; }
     .section-label { margin: 54px 0 18px; }
     .days { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); }
     .day { min-height: 300px; padding: 22px 22px 24px 0; margin-right: 22px; border-bottom: 1px solid var(--line); }
@@ -113,6 +121,7 @@
       .map-card:first-child { grid-column: 1 / -1; }
       .days { grid-template-columns: 1fr 1fr; }
       .weather-days { grid-template-columns: 1fr 1fr; }
+      .daily-focus { grid-template-columns: 1fr; }
       .day:nth-child(2) { border-right: 0; }
       .day:nth-child(3) { border-right: 1px solid var(--line); }
       .day { min-height: 280px; }
@@ -149,6 +158,10 @@
       <div class="weather-days" id="weather-days"></div>
       <p class="weather-note">Previsión cambiante; consultar de nuevo al abrir</p>
     </section>
+    <section class="daily-focus" id="daily-focus" hidden aria-live="polite">
+      <article class="daily-card"><h2>Consejo rápido del día</h2><h3 id="daily-advice-heading">—</h3><div id="daily-advice-content"></div></article>
+      <article class="daily-card"><h2>Agenda de hoy</h2><h3 id="daily-agenda-heading">—</h3><div id="daily-agenda-content"></div></article>
+    </section>
     <section class="status"><div><p class="eyebrow">Base</p><p id="hotel">—</p></div><div><p id="mode">Cargando el plan…</p><p class="weather" id="weather">Tiempo en Disneyland Paris: consultando…</p></div></section>
     <section id="plan"><p class="section-label">Agenda</p><div class="days" id="days"></div></section>
     <noscript>Referencia del viaje: Mickey and the Magician · Frozen Ever After · Big Thunder Mountain · Molletito · Nacho · Alex</noscript>
@@ -159,19 +172,18 @@
     <footer>Fuente de datos del viaje: viaje.json · Tiempo: Open-Meteo · Reloj y cuenta atrás: Europe/Madrid.<br>Creado por Álvaro GT y sus minions</footer>
   </main>
 <script>
-  const madrid = new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'});
   const clock = new Intl.DateTimeFormat('es-ES',{timeZone:'Europe/Madrid',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
-  const requestedDay = new URLSearchParams(window.location.search).get('dia');
-  const simulatedDay = /^\d{4}-\d{2}-\d{2}$/.test(requestedDay || '') ? requestedDay : null;
-  const dateKey = () => simulatedDay || madrid.format(new Date());
-  const tick = () => { document.querySelector('#clock').textContent = clock.format(new Date()); };
+  const madridParts = () => { try { return Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date()).filter(p=>p.type !== 'literal').map(p=>[p.type,p.value])); } catch (_) { const d=new Date(); return {year:String(d.getFullYear()),month:String(d.getMonth()+1).padStart(2,'0'),day:String(d.getDate()).padStart(2,'0'),hour:String(d.getHours()).padStart(2,'0'),minute:String(d.getMinutes()).padStart(2,'0')}; } };
+  const dateKey = () => { const p=madridParts(); return `${p.year}-${p.month}-${p.day}`; };
+  const madridHour = () => Number(madridParts().hour);
+  const tick = () => { document.querySelector('#clock').textContent = clock.format(new Date()); if (window.refreshDailyFocus) window.refreshDailyFocus(); };
   const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const weatherName = code => ({0:'despejado',1:'casi despejado',2:'parcialmente nuboso',3:'nuboso',45:'niebla',48:'niebla',51:'llovizna',53:'llovizna',55:'llovizna',61:'lluvia',63:'lluvia',65:'lluvia',71:'nieve',73:'nieve',75:'nieve',80:'chubascos',81:'chubascos',82:'chubascos',95:'tormenta',96:'tormenta',99:'tormenta'}[code] || 'tiempo variable');
   const dateText = d => new Intl.DateTimeFormat('es-ES',{day:'numeric',month:'short',timeZone:'Europe/Paris'}).format(new Date(d+'T12:00:00+02:00'));
   function weatherFor(w, date) { const i=w.daily.time.indexOf(date); if(i<0) return 'sin previsión'; return `${weatherName(w.daily.weather_code[i])} · ${w.daily.temperature_2m_min[i]}–${w.daily.temperature_2m_max[i]} °C`; }
   async function start() {
     const data = await fetch('viaje.json').then(r => r.json());
-    const today = dateKey(), first = data.dias[0].fecha, last = data.dias[data.dias.length-1].fecha;
+    const today = dateKey(), first = '2026-09-11', last = '2026-09-14';
     const todayDate = new Date(today+'T12:00:00+02:00');
     const daysUntil = Math.ceil((new Date(first+'T12:00:00+02:00') - todayDate) / 86400000);
     document.querySelector('#countdown').textContent = today < first ? `${daysUntil} ${daysUntil===1?'día':'días'}` : today <= last ? 'Hoy, '+today.split('-').reverse().join('/') : 'Viaje terminado';
@@ -179,6 +191,22 @@
     document.querySelector('#mode').textContent = inTrip ? 'Hoy manda el día actual. El resto queda como referencia.' : 'Vista de conjunto para preparar el viaje.';
     document.querySelector('#trip-dates').textContent=data.fechas; document.querySelector('#trip-title').innerHTML=esc(data.titulo).replace(' ','<br>'); document.querySelector('#trip-description').textContent=data.descripcion; document.querySelector('#hotel').textContent=data.hotel; document.querySelector('#updated').textContent=data.actualizado || '—';
     document.querySelector('#maps').innerHTML=data.mapas.map(m=>`<a class="map-card" href="${esc(m.url)}" target="_blank" rel="noopener"><img src="${esc(m.url)}" alt="${esc(m.texto)}"><span>${esc(m.texto)}</span></a>`).join('');
+    const adviceFor = date => data.consejos_practicos.find(t=>t.fecha===date) || data.consejos_practicos[0];
+    const agendaFor = date => data.dias.find(d=>d.fecha===date) || data.dias[0];
+    const emphasis = text => esc(text).replace(/(confirmar en la app|volver al hotel|reservas?\/colas?|TOP|\b(?:Disneyland|Disney Adventure World|Disneyland Park)\b|\b(?:8:30|10:00|13:30|13:45|15:00|17:30|21:00|22:00)\b)/gi, '<strong>$1</strong>');
+    const renderDailyFocus = () => {
+      const current = dateKey(), duringTrip = current >= first && current <= last, afterNoon = madridHour() >= 12;
+      const box = document.querySelector('#daily-focus');
+      if (!afterNoon) { box.hidden = true; return; }
+      const advice = adviceFor(duringTrip ? current : first), agenda = agendaFor(duringTrip ? current : first);
+      document.querySelector('#daily-advice-heading').textContent = duringTrip ? `${advice.dia} · ${advice.titulo}` : `Referencia · ${advice.dia} · ${advice.titulo}`;
+      document.querySelector('#daily-advice-content').innerHTML = `<p><strong>Parque:</strong> ${emphasis(advice.parque || advice.titulo)}</p><p><strong>Zona:</strong> ${emphasis(advice.zona || 'Consultar el plan y la app')}</p><p>${emphasis(advice.texto)}</p>`;
+      document.querySelector('#daily-agenda-heading').textContent = duringTrip ? `${agenda.etiqueta} · ${agenda.parque}` : `Referencia · ${agenda.etiqueta} · ${agenda.parque}`;
+      document.querySelector('#daily-agenda-content').innerHTML = (agenda.agenda || [{texto: agenda.plan}]).map(item => `<p>${item.hora ? `<strong>${esc(item.hora)}</strong> · ` : ''}${emphasis(item.texto)}${item.confirmar ? ' · <strong>Confirmar en la app</strong>' : ''}</p>`).join('');
+      box.hidden = false;
+    };
+    window.refreshDailyFocus = renderDailyFocus;
+    renderDailyFocus();
     const badgeClass = category => ({'TOP NIÑOS':'ninos','TOP TODOS':'todos','TOP MAYORES':'mayores'}[category] || '');
     const badge = category => category ? `<span class="top-badge ${badgeClass(category)}">${esc(category)}</span>` : '';
     const schedule = s => s.nombre === 'Disney Stars on Parade' ? 'Orientativo, no garantizado: 17:30 · referencia secundaria DLP Stats/calendario; no confirma 11–14 sep; confirmar en la app' : s.nombre === 'Disney Tales of Magic' ? 'Orientativo, no garantizado: 21:00–22:00 · referencia secundaria DLP Stats/calendario; no confirma 11–14 sep; confirmar en la app' : 'Confirmar en la app';
