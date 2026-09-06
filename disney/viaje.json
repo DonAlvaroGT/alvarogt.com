@@ -5,7 +5,6 @@
   "zona_horaria": "Europe/Madrid",
   "activacion_consejo_agenda": "2026-09-11T00:00:00+02:00",
   "actualizado": "2026-09-06",
-  "leyenda_top": "Estas etiquetas describen el tipo de experiencia, no un orden de prioridad. Criterio orientativo; Álvaro puede cambiarlo.",
   "fuentes_horarios": {
     "oficial": "https://www.disneylandparis.com/en-int/entertainment/shows-and-parades",
     "secundaria": "https://www.dlpstats.com/dlp/entertainment"
@@ -159,8 +158,7 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
-      "categoria": "TOP TODOS",
-      "motivo_top": "Espectáculo interior con Mickey, magia, música y personajes Disney; encaja en TOP TODOS por su formato compartido y sin intensidad física."
+      "categoria": "TOP TODOS"
     },
     {
       "nombre": "Meet the Characters of Alice in Wonderland",
@@ -183,8 +181,7 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
-      "categoria": "TOP TODOS",
-      "motivo_top": "Espectáculo musical interior con danza, acrobacias y canciones inspiradas en El Rey León; encaja en TOP TODOS."
+      "categoria": "TOP TODOS"
     },
     {
       "parque": "Disneyland Park",
@@ -196,8 +193,7 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)",
-      "categoria": "TOP NIÑOS",
-      "motivo_top": "Desfile exterior de carrozas, personajes, música y vestuario colorido; encaja en TOP NIÑOS por su experiencia visual y familiar."
+      "categoria": "TOP NIÑOS"
     },
     {
       "parque": "Disneyland Park",
@@ -209,8 +205,7 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)",
-      "categoria": "TOP TODOS",
-      "motivo_top": "Espectáculo nocturno de proyecciones, efectos y fuegos sobre el castillo; encaja en TOP TODOS, si se confirma y la meteorología lo permite."
+      "categoria": "TOP TODOS"
     },
     {
       "parque": "Disney Adventure World",
@@ -244,8 +239,7 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
-      "categoria": "TOP NIÑOS",
-      "motivo_top": "Espectáculo exterior con Anna, Elsa, Olaf, Kristoff y habitantes de Arendelle; encaja en TOP NIÑOS por sus personajes y formato familiar."
+      "categoria": "TOP NIÑOS"
     },
     {
       "parque": "Disney Adventure World",
@@ -257,8 +251,7 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
-      "categoria": "TOP TODOS",
-      "motivo_top": "Espectáculo nocturno con fuegos, pantallas de agua, drones, proyecciones y efectos visuales; encaja en TOP TODOS, si se confirma."
+      "categoria": "TOP TODOS"
     }
   ],
   "atracciones": [
@@ -269,8 +262,7 @@
       "descripcion": "Recorrido en barco por escenas de piratas; puede salpicar y asustar.",
       "altura_minima_publicada": "Cualquier altura",
       "advertencia": "Puede ser complicado por edad/intensidad",
-      "categoria": "TOP TODOS",
-      "motivo_top": "Recorrido en barco por escenas de piratas, con oscuridad, efectos y posibles salpicaduras; cualquier altura, pero puede impresionar."
+      "categoria": "TOP TODOS"
     },
     {
       "atraccion": "Indiana Jones and the Temple of Peril",
@@ -279,8 +271,7 @@
       "descripcion": "Montaña rusa de aventura con curvas intensas e inversión.",
       "altura_minima_publicada": "1,40 m",
       "advertencia": "No pueden subir",
-      "categoria": "TOP MAYORES",
-      "motivo_top": "Montaña rusa exterior de aventura con curvas, velocidad e inversión; mínimo 140 cm."
+      "categoria": "TOP MAYORES"
     },
     {
       "atraccion": "Star Wars Hyperspace Mountain",
@@ -289,8 +280,7 @@
       "descripcion": "Montaña rusa rápida ambientada en una batalla espacial.",
       "altura_minima_publicada": "1,20 m",
       "advertencia": "No pueden subir",
-      "categoria": "TOP MAYORES",
-      "motivo_top": "Montaña rusa oscura de Star Wars, rápida e intensa; mínimo 120 cm."
+      "categoria": "TOP MAYORES"
     },
     {
       "atraccion": "Buzz Lightyear Laser Blast",
@@ -298,8 +288,7 @@
       "zona": "Discoveryland",
       "descripcion": "Recorrido interactivo de disparos láser.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP TODOS",
-      "motivo_top": "Recorrido oscuro interactivo con pistolas láser y giros; cualquier altura."
+      "categoria": "TOP TODOS"
     },
     {
       "atraccion": "Star Tours: The Adventures Continue",
@@ -322,8 +311,7 @@
       "zona": "Fantasyland",
       "descripcion": "Recorrido a pie por un laberinto inspirado en Alicia.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS",
-      "motivo_top": "Laberinto exterior a pie inspirado en Alicia, con caminos y rincones para explorar; cualquier altura."
+      "categoria": "TOP NIÑOS"
     },
     {
       "atraccion": "Dumbo the Flying Elephant",
@@ -331,8 +319,7 @@
       "zona": "Fantasyland",
       "descripcion": "Vuelo circular en elefante.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS",
-      "motivo_top": "Vuelo circular en un elefante que sube y baja; cualquier altura."
+      "categoria": "TOP NIÑOS"
     },
     {
       "atraccion": "it’s a small world",
@@ -340,8 +327,7 @@
       "zona": "Fantasyland",
       "descripcion": "Paseo tranquilo en barco por escenas del mundo.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS",
-      "motivo_top": "Paseo tranquilo en barco por escenas musicales de distintos lugares del mundo; cualquier altura."
+      "categoria": "TOP NIÑOS"
     },
     {
       "atraccion": "Big Thunder Mountain",
@@ -350,8 +336,7 @@
       "descripcion": "Tren minero rápido por una montaña del Oeste, con curvas y movimiento.",
       "altura_minima_publicada": "1,02 m",
       "advertencia": "Puede ser complicado por edad/intensidad",
-      "categoria": "TOP TODOS",
-      "motivo_top": "Montaña rusa exterior con curvas, velocidad y traqueteo; mínimo 102 cm; puede impresionar."
+      "categoria": "TOP TODOS"
     },
     {
       "atraccion": "Phantom Manor",
@@ -368,8 +353,7 @@
       "descripcion": "Ascensor con caídas inesperadas.",
       "altura_minima_publicada": "1,02 m",
       "advertencia": "Puede ser complicado por edad/intensidad",
-      "categoria": "TOP MAYORES",
-      "motivo_top": "Ascensor con caídas y ambientación de terror; mínimo 102 cm; puede asustar."
+      "categoria": "TOP MAYORES"
     },
     {
       "atraccion": "Avengers Assemble: Flight Force",
@@ -378,8 +362,7 @@
       "descripcion": "Montaña rusa rápida con Iron Man y Capitana Marvel.",
       "altura_minima_publicada": "1,20 m",
       "advertencia": "No pueden subir",
-      "categoria": "TOP MAYORES",
-      "motivo_top": "Montaña rusa cubierta, rápida e intensa, ambientada en una misión de Marvel; mínimo 120 cm."
+      "categoria": "TOP MAYORES"
     },
     {
       "atraccion": "Spider-Man W.E.B. Adventure",
@@ -387,8 +370,7 @@
       "zona": "Marvel Avengers Campus",
       "descripcion": "Experiencia interactiva para lanzar telarañas.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP TODOS",
-      "motivo_top": "Recorrido interactivo para lanzar telarañas con los brazos; cualquier altura."
+      "categoria": "TOP TODOS"
     },
     {
       "atraccion": "Frozen Ever After",
@@ -397,8 +379,7 @@
       "descripcion": "Paseo musical en barco por Arendelle.",
       "altura_minima_publicada": "Cualquier altura",
       "advertencia": "Puede ser complicado por edad/intensidad",
-      "categoria": "TOP TODOS",
-      "motivo_top": "Paseo en barco musical por Arendelle con pequeñas bajadas; sin altura mínima; puede salpicar y asustar a algunos niños."
+      "categoria": "TOP TODOS"
     },
     {
       "atraccion": "Ratatouille: L’Aventure Totalement Toquée de Rémy",
@@ -407,8 +388,7 @@
       "descripcion": "Aventura inmersiva siguiendo a Rémy por una cocina gigante.",
       "altura_minima_publicada": "Cualquier altura",
       "advertencia": "Puede ser complicado por edad/intensidad",
-      "categoria": "TOP TODOS",
-      "motivo_top": "Recorrido 4D con movimiento y efectos siguiendo a Rémy por una cocina gigante; cualquier altura, pero puede impresionar."
+      "categoria": "TOP TODOS"
     },
     {
       "atraccion": "Cars ROAD TRIP",
@@ -416,8 +396,7 @@
       "zona": "Worlds of Pixar",
       "descripcion": "Recorrido familiar en vehículo por escenas y efectos de Cars.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS",
-      "motivo_top": "Recorrido familiar en vehículo por escenas y efectos de Cars; cualquier altura."
+      "categoria": "TOP NIÑOS"
     },
     {
       "atraccion": "RC Racer",
@@ -433,8 +412,7 @@
       "zona": "Worlds of Pixar · Toy Story Playland",
       "descripcion": "Recorrido giratorio familiar.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS",
-      "motivo_top": "Atracción exterior de recorrido giratorio y ritmo suave inspirada en Slinky Dog; cualquier altura."
+      "categoria": "TOP NIÑOS"
     },
     {
       "atraccion": "Toy Soldiers Parachute Drop",
@@ -450,8 +428,7 @@
       "zona": "Fantasyland",
       "descripcion": "Paseo oscuro por la historia de Pinocho.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS",
-      "motivo_top": "Paseo oscuro en vehículo por escenas de la historia de Pinocho; cualquier altura."
+      "categoria": "TOP NIÑOS"
     },
     {
       "atraccion": "Le Pays des Contes de Fées",
@@ -459,8 +436,7 @@
       "zona": "Fantasyland",
       "descripcion": "Paseo tranquilo en barco por cuentos de hadas.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS",
-      "motivo_top": "Paseo tranquilo en barco por maquetas de cuentos de hadas; cualquier altura."
+      "categoria": "TOP NIÑOS"
     }
   ],
   "alturas_niños": {
