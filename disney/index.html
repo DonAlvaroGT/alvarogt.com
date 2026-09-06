@@ -6,29 +6,101 @@
   <meta name="robots" content="noindex,nofollow">
   <title>Disneyland Paris · Álvaro GT</title>
   <style>
-    :root { color-scheme:dark; --bg:#101214; --paper:#e9e5dc; --muted:#a7aaa9; --line:rgba(233,229,220,.17); --accent:#d7b36a; }
-    * { box-sizing:border-box; } html { scroll-behavior:smooth; } body { margin:0; background:var(--bg); color:var(--paper); font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
-    a { color:inherit; } .wrap { width:min(1180px, calc(100% - 40px)); margin:auto; }
-    header { min-height:34vh; display:flex; flex-direction:column; justify-content:space-between; padding:24px 0 48px; border-bottom:1px solid var(--line); }
-    nav { display:flex; gap:20px; justify-content:space-between; align-items:center; font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; } nav a { text-decoration:none; color:var(--muted); } nav a:hover, nav a:focus-visible { color:var(--paper); } .brand { color:var(--paper); }
-    .eyebrow { color:var(--accent); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; margin:0 0 18px; } h1 { font:400 clamp(3.2rem, 9vw, 8rem)/.9 Georgia,serif; letter-spacing:-.06em; margin:0; max-width:900px; } .sub { margin:24px 0 0; color:var(--muted); max-width:580px; font-size:1rem; }
-    .topline { display:flex; justify-content:space-between; gap:20px; color:var(--muted); font-size:.75rem; } #clock { color:var(--paper); font-variant-numeric:tabular-nums; }
-    .maps { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:28px 0 0; } .map-card { display:block; border:1px solid var(--line); color:var(--paper); text-decoration:none; overflow:hidden; background:#17191b; } .map-card:hover, .map-card:focus-visible { border-color:var(--accent); } .map-card img { display:block; width:100%; aspect-ratio:1.15; object-fit:cover; background:#ddd; } .map-card span { display:block; padding:11px 12px 13px; color:var(--muted); font-size:.8rem; } .map-card:hover span { color:var(--paper); }
-    main { padding:42px 0 80px; } .status { display:grid; grid-template-columns:1.15fr 2fr; gap:24px; padding:26px 0; border-bottom:1px solid var(--line); } .status h2 { font:400 clamp(2rem,5vw,4rem)/.95 Georgia,serif; margin:0; } .status p { margin:0; color:var(--muted); max-width:580px; } .weather { margin-top:14px !important; color:var(--paper) !important; line-height:1.55; }
-    .section-label { margin:48px 0 18px; color:var(--accent); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; }
-    .days { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid var(--line); } .day { min-height:280px; padding:22px 18px 24px 0; margin-right:18px; border-bottom:1px solid var(--line); } .day:not(:last-child) { border-right:1px solid var(--line); } .day.today { color:var(--paper); } .day.today .date { color:var(--accent); } .date { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.08em; } .day h3 { font:400 1.7rem/1 Georgia,serif; margin:35px 0 10px; } .park { color:var(--accent); font-size:.78rem; margin-bottom:18px; } .plan { color:var(--muted); font-size:.9rem; line-height:1.55; margin:0; } .day-weather { margin-top:18px; color:var(--paper); font-size:.82rem; line-height:1.45; }
-    .flights { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); } .flight { background:var(--bg); padding:22px; } .flight .code { color:var(--accent); font-size:1.25rem; } .flight p { color:var(--muted); margin:10px 0 0; } .flight .route { color:var(--paper); line-height:1.55; } .flight .note { color:var(--accent); font-size:.82rem; }
-    footer { color:var(--muted); font-size:.75rem; border-top:1px solid var(--line); padding-top:18px; }
-    @media (max-width:760px) { .wrap { width:min(100% - 28px,1180px); } header { min-height:38vh; } nav { align-items:flex-start; } .topline { margin-top:32px; } .status { grid-template-columns:1fr; } .maps { grid-template-columns:1fr 1fr; } .days { grid-template-columns:1fr 1fr; } .day:nth-child(2) { border-right:0; } .day:nth-child(3) { border-right:1px solid var(--line); } .day { min-height:260px; } .flights { grid-template-columns:1fr; } }
-    @media (max-width:460px) { .maps { grid-template-columns:1fr; } .days { grid-template-columns:1fr; } .day, .day:nth-child(3) { border-right:0; margin-right:0; padding-right:0; } .day h3 { margin-top:22px; } }
+    :root {
+      color-scheme: light;
+      --ink: #18263a;
+      --ink-soft: #526174;
+      --navy: #223c5c;
+      --blue: #3a6b9e;
+      --sky: #edf4fa;
+      --cream: #fbfaf7;
+      --paper: #ffffff;
+      --line: #dbe3eb;
+      --gold: #ad7b27;
+      --shadow: 0 18px 50px rgba(31, 54, 78, .08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--cream); color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    a { color: inherit; }
+    .wrap { width: min(1160px, calc(100% - 44px)); margin: auto; }
+    header { padding: 22px 0 76px; background: linear-gradient(180deg, #edf5fb 0%, #f8fbfd 70%, var(--cream) 100%); }
+    nav { display: flex; justify-content: space-between; align-items: center; padding-bottom: 70px; font-size: .72rem; letter-spacing: .13em; text-transform: uppercase; }
+    nav a { text-decoration: none; color: var(--ink-soft); }
+    nav a:hover, nav a:focus-visible { color: var(--navy); }
+    .brand { color: var(--navy); font-weight: 700; letter-spacing: .08em; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 48px; align-items: end; }
+    .eyebrow, .section-label { color: var(--gold); font-size: .7rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; margin: 0 0 16px; }
+    h1 { color: var(--navy); font: 400 clamp(3.5rem, 9vw, 8rem)/.86 Georgia, "Times New Roman", serif; letter-spacing: -.065em; margin: 0; max-width: 760px; }
+    .sub { color: var(--ink-soft); font: 400 clamp(1rem, 1.8vw, 1.2rem)/1.55 Georgia, "Times New Roman", serif; max-width: 590px; margin: 28px 0 0; }
+    .trip-meta { border-left: 1px solid #bfd0df; padding-left: 22px; color: var(--ink-soft); font-size: .78rem; line-height: 1.8; }
+    .trip-meta strong { display: block; color: var(--navy); font-size: 1rem; font-weight: 600; }
+    #clock { color: var(--navy); font-variant-numeric: tabular-nums; }
+    main { padding: 0 0 86px; }
+    .maps { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 14px; margin: -28px 0 58px; position: relative; }
+    .map-card { display: block; overflow: hidden; background: var(--paper); border: 1px solid var(--line); border-radius: 3px; box-shadow: var(--shadow); text-decoration: none; }
+    .map-card:hover, .map-card:focus-visible { border-color: var(--blue); transform: translateY(-2px); }
+    .map-card, .map-card img { transition: transform .2s ease, border-color .2s ease; }
+    .map-card img { display: block; width: 100%; aspect-ratio: 1.45; object-fit: cover; background: #e6edf2; }
+    .map-card:first-child img { aspect-ratio: 1.72; }
+    .map-card span { display: flex; justify-content: space-between; gap: 10px; padding: 14px 15px 16px; color: var(--navy); font-size: .78rem; }
+    .map-card span::after { content: '↗'; color: var(--gold); font-size: 1rem; line-height: .8; }
+    .status { display: grid; grid-template-columns: .8fr 1.6fr; gap: 60px; align-items: start; padding: 0 0 42px; border-bottom: 1px solid var(--line); }
+    .status h2 { color: var(--navy); font: 400 clamp(2rem, 4vw, 3.5rem)/.95 Georgia, "Times New Roman", serif; margin: 0; }
+    .status p { margin: 0; color: var(--ink-soft); line-height: 1.6; }
+    #hotel { color: var(--navy); font-size: 1.05rem; }
+    #mode { font: 400 1.3rem/1.3 Georgia, "Times New Roman", serif; color: var(--navy); max-width: 590px; }
+    .weather { margin-top: 17px !important; color: var(--ink-soft) !important; font-size: .84rem; }
+    .section-label { margin: 54px 0 18px; }
+    .days { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); }
+    .day { min-height: 300px; padding: 22px 22px 24px 0; margin-right: 22px; border-bottom: 1px solid var(--line); }
+    .day:not(:last-child) { border-right: 1px solid var(--line); }
+    .day.today { background: linear-gradient(180deg, rgba(226, 238, 247, .58), transparent 68%); }
+    .day.today .date, .day.today .park { color: var(--gold); }
+    .date { color: var(--ink-soft); font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .day h3 { color: var(--navy); font: 400 1.9rem/1 Georgia, "Times New Roman", serif; margin: 40px 0 12px; }
+    .park { color: var(--blue); font-size: .78rem; line-height: 1.35; margin-bottom: 18px; }
+    .plan { color: var(--ink-soft); font-size: .89rem; line-height: 1.62; margin: 0; }
+    .day-weather { margin-top: 20px; color: var(--navy); font-size: .78rem; line-height: 1.45; }
+    .flights { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .flight { background: var(--paper); border: 1px solid var(--line); padding: 22px; }
+    .flight .code { color: var(--gold); font-size: 1.05rem; font-weight: 700; letter-spacing: .08em; }
+    .flight p { color: var(--ink-soft); margin: 10px 0 0; font-size: .84rem; line-height: 1.55; }
+    .flight .route { color: var(--navy); }
+    .flight .note { color: var(--gold); font-size: .78rem; }
+    footer { color: var(--ink-soft); font-size: .72rem; border-top: 1px solid var(--line); padding-top: 18px; margin-top: 58px; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .map-card, .map-card img { transition: none; } }
+    @media (max-width: 800px) {
+      .wrap { width: min(100% - 30px, 1160px); }
+      header { padding-bottom: 58px; }
+      nav { padding-bottom: 52px; }
+      .hero, .status { grid-template-columns: 1fr; gap: 28px; }
+      .trip-meta { border-left: 0; border-top: 1px solid #bfd0df; padding: 16px 0 0; }
+      .maps { grid-template-columns: 1fr 1fr; margin-bottom: 44px; }
+      .map-card:first-child { grid-column: 1 / -1; }
+      .days { grid-template-columns: 1fr 1fr; }
+      .day:nth-child(2) { border-right: 0; }
+      .day:nth-child(3) { border-right: 1px solid var(--line); }
+      .day { min-height: 280px; }
+    }
+    @media (max-width: 500px) {
+      h1 { font-size: clamp(3.3rem, 18vw, 5.6rem); }
+      .maps, .days, .flights { grid-template-columns: 1fr; }
+      .map-card:first-child { grid-column: auto; }
+      .day, .day:nth-child(3) { border-right: 0; margin-right: 0; padding-right: 0; }
+      .day h3 { margin-top: 25px; }
+    }
   </style>
 </head>
 <body>
-  <header class="wrap">
-    <nav><a class="brand" href="../">Álvaro GT</a><a href="#plan">el viaje ↘</a></nav>
-    <div><p class="eyebrow" id="trip-dates">—</p><h1 id="trip-title">—</h1><p class="sub" id="trip-description">—</p></div>
-    <div class="topline"><span>Europe/Madrid · <span id="clock">—</span></span><span id="countdown">—</span></div>
-    <div class="topline"><span>Actualizado · <span id="updated">—</span></span></div>
+  <header>
+    <div class="wrap">
+      <nav><a class="brand" href="../">Álvaro GT</a><a href="#plan">el viaje ↘</a></nav>
+      <div class="hero">
+        <div><p class="eyebrow" id="trip-dates">—</p><h1 id="trip-title">—</h1><p class="sub" id="trip-description">—</p></div>
+        <div class="trip-meta"><strong>Europe/Madrid</strong><span id="clock">—</span><br><span>Actualizado · <span id="updated">—</span></span><br><span id="countdown">—</span></div>
+      </div>
+    </div>
   </header>
   <main class="wrap">
     <div class="maps" id="maps" aria-label="Mapas oficiales"></div>
@@ -57,7 +129,7 @@
     const inTrip = today >= first && today <= last;
     document.querySelector('#mode').textContent = inTrip ? 'Hoy manda el día actual. El resto queda como referencia.' : 'Vista de conjunto para preparar el viaje.';
     document.querySelector('#trip-dates').textContent=data.fechas; document.querySelector('#trip-title').innerHTML=esc(data.titulo).replace(' ','<br>'); document.querySelector('#trip-description').textContent=data.descripcion; document.querySelector('#hotel').textContent=data.hotel; document.querySelector('#updated').textContent=data.actualizado || '—';
-    document.querySelector('#maps').innerHTML=data.mapas.map(m=>`<a class="map-card" href="${esc(m.url)}" target="_blank" rel="noopener"><img src="${esc(m.url)}" alt="${esc(m.texto)}"><span>${esc(m.texto)} · abrir imagen</span></a>`).join('');
+    document.querySelector('#maps').innerHTML=data.mapas.map(m=>`<a class="map-card" href="${esc(m.url)}" target="_blank" rel="noopener"><img src="${esc(m.url)}" alt="${esc(m.texto)}"><span>${esc(m.texto)}</span></a>`).join('');
     const visible = inTrip ? data.dias.filter(d=>d.fecha===today) : data.dias;
     document.querySelector('#days').innerHTML=visible.map(d=>`<article class="day ${d.fecha===today?'today':''}"><div class="date">${esc(d.etiqueta)} · ${d.fecha}</div><h3>${d.fecha===today?'Hoy':esc(d.etiqueta)}</h3><div class="park">${esc(d.parque)}</div><p class="plan">${esc(d.plan)}</p><div class="day-weather" data-date="${d.fecha}">Tiempo: consultando…</div></article>`).join('');
     document.querySelector('#flights').innerHTML=data.vuelos.map(v=>`<div class="flight"><div class="code">${esc(v.codigo)}</div><p>${esc(v.detalle)}</p><p class="route">Salida: ${esc(v.salida)}<br>Llegada: ${esc(v.llegada)}</p>${v.nota?`<p class="note">${esc(v.nota)}</p>`:''}</div>`).join('');
