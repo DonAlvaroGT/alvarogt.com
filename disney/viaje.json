@@ -1,0 +1,49 @@
+{
+  "titulo": "Disneyland Paris",
+  "fechas": "11—14 septiembre 2026",
+  "descripcion": "Cuatro días para entrar en el ambiente sin correr: una base junto al lago, parques distintos y los momentos que merece la pena guardar.",
+  "zona_horaria": "Europe/Madrid",
+  "hotel": "Newport Bay Club",
+
+  "mapas": [
+    {"texto": "Mapa general", "url": "mapas/general.png", "tipo": "imagen"},
+    {"texto": "Parque grande · Disneyland", "url": "mapas/parque-grande.png", "tipo": "imagen"},
+    {"texto": "Parque pequeño · Adventure World", "url": "mapas/parque-pequeno.png", "tipo": "imagen"}
+  ],
+  "vuelos": [
+    {"codigo": "AF1001", "detalle": "11-sep · MAD 10:05 → CDG 12:10"},
+    {"codigo": "AF1100", "detalle": "14-sep · CDG 17:00 → MAD 19:15"}
+  ],
+  "tiempo": {
+    "latitud": 48.8698,
+    "longitud": 2.7855,
+    "zona_horaria": "Europe/Paris",
+    "etiqueta": "Tiempo en Disneyland Paris"
+  },
+  "dias": [
+    {
+      "fecha": "2026-09-11",
+      "etiqueta": "Vie 11",
+      "parque": "grande (Disneyland)",
+      "plan": "Llegamos al parque grande a las 15:00. Main Street, Piratas, Phantom y Star Tours dejan una primera tarde con sabor a parque. Disney Stars on Parade pasa a las 17:30 (anuncio de Pixie Dust para el 7–25 de septiembre; confirmar en la app). Al cierre, Disney Tales of Magic, previsto sobre las 21:00 según Thrill Data."
+    },
+    {
+      "fecha": "2026-09-12",
+      "etiqueta": "Sáb 12",
+      "parque": "grande (Disneyland)",
+      "plan": "Por el hotel podemos entrar a las 8:30, una hora antes de que abra el parque (Extra Magic Time). Empezamos por Big Thunder. Por la tarde, personajes. Disney Stars on Parade está prevista a las 17:30 (confirmar en la app) y Disney Tales of Magic, al cierre previsto a las 22:00 según Thrill Data."
+    },
+    {
+      "fecha": "2026-09-13",
+      "etiqueta": "Dom 13",
+      "parque": "pequeño (Adventure World)",
+      "plan": "Por el hotel podemos entrar a las 8:30, una hora antes de que abra el parque (Extra Magic Time). El domingo empezamos por Remy’s / Ratatouille y Hero Training. A las 10:00 toca la cola virtual de Hero Training, y dejamos sitio para los espectáculos centrales. El nocturno es Disney Cascade of Lights, al cierre previsto a las 22:00 según Thrill Data."
+    },
+    {
+      "fecha": "2026-09-14",
+      "etiqueta": "Lun 14",
+      "parque": "parque, mañana",
+      "plan": "La mañana es de parque, de 8:30 a 13:30. A las 13:45 recogemos las maletas y después toca el vuelo de vuelta. No hay nocturno: salimos a las 13:45."
+    }
+  ]
+}

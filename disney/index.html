@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Disneyland Paris · Álvaro GT</title>
+  <style>
+    :root { color-scheme:dark; --bg:#101214; --paper:#e9e5dc; --muted:#a7aaa9; --line:rgba(233,229,220,.17); --accent:#d7b36a; }
+    * { box-sizing:border-box; } html { scroll-behavior:smooth; } body { margin:0; background:var(--bg); color:var(--paper); font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    a { color:inherit; } .wrap { width:min(1180px, calc(100% - 40px)); margin:auto; }
+    header { min-height:34vh; display:flex; flex-direction:column; justify-content:space-between; padding:24px 0 48px; border-bottom:1px solid var(--line); }
+    nav { display:flex; gap:20px; justify-content:space-between; align-items:center; font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; } nav a { text-decoration:none; color:var(--muted); } nav a:hover, nav a:focus-visible { color:var(--paper); } .brand { color:var(--paper); }
+    .eyebrow { color:var(--accent); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; margin:0 0 18px; } h1 { font:400 clamp(3.2rem, 9vw, 8rem)/.9 Georgia,serif; letter-spacing:-.06em; margin:0; max-width:900px; } .sub { margin:24px 0 0; color:var(--muted); max-width:580px; font-size:1rem; }
+    .topline { display:flex; justify-content:space-between; gap:20px; color:var(--muted); font-size:.75rem; } #clock { color:var(--paper); font-variant-numeric:tabular-nums; }
+    .maps { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:28px 0 0; } .map-card { display:block; border:1px solid var(--line); color:var(--paper); text-decoration:none; overflow:hidden; background:#17191b; } .map-card:hover, .map-card:focus-visible { border-color:var(--accent); } .map-card img { display:block; width:100%; aspect-ratio:1.15; object-fit:cover; background:#ddd; } .map-card span { display:block; padding:11px 12px 13px; color:var(--muted); font-size:.8rem; } .map-card:hover span { color:var(--paper); }
+    main { padding:42px 0 80px; } .status { display:grid; grid-template-columns:1.15fr 2fr; gap:24px; padding:26px 0; border-bottom:1px solid var(--line); } .status h2 { font:400 clamp(2rem,5vw,4rem)/.95 Georgia,serif; margin:0; } .status p { margin:0; color:var(--muted); max-width:580px; } .weather { margin-top:14px !important; color:var(--paper) !important; line-height:1.55; }
+    .section-label { margin:48px 0 18px; color:var(--accent); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; }
+    .days { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid var(--line); } .day { min-height:280px; padding:22px 18px 24px 0; margin-right:18px; border-bottom:1px solid var(--line); } .day:not(:last-child) { border-right:1px solid var(--line); } .day.today { color:var(--paper); } .day.today .date { color:var(--accent); } .date { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.08em; } .day h3 { font:400 1.7rem/1 Georgia,serif; margin:35px 0 10px; } .park { color:var(--accent); font-size:.78rem; margin-bottom:18px; } .plan { color:var(--muted); font-size:.9rem; line-height:1.55; margin:0; } .day-weather { margin-top:18px; color:var(--paper); font-size:.82rem; line-height:1.45; }
+    .flights { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); } .flight { background:var(--bg); padding:22px; } .flight .code { color:var(--accent); font-size:1.25rem; } .flight p { color:var(--muted); margin:10px 0 0; }
+    footer { color:var(--muted); font-size:.75rem; border-top:1px solid var(--line); padding-top:18px; }
+    @media (max-width:760px) { .wrap { width:min(100% - 28px,1180px); } header { min-height:38vh; } nav { align-items:flex-start; } .topline { margin-top:32px; } .status { grid-template-columns:1fr; } .maps { grid-template-columns:1fr 1fr; } .days { grid-template-columns:1fr 1fr; } .day:nth-child(2) { border-right:0; } .day:nth-child(3) { border-right:1px solid var(--line); } .day { min-height:260px; } .flights { grid-template-columns:1fr; } }
+    @media (max-width:460px) { .maps { grid-template-columns:1fr; } .days { grid-template-columns:1fr; } .day, .day:nth-child(3) { border-right:0; margin-right:0; padding-right:0; } .day h3 { margin-top:22px; } }
+  </style>
+</head>
+<body>
+  <header class="wrap">
+    <nav><a class="brand" href="../">Álvaro GT</a><a href="#plan">el viaje ↘</a></nav>
+    <div><p class="eyebrow" id="trip-dates">—</p><h1 id="trip-title">—</h1><p class="sub" id="trip-description">—</p></div>
+    <div class="topline"><span>Europe/Madrid · <span id="clock">—</span></span><span id="countdown">—</span></div>
+  </header>
+  <main class="wrap">
+    <div class="maps" id="maps" aria-label="Mapas oficiales"></div>
+    <section class="status"><div><p class="eyebrow">Base</p><p id="hotel">—</p></div><div><p id="mode">Cargando el plan…</p><p class="weather" id="weather">Tiempo en Disneyland Paris: consultando…</p></div></section>
+    <section id="plan"><p class="section-label">Agenda</p><div class="days" id="days"></div></section>
+    <section><p class="section-label">Vuelos</p><div class="flights" id="flights"></div></section>
+    <footer>Fuente de datos del viaje: viaje.json · Tiempo: Open-Meteo · Reloj y cuenta atrás: Europe/Madrid.</footer>
+  </main>
+<script>
+  const madrid = new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'});
+  const clock = new Intl.DateTimeFormat('es-ES',{timeZone:'Europe/Madrid',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+  const dateKey = () => madrid.format(new Date());
+  const tick = () => { document.querySelector('#clock').textContent = clock.format(new Date()); };
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const weatherName = code => ({0:'despejado',1:'casi despejado',2:'parcialmente nuboso',3:'nuboso',45:'niebla',48:'niebla',51:'llovizna',53:'llovizna',55:'llovizna',61:'lluvia',63:'lluvia',65:'lluvia',71:'nieve',73:'nieve',75:'nieve',80:'chubascos',81:'chubascos',82:'chubascos',95:'tormenta',96:'tormenta',99:'tormenta'}[code] || 'tiempo variable');
+  const dateText = d => new Intl.DateTimeFormat('es-ES',{day:'numeric',month:'short',timeZone:'Europe/Paris'}).format(new Date(d+'T12:00:00+02:00'));
+  function weatherFor(w, date) { const i=w.daily.time.indexOf(date); if(i<0) return 'sin previsión'; return `${weatherName(w.daily.weather_code[i])} · ${w.daily.temperature_2m_min[i]}–${w.daily.temperature_2m_max[i]} °C`; }
+  async function start() {
+    const data = await fetch('viaje.json').then(r => r.json());
+    const today = dateKey(), first = data.dias[0].fecha, last = data.dias[data.dias.length-1].fecha;
+    const daysUntil = Math.ceil((new Date(first+'T00:00:00+02:00') - new Date()) / 86400000);
+    document.querySelector('#countdown').textContent = today < first ? `${daysUntil} ${daysUntil===1?'día':'días'}` : today <= last ? 'Hoy, '+today.split('-').reverse().join('/') : 'Viaje terminado';
+    const inTrip = today >= first && today <= last;
+    document.querySelector('#mode').textContent = inTrip ? 'Hoy manda el día actual. El resto queda como referencia.' : 'Vista de conjunto para preparar el viaje.';
+    document.querySelector('#trip-dates').textContent=data.fechas; document.querySelector('#trip-title').innerHTML=esc(data.titulo).replace(' ','<br>'); document.querySelector('#trip-description').textContent=data.descripcion; document.querySelector('#hotel').textContent=data.hotel;
+    document.querySelector('#maps').innerHTML=data.mapas.map(m=>`<a class="map-card" href="${esc(m.url)}" target="_blank" rel="noopener"><img src="${esc(m.url)}" alt="${esc(m.texto)}"><span>${esc(m.texto)} · abrir imagen</span></a>`).join('');
+    const visible = inTrip ? data.dias.filter(d=>d.fecha===today) : data.dias;
+    document.querySelector('#days').innerHTML=visible.map(d=>`<article class="day ${d.fecha===today?'today':''}"><div class="date">${esc(d.etiqueta)} · ${d.fecha}</div><h3>${d.fecha===today?'Hoy':esc(d.etiqueta)}</h3><div class="park">${esc(d.parque)}</div><p class="plan">${esc(d.plan)}</p><div class="day-weather" data-date="${d.fecha}">Tiempo: consultando…</div></article>`).join('');
+    document.querySelector('#flights').innerHTML=data.vuelos.map(v=>`<div class="flight"><div class="code">${esc(v.codigo)}</div><p>${esc(v.detalle)}</p></div>`).join('');
+    const t=data.tiempo;
+    const url=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(t.latitud)}&longitude=${encodeURIComponent(t.longitud)}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(t.zona_horaria)}&forecast_days=16`;
+    const w=await fetch(url).then(r=>r.json());
+    document.querySelector('#weather').textContent=`${t.etiqueta}: ${w.current.temperature_2m} °C ahora · Open-Meteo`;
+    document.querySelectorAll('.day-weather').forEach(el=>el.textContent=`Tiempo: ${weatherFor(w,el.dataset.date)} · Open-Meteo`);
+  }
+  tick(); setInterval(tick,1000); start().catch(()=>{ document.querySelector('#mode').textContent='No se ha podido cargar viaje.json o el tiempo'; });
+</script>
+</body>
+</html>
