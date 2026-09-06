@@ -5,11 +5,22 @@
   "zona_horaria": "Europe/Madrid",
   "actualizado": "2026-09-06 14:28:08 CEST",
   "hotel": "Newport Bay Club",
-
   "mapas": [
-    {"texto": "Mapa general", "url": "mapas/general.png", "tipo": "imagen"},
-    {"texto": "Parque grande · Disneyland", "url": "mapas/parque-grande.png", "tipo": "imagen"},
-    {"texto": "Parque pequeño · Adventure World", "url": "mapas/parque-pequeno.jpg", "tipo": "imagen"}
+    {
+      "texto": "Mapa general",
+      "url": "mapas/general.png",
+      "tipo": "imagen"
+    },
+    {
+      "texto": "Parque grande · Disneyland",
+      "url": "mapas/parque-grande.png",
+      "tipo": "imagen"
+    },
+    {
+      "texto": "Parque pequeño · Adventure World",
+      "url": "mapas/parque-pequeno.jpg",
+      "tipo": "imagen"
+    }
   ],
   "vuelos": [
     {
@@ -57,5 +68,338 @@
       "parque": "parque, mañana",
       "plan": "La mañana es de parque, de 8:30 a 13:30. A las 13:45 recogemos las maletas y después toca el vuelo de vuelta. No hay nocturno: salimos a las 13:45."
     }
-  ]
+  ],
+  "espectaculos": [
+    {
+      "fecha": "2026-09-11",
+      "dia": "viernes 11",
+      "parque": "Disneyland Park",
+      "zona": "Frontierland Theater",
+      "nombre": "The Lion King: Rhythms of the Pride Lands",
+      "horario": "confirmar en la app",
+      "descripcion": "Música, danza y acrobacias que recrean momentos de El Rey León.",
+      "consejo": "Prioridad alta; el teatro se llena. Llegar con margen."
+    },
+    {
+      "fecha": "2026-09-11",
+      "dia": "viernes 11",
+      "parque": "Disneyland Park",
+      "zona": "recorrido de la cabalgata",
+      "nombre": "Disney Stars on Parade",
+      "horario": "confirmar en la app",
+      "descripcion": "Desfile de personajes Disney en carrozas, con música y vestuario colorido.",
+      "consejo": "Buscar sitio con antelación y no programar una atracción justo antes."
+    },
+    {
+      "fecha": "2026-09-11",
+      "dia": "viernes 11",
+      "parque": "Disneyland Park",
+      "zona": "Castillo de la Bella Durmiente y Main Street U.S.A.",
+      "nombre": "Disney Tales of Magic",
+      "horario": "confirmar en la app",
+      "descripcion": "Espectáculo nocturno de proyecciones, efectos y fuegos sobre el castillo.",
+      "consejo": "Puede cambiar por meteorología; las salidas se congestionan al terminar."
+    },
+    {
+      "fecha": "2026-09-11",
+      "dia": "viernes 11",
+      "parque": "Disneyland Park",
+      "zona": "Fantasyland",
+      "nombre": "Meet the Characters of Alice in Wonderland",
+      "horario": "confirmar en la app",
+      "descripcion": "Encuentro con personajes de Alicia; es una experiencia de personajes, no un show escénico.",
+      "consejo": "Buscarlo en la app al entrar; no confundirlo con Back to Wonderland."
+    },
+    {
+      "fecha": "2026-09-12",
+      "dia": "sábado 12",
+      "parque": "Disneyland Park",
+      "zona": "Frontierland Theater",
+      "nombre": "The Lion King: Rhythms of the Pride Lands",
+      "horario": "confirmar en la app",
+      "descripcion": "Música, danza y acrobacias que recrean momentos de El Rey León.",
+      "consejo": "Elegir una sesión que no choque con la comida y llegar con margen."
+    },
+    {
+      "fecha": "2026-09-12",
+      "dia": "sábado 12",
+      "parque": "Disneyland Park",
+      "zona": "recorrido de la cabalgata",
+      "nombre": "Disney Stars on Parade",
+      "horario": "confirmar en la app",
+      "descripcion": "Desfile de personajes Disney en carrozas, con música y vestuario colorido.",
+      "consejo": "Colocarse con antelación, especialmente con los niños."
+    },
+    {
+      "fecha": "2026-09-12",
+      "dia": "sábado 12",
+      "parque": "Disneyland Park",
+      "zona": "Castillo de la Bella Durmiente y Main Street U.S.A.",
+      "nombre": "Disney Tales of Magic",
+      "horario": "confirmar en la app",
+      "descripcion": "Espectáculo nocturno de proyecciones, efectos y fuegos sobre el castillo.",
+      "consejo": "Llevar abrigo y proteger los oídos si molestan los fuegos."
+    },
+    {
+      "fecha": "2026-09-13",
+      "dia": "domingo 13",
+      "parque": "Disney Adventure World",
+      "zona": "World Premiere Plaza · Animagique Theater",
+      "nombre": "Mickey and the Magician",
+      "horario": "confirmar en la app",
+      "descripcion": "Mickey aprende magia con canciones, baile, ilusiones y personajes como el Genio, Lumière y Rafiki.",
+      "consejo": "Prioridad alta; el aforo es limitado. Llegar con margen."
+    },
+    {
+      "fecha": "2026-09-13",
+      "dia": "domingo 13",
+      "parque": "Disney Adventure World",
+      "zona": "World of Frozen · fiordo frente al castillo de Arendelle",
+      "nombre": "A Celebration in Arendelle",
+      "horario": "confirmar en la app",
+      "descripcion": "Show exterior con Elsa, Anna, Olaf, Kristoff y habitantes de Arendelle.",
+      "consejo": "Es exterior: colocarse con margen y contar con posibles cambios por tiempo."
+    },
+    {
+      "fecha": "2026-09-13",
+      "dia": "domingo 13",
+      "parque": "Disney Adventure World",
+      "zona": "World of Frozen",
+      "nombre": "World of Frozen",
+      "horario": "confirmar en la app",
+      "descripcion": "Tierra temática de Arendelle con Frozen Ever After, encuentro con Anna y Elsa, restaurante y tiendas.",
+      "consejo": "Ir hacia allí al entrar si Frozen es prioridad."
+    },
+    {
+      "fecha": "2026-09-13",
+      "dia": "domingo 13",
+      "parque": "Disney Adventure World",
+      "zona": "World of Frozen",
+      "nombre": "Frozen Ever After",
+      "horario": "confirmar en la app",
+      "descripcion": "Recorrido musical en barco por Arendelle con Elsa, Anna y Olaf; incluye pequeñas bajadas en oscuridad.",
+      "consejo": "Prioridad máxima; revisar cola y condiciones en la app."
+    },
+    {
+      "fecha": "2026-09-13",
+      "dia": "domingo 13",
+      "parque": "Disney Adventure World",
+      "zona": "Adventure Bay · lago de Adventure Way",
+      "nombre": "Disney Cascade of Lights",
+      "horario": "confirmar en la app",
+      "descripcion": "Espectáculo nocturno sobre el lago con fuegos, pantallas de agua, drones, proyecciones y efectos visuales.",
+      "consejo": "Elegirlo para la noche del domingo; coincide en horario con Disney Tales of Magic."
+    }
+  ],
+  "atracciones": [
+    {
+      "atraccion": "Big Thunder Mountain",
+      "parque": "Disneyland Park",
+      "zona": "Frontierland",
+      "descripcion": "Tren minero rápido por una montaña del Oeste, con curvas y movimiento.",
+      "altura_minima_publicada": "1,02 m",
+      "quien_cumple": "Los tres"
+    },
+    {
+      "atraccion": "Star Tours: The Adventures Continue",
+      "parque": "Disneyland Park",
+      "zona": "Discoveryland",
+      "descripcion": "Simulador 3D de viaje por la galaxia Star Wars.",
+      "altura_minima_publicada": "1,02 m",
+      "quien_cumple": "Los tres"
+    },
+    {
+      "atraccion": "Star Wars Hyperspace Mountain",
+      "parque": "Disneyland Park",
+      "zona": "Discoveryland",
+      "descripcion": "Montaña rusa rápida ambientada en una batalla espacial.",
+      "altura_minima_publicada": "1,20 m",
+      "quien_cumple": "Nacho y Alex"
+    },
+    {
+      "atraccion": "Indiana Jones and the Temple of Peril",
+      "parque": "Disneyland Park",
+      "zona": "Adventureland",
+      "descripcion": "Montaña rusa de aventura con curvas intensas e inversión.",
+      "altura_minima_publicada": "1,40 m",
+      "quien_cumple": "Ninguno"
+    },
+    {
+      "atraccion": "Peter Pan’s Flight",
+      "parque": "Disneyland Park",
+      "zona": "Fantasyland",
+      "descripcion": "Vuelo en galeón sobre Londres y Nunca Jamás.",
+      "altura_minima_publicada": "Cualquier altura",
+      "quien_cumple": "Los tres"
+    },
+    {
+      "atraccion": "Pirates of the Caribbean",
+      "parque": "Disneyland Park",
+      "zona": "Adventureland",
+      "descripcion": "Recorrido en barco por escenas de piratas; puede salpicar y asustar.",
+      "altura_minima_publicada": "Cualquier altura",
+      "quien_cumple": "Los tres"
+    },
+    {
+      "atraccion": "Buzz Lightyear Laser Blast",
+      "parque": "Disneyland Park",
+      "zona": "Discoveryland",
+      "descripcion": "Recorrido interactivo de disparos láser.",
+      "altura_minima_publicada": "Cualquier altura",
+      "quien_cumple": "Los tres"
+    },
+    {
+      "atraccion": "Dumbo the Flying Elephant",
+      "parque": "Disneyland Park",
+      "zona": "Fantasyland",
+      "descripcion": "Vuelo circular en elefante.",
+      "altura_minima_publicada": "Cualquier altura",
+      "quien_cumple": "Los tres"
+    },
+    {
+      "atraccion": "it’s a small world",
+      "parque": "Disneyland Park",
+      "zona": "Fantasyland",
+      "descripcion": "Paseo tranquilo en barco por escenas del mundo.",
+      "altura_minima_publicada": "Cualquier altura",
+      "quien_cumple": "Los tres"
+    },
+    {
+      "atraccion": "Autopia",
+      "parque": "Disneyland Park",
+      "zona": "Discoveryland",
+      "descripcion": "Conducción de coches pequeños por un circuito.",
+      "altura_minima_publicada": "81 cm para montar",
+      "quien_cumple": "Los tres para montar; conducción en solitario: revisar condiciones"
+    },
+    {
+      "atraccion": "Alice’s Curious Labyrinth",
+      "parque": "Disneyland Park",
+      "zona": "Fantasyland",
+      "descripcion": "Recorrido a pie por un laberinto inspirado en Alicia.",
+      "altura_minima_publicada": "Cualquier altura",
+      "quien_cumple": "Los tres"
+    },
+    {
+      "atraccion": "Phantom Manor",
+      "parque": "Disneyland Park",
+      "zona": "Frontierland",
+      "descripcion": "Recorrido oscuro de mansión encantada.",
+      "altura_minima_publicada": "Cualquier altura",
+      "quien_cumple": "Los tres"
+    },
+    {
+      "atraccion": "Ratatouille: L’Aventure Totalement Toquée de Rémy",
+      "parque": "Disney Adventure World",
+      "zona": "Worlds of Pixar",
+      "descripcion": "Aventura inmersiva siguiendo a Rémy por una cocina gigante.",
+      "altura_minima_publicada": "Cualquier altura",
+      "quien_cumple": "Los tres"
+    },
+    {
+      "atraccion": "Frozen Ever After",
+      "parque": "Disney Adventure World",
+      "zona": "World of Frozen",
+      "descripcion": "Paseo musical en barco por Arendelle.",
+      "altura_minima_publicada": "Cualquier altura",
+      "quien_cumple": "Los tres"
+    },
+    {
+      "atraccion": "Crush’s Coaster",
+      "parque": "Disney Adventure World",
+      "zona": "Worlds of Pixar",
+      "descripcion": "Montaña rusa en una tortuga marina, con vehículos que giran.",
+      "altura_minima_publicada": "1,07 m",
+      "quien_cumple": "Los tres"
+    },
+    {
+      "atraccion": "Spider-Man W.E.B. Adventure",
+      "parque": "Disney Adventure World",
+      "zona": "Marvel Avengers Campus",
+      "descripcion": "Experiencia interactiva para lanzar telarañas.",
+      "altura_minima_publicada": "Cualquier altura",
+      "quien_cumple": "Los tres"
+    },
+    {
+      "atraccion": "Cars ROAD TRIP",
+      "parque": "Disney Adventure World",
+      "zona": "Worlds of Pixar",
+      "descripcion": "Recorrido familiar en vehículo por escenas y efectos de Cars.",
+      "altura_minima_publicada": "Cualquier altura",
+      "quien_cumple": "Los tres"
+    },
+    {
+      "atraccion": "Avengers Assemble: Flight Force",
+      "parque": "Disney Adventure World",
+      "zona": "Marvel Avengers Campus",
+      "descripcion": "Montaña rusa rápida con Iron Man y Capitana Marvel.",
+      "altura_minima_publicada": "1,20 m",
+      "quien_cumple": "Nacho y Alex"
+    },
+    {
+      "atraccion": "The Twilight Zone Tower of Terror",
+      "parque": "Disney Adventure World",
+      "zona": "Hollywood Boulevard",
+      "descripcion": "Ascensor con caídas inesperadas.",
+      "altura_minima_publicada": "1,02 m",
+      "quien_cumple": "Los tres"
+    },
+    {
+      "atraccion": "RC Racer",
+      "parque": "Disney Adventure World",
+      "zona": "Worlds of Pixar · Toy Story Playland",
+      "descripcion": "Vehículo que sube y baja por una pista en U.",
+      "altura_minima_publicada": "1,20 m",
+      "quien_cumple": "Nacho y Alex"
+    },
+    {
+      "atraccion": "Toy Soldiers Parachute Drop",
+      "parque": "Disney Adventure World",
+      "zona": "Worlds of Pixar · Toy Story Playland",
+      "descripcion": "Caída y subida en paracaídas tematizados.",
+      "altura_minima_publicada": "81 cm",
+      "quien_cumple": "Los tres"
+    },
+    {
+      "atraccion": "Slinky Dog Zigzag Spin",
+      "parque": "Disney Adventure World",
+      "zona": "Worlds of Pixar · Toy Story Playland",
+      "descripcion": "Recorrido giratorio familiar.",
+      "altura_minima_publicada": "Cualquier altura",
+      "quien_cumple": "Los tres"
+    }
+  ],
+  "alturas_niños": {
+    "Molletito": "111 cm",
+    "Nacho": "126 cm",
+    "Alex": "122 cm"
+  },
+  "nota_alturas": "Cumplir el mínimo publicado no garantiza seguridad o tolerancia: revisar la información de la atracción y la app.",
+  "consejos_practicos": [
+    {
+      "fecha": "2026-09-11",
+      "dia": "viernes 11",
+      "titulo": "Disneyland Park por la tarde",
+      "texto": "Abrir la app y comprobar colas, cierres y horarios. Priorizar Peter Pan, Big Thunder Mountain, Buzz, Pirates y Fantasyland según colas. Buscar Meet the Characters of Alice in Wonderland."
+    },
+    {
+      "fecha": "2026-09-12",
+      "dia": "sábado 12",
+      "titulo": "Disneyland Park",
+      "texto": "Comprobar Extra Magic Time por alojaros en Newport Bay Club y usarlo según indique la app. Después, Lion King, Alice y Disney Stars on Parade; por la noche, Disney Tales of Magic si se confirma."
+    },
+    {
+      "fecha": "2026-09-13",
+      "dia": "domingo 13",
+      "titulo": "Disney Adventure World",
+      "texto": "Con Extra Magic Time confirmado en la app, prioridad a World of Frozen y Frozen Ever After. Después, A Celebration in Arendelle, Ratatouille, Crush’s Coaster y Spider-Man. Mirar la Virtual Queue de Anna y Elsa. Por la noche, Disney Cascade of Lights."
+    },
+    {
+      "fecha": "2026-09-14",
+      "dia": "lunes 14",
+      "titulo": "Parque por confirmar",
+      "texto": "No cierro el parque: confirmar en la app Disneyland Park o Disney Adventure World, horarios, atracciones abiertas y Extra Magic Time de esa mañana. Todo puede cambiar por operación o meteorología."
+    }
+  ],
+  "nota_operativa": "Horarios, cierres, reaperturas, Extra Magic Time y espectáculos pueden cambiar. Confirmar siempre en la app oficial el mismo día."
 }
