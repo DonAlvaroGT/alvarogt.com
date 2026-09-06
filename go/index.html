@@ -7,11 +7,14 @@
   <title>García Olivas</title>
   <style>
     :root{color-scheme:dark;--bg:#11120f;--paper:#f0eee7;--muted:#aaa99f;--line:#30332d;--green:#ffb86b;--card:#1a1c17}
-    *{box-sizing:border-box}html,body{margin:0;min-height:100%}body{background:radial-gradient(circle at 85% 0,#2d3320 0,#11120f 40%),var(--bg);color:var(--paper);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;scroll-behavior:smooth}body{background:radial-gradient(circle at 85% 0,#2d3320 0,#11120f 40%),var(--bg);color:var(--paper);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     .wrap{width:min(980px,calc(100% - 36px));margin:auto}header{min-height:38vh;padding:24px 0 44px;display:flex;flex-direction:column;justify-content:space-between;border-bottom:1px solid var(--line)}
     .kicker,.source,.stamp{font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;color:var(--green)}h1{font:400 clamp(3.5rem,12vw,8.5rem)/.84 Georgia,serif;letter-spacing:-.075em;margin:0;max-width:800px}.intro{max-width:500px;color:var(--muted);line-height:1.5;margin:22px 0 0}.clock{font-variant-numeric:tabular-nums;color:var(--paper);font-size:.78rem}
-    main{padding:38px 0 70px}.days{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}article{background:var(--card);min-height:350px;padding:24px}.date{color:var(--green);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}.day-name{font:400 2.2rem/1 Georgia,serif;margin:34px 0 20px}.copy{color:var(--muted);line-height:1.65;margin:0}.copy strong{color:var(--paper);font-weight:500}.activities{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);color:var(--paper);line-height:1.6}.empty{color:var(--muted)}footer{margin-top:26px;color:var(--muted);font-size:.73rem;line-height:1.5}.error{padding:24px;border:1px solid #68433c;color:#f2c5b9}
-    @media(max-width:650px){.wrap{width:min(100% - 28px,980px)}header{min-height:42vh}.days{grid-template-columns:1fr}article{min-height:0}.day-name{margin-top:24px}}
+    .agenda-link{align-self:flex-start;margin-top:26px;padding:11px 15px;border:1px solid var(--green);border-radius:999px;color:var(--paper);font-size:.82rem;text-decoration:none}.agenda-link:hover,.agenda-link:focus{background:var(--green);color:var(--bg)}
+    main{padding:38px 0 70px}.days{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}article{background:var(--card);min-height:350px;padding:24px}.date{color:var(--green);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}.day-name{font:400 2.2rem/1 Georgia,serif;margin:34px 0 20px}.copy{color:var(--muted);line-height:1.65;margin:0}.copy strong{color:var(--paper);font-weight:500}.activities{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);color:var(--paper);line-height:1.6}.empty{color:var(--muted)}
+    .sports{margin-top:44px;padding-top:30px;border-top:1px solid var(--line)}.sports h2{font:400 clamp(2rem,7vw,3.7rem)/1 Georgia,serif;letter-spacing:-.04em;margin:10px 0 12px}.sports-intro{color:var(--muted);line-height:1.55;max-width:620px}.sports-list{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:24px}.sports-event{background:var(--card);padding:16px 18px;display:grid;grid-template-columns:110px 1fr;gap:12px}.sports-time{color:var(--green);font-variant-numeric:tabular-nums}.sports-event p{margin:0;line-height:1.45}.sports-meta{color:var(--muted);font-size:.82rem}.sports-event a{color:var(--paper);text-decoration:underline;text-underline-offset:3px}.sports-empty{background:var(--card);padding:20px;color:var(--muted);line-height:1.55}
+    footer{margin-top:26px;color:var(--muted);font-size:.73rem;line-height:1.5}.error{padding:24px;border:1px solid #68433c;color:#f2c5b9}
+    @media(max-width:650px){.wrap{width:min(100% - 28px,980px)}header{min-height:42vh}.days{grid-template-columns:1fr}article{min-height:0}.day-name{margin-top:24px}.sports-event{grid-template-columns:1fr;gap:4px}}
   </style>
 </head>
 <body>
@@ -19,9 +22,16 @@
     <div class="kicker">Casa · Madrid</div>
     <div><h1>García<br>Olivas</h1><p class="intro"><span id="updated">Actualizado: —</span></p></div>
     <div class="clock" id="clock">—</div>
+    <a class="agenda-link" href="#agenda-deportiva">Agenda deportiva</a>
   </header>
   <main class="wrap">
     <section class="days" id="days" aria-live="polite"><p style="padding:24px">Cargando…</p></section>
+    <section class="sports" id="agenda-deportiva" aria-labelledby="agenda-title">
+      <div class="kicker">Hoy · Madrid</div>
+      <h2 id="agenda-title">Agenda deportiva</h2>
+      <p class="sports-intro">La agenda de hoy se carga al abrir la página y cubre de 10:00 a 22:30, hora de Madrid.</p>
+      <div class="sports-list" id="sports-agenda" aria-live="polite"><p class="sports-empty">La agenda de hoy se carga al abrir; si no hay evento en la ventana, no aparece.</p></div>
+    </section>
     <footer><span class="source">Fuente del tiempo: Open-Meteo</span><br>La página se actualiza sola al abrirla.<br>Creado por Álvaro GT y sus minions</footer>
   </main>
 <script>
@@ -38,10 +48,23 @@
   function clothes(min,max){const low=Number(min),high=Number(max);if(low<8)return 'largo, camiseta y abrigo gordo';if(low<14)return 'largo, camiseta y abrigo fino';if(high<22)return 'largo, camiseta y cortavientos';if(high<28)return 'corto y camiseta';return 'corto y camiseta';}
   function activities(d,rules){const w=weekday(d),out=[];if(w==='miércoles')out.push('<strong>Molletito (Luz):</strong> natación, 18:30–19:00.');if(rules.extraescolares.futbol.dias.includes(w)&&d>=rules.extraescolares.futbol.desde)out.push('<strong>Nacho:</strong> fútbol.');return out.length?out.join(' '):'<span class="empty">No hay extraescolares apuntadas.</span>'}
   function card(d,w,i,rules){const n=w.daily.time.indexOf(d);if(n<0)return `<article><div class="date">${safe(pretty(d))}</div><p class="error">No hay previsión disponible para este día.</p></article>`;const min=w.daily.temperature_2m_min[n],max=w.daily.temperature_2m_max[n];return `<article><div class="date">${i===0?'Hoy': 'Mañana'} · ${safe(pretty(d))}</div><h2 class="day-name">${i===0?'Hoy':'Mañana'}</h2><p class="copy">En Madrid, ${safe(min)}–${safe(max)} °C y ${safe(clothes(min,max))}.</p><div class="activities">${activities(d,rules)}</div></article>`}
+
+  // Homer sustituye o rellena este bloque al cargar la agenda del día.
+  // Cada elemento debe tener: deporte, competición, evento, hora Madrid, interés, enlace/fuente.
+  // Ejemplo: {deporte:'MLB',competición:'',evento:'',hora:'20:10',interés:5,enlace:'https://…'}
+  window.sportsAgenda=[];
+  const sportsOrder=['MLB','NCAA Football','Fútbol masculino','NFL','Fórmula 1'];
+  const agendaTime=e=>String(e.hora||'').match(/^(\d{1,2}):(\d{2})$/);
+  function renderSportsAgenda(){
+    const list=window.sportsAgenda.filter(e=>{const m=agendaTime(e);if(!m)return false;const mins=Number(m[1])*60+Number(m[2]);return mins>=600&&mins<=1350}).sort((a,b)=>{const ao=sportsOrder.indexOf(a.deporte),bo=sportsOrder.indexOf(b.deporte);return (ao<0?99:ao)-(bo<0?99:bo)||String(a.hora).localeCompare(String(b.hora))});
+    const target=document.querySelector('#sports-agenda');
+    if(!list.length){target.innerHTML='<p class="sports-empty">La agenda de hoy se carga al abrir; si no hay evento en la ventana, no aparece.</p>';return}
+    target.innerHTML=list.map(e=>`<div class="sports-event"><div class="sports-time">${safe(e.hora)}<br><span class="sports-meta">${safe(e.deporte)}</span></div><p>${e.enlace?`<a href="${safe(e.enlace)}" rel="noopener">${safe(e.evento)}</a>`:safe(e.evento)}<br><span class="sports-meta">${safe(e.competición)}${e.interés?' · Interés '+safe(e.interés):''}</span></p></div>`).join('');
+  }
   async function start(){const rules=await fetch('condiciones.json').then(r=>r.json());const a=today(),b=addDay(a,1);const t=rules.tiempo;const url=`https://api.open-meteo.com/v1/forecast?latitude=${t.latitud}&longitude=${t.longitud}&daily=temperature_2m_min,temperature_2m_max&timezone=${encodeURIComponent(t.zona_horaria)}&forecast_days=2`;const w=await fetch(url).then(r=>{if(!r.ok)throw Error('weather');return r.json()});document.querySelector('#days').innerHTML=card(a,w,0,rules)+card(b,w,1,rules)}
   const tick=()=>document.querySelector('#clock').textContent=clockFmt.format(new Date());
   document.querySelector('#updated').textContent=`Actualizado: ${updatedFmt.format(new Date())}`;
-  tick();setInterval(tick,1000);start().catch(()=>document.querySelector('#days').innerHTML='<p class="error">Ahora mismo no se puede consultar el tiempo.</p>');
+  tick();setInterval(tick,1000);renderSportsAgenda();start().catch(()=>document.querySelector('#days').innerHTML='<p class="error">Ahora mismo no se puede consultar el tiempo.</p>');
 </script>
 </body>
 </html>
