@@ -11,8 +11,19 @@
     {"texto": "Parque pequeño · Adventure World", "url": "mapas/parque-pequeno.png", "tipo": "imagen"}
   ],
   "vuelos": [
-    {"codigo": "AF1001", "detalle": "11-sep · MAD 10:05 → CDG 12:10"},
-    {"codigo": "AF1100", "detalle": "14-sep · CDG 17:00 → MAD 19:15"}
+    {
+      "codigo": "AF1001",
+      "detalle": "11-sep · MAD 10:05 → CDG 12:10",
+      "salida": "MAD, terminal T2 (check-in Air France)",
+      "llegada": "CDG, terminal 2F",
+      "nota": "Confirmar el día en la app de Air France."
+    },
+    {
+      "codigo": "AF1100",
+      "detalle": "14-sep · CDG 17:00 → MAD 19:15",
+      "salida": "CDG, puerta G29 (confirmar terminal el día)",
+      "llegada": "MAD, terminal T2"
+    }
   ],
   "tiempo": {
     "latitud": 48.8698,
