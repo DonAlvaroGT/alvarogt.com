@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>García Olivas</title>
+  <style>
+    :root{color-scheme:dark;--bg:#11120f;--paper:#f0eee7;--muted:#aaa99f;--line:#30332d;--green:#f0ad78;--card:#1a1c17}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%}body{background:radial-gradient(circle at 85% 0,#2d3320 0,#11120f 40%),var(--bg);color:var(--paper);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .wrap{width:min(980px,calc(100% - 36px));margin:auto}header{min-height:38vh;padding:24px 0 44px;display:flex;flex-direction:column;justify-content:space-between;border-bottom:1px solid var(--line)}
+    .kicker,.source,.stamp{font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;color:var(--green)}h1{font:400 clamp(3.5rem,12vw,8.5rem)/.84 Georgia,serif;letter-spacing:-.075em;margin:0;max-width:800px}.intro{max-width:500px;color:var(--muted);line-height:1.5;margin:22px 0 0}.clock{font-variant-numeric:tabular-nums;color:var(--paper);font-size:.78rem}
+    main{padding:38px 0 70px}.days{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}article{background:var(--card);min-height:350px;padding:24px}.date{color:var(--green);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}.day-name{font:400 2.2rem/1 Georgia,serif;margin:34px 0 20px}.copy{color:var(--muted);line-height:1.65;margin:0}.copy strong{color:var(--paper);font-weight:500}.activities{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);color:var(--paper);line-height:1.6}.empty{color:var(--muted)}footer{margin-top:26px;color:var(--muted);font-size:.73rem;line-height:1.5}.error{padding:24px;border:1px solid #68433c;color:#f2c5b9}
+    @media(max-width:650px){.wrap{width:min(100% - 28px,980px)}header{min-height:42vh}.days{grid-template-columns:1fr}article{min-height:0}.day-name{margin-top:24px}}
+  </style>
+</head>
+<body>
+  <header class="wrap">
+    <div class="kicker">Casa · Madrid</div>
+    <div><h1>García<br>Olivas</h1><p class="intro">Lo de hoy y lo de mañana, sin vueltas. El tiempo se consulta al abrir.</p></div>
+    <div class="clock" id="clock">—</div>
+  </header>
+  <main class="wrap">
+    <section class="days" id="days" aria-live="polite"><p style="padding:24px">Cargando…</p></section>
+    <footer><span class="source">Fuente del tiempo: Open-Meteo</span><br>La página se actualiza sola al abrirla.</footer>
+  </main>
+<script>
+  const zone='Europe/Madrid';
+  const dateFmt=new Intl.DateTimeFormat('en-CA',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'});
+  const dayFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,weekday:'long',day:'numeric',month:'long'});
+  const clockFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+  const today=()=>dateFmt.format(new Date());
+  const addDay=(key,n)=>{const d=new Date(key+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
+  const pretty=d=>dayFmt.format(new Date(d+'T12:00:00Z'));
+  const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const weekday=d=>new Intl.DateTimeFormat('es-ES',{timeZone:zone,weekday:'long'}).format(new Date(d+'T12:00:00Z'));
+  function clothes(min,max){const low=Number(min),high=Number(max);if(low<8)return 'largo, camiseta y abrigo gordo';if(low<14)return 'largo, camiseta y abrigo fino';if(high<22)return 'largo, camiseta y cortavientos';if(high<28)return 'corto y camiseta';return 'corto y camiseta';}
+  function activities(d,rules){const w=weekday(d),out=[];if(w==='miércoles')out.push('<strong>Molletito (Luz):</strong> natación, 18:30–19:00.');if(rules.extraescolares.futbol.dias.includes(w)&&d>=rules.extraescolares.futbol.desde)out.push('<strong>Nacho:</strong> fútbol.');return out.length?out.join(' '):'<span class="empty">No hay extraescolares apuntadas.</span>'}
+  function card(d,w,i,rules){const n=w.daily.time.indexOf(d);if(n<0)return `<article><div class="date">${safe(pretty(d))}</div><p class="error">No hay previsión disponible para este día.</p></article>`;const min=w.daily.temperature_2m_min[n],max=w.daily.temperature_2m_max[n];return `<article><div class="date">${i===0?'Hoy': 'Mañana'} · ${safe(pretty(d))}</div><h2 class="day-name">${i===0?'Hoy':'Mañana'}</h2><p class="copy">En Madrid, ${safe(min)}–${safe(max)} °C y ${safe(clothes(min,max))}.</p><div class="activities">${activities(d,rules)}</div></article>`}
+  async function start(){const rules=await fetch('condiciones.json').then(r=>r.json());const a=today(),b=addDay(a,1);const t=rules.tiempo;const url=`https://api.open-meteo.com/v1/forecast?latitude=${t.latitud}&longitude=${t.longitud}&daily=temperature_2m_min,temperature_2m_max&timezone=${encodeURIComponent(t.zona_horaria)}&forecast_days=2`;const w=await fetch(url).then(r=>{if(!r.ok)throw Error('weather');return r.json()});document.querySelector('#days').innerHTML=card(a,w,0,rules)+card(b,w,1,rules)}
+  const tick=()=>document.querySelector('#clock').textContent=clockFmt.format(new Date());tick();setInterval(tick,1000);start().catch(()=>document.querySelector('#days').innerHTML='<p class="error">Ahora mismo no se puede consultar el tiempo.</p>');
+</script>
+</body>
+</html>
