@@ -3,12 +3,13 @@
   "fechas": "11—14 septiembre 2026",
   "descripcion": "Cuatro días para entrar en el ambiente sin correr: una base junto al lago, parques distintos y los momentos que merece la pena guardar.",
   "zona_horaria": "Europe/Madrid",
+  "actualizado": "2026-09-06 14:28:08 CEST",
   "hotel": "Newport Bay Club",
 
   "mapas": [
     {"texto": "Mapa general", "url": "mapas/general.png", "tipo": "imagen"},
     {"texto": "Parque grande · Disneyland", "url": "mapas/parque-grande.png", "tipo": "imagen"},
-    {"texto": "Parque pequeño · Adventure World", "url": "mapas/parque-pequeno.png", "tipo": "imagen"}
+    {"texto": "Parque pequeño · Adventure World", "url": "mapas/parque-pequeno.jpg", "tipo": "imagen"}
   ],
   "vuelos": [
     {
@@ -21,7 +22,7 @@
     {
       "codigo": "AF1100",
       "detalle": "14-sep · CDG 17:00 → MAD 19:15",
-      "salida": "CDG, puerta G29 (confirmar terminal el día)",
+      "salida": "CDG, terminal 2 (confirmar el día)",
       "llegada": "MAD, terminal T2"
     }
   ],
@@ -48,7 +49,7 @@
       "fecha": "2026-09-13",
       "etiqueta": "Dom 13",
       "parque": "pequeño (Adventure World)",
-      "plan": "Por el hotel podemos entrar a las 8:30, una hora antes de que abra el parque (Extra Magic Time). El domingo empezamos por Remy’s / Ratatouille y Hero Training. A las 10:00 toca la cola virtual de Hero Training, y dejamos sitio para los espectáculos centrales. El nocturno es Disney Cascade of Lights, al cierre previsto a las 22:00 según Thrill Data."
+      "plan": "Por el hotel podemos entrar a las 8:30, una hora antes de que abra el parque (Extra Magic Time). El domingo empezamos por Remy’s / Ratatouille y dejamos sitio para World of Frozen, abierto desde marzo de 2026, además de los espectáculos centrales. A las 10:00 toca la cola virtual de Hero Training. El nocturno es Disney Cascade of Lights, al cierre previsto a las 22:00 según Thrill Data."
     },
     {
       "fecha": "2026-09-14",

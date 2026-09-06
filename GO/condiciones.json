@@ -1,0 +1,21 @@
+{
+  "tiempo": {
+    "etiqueta": "Madrid",
+    "latitud": 40.4168,
+    "longitud": -3.7038,
+    "zona_horaria": "Europe/Madrid",
+    "fuente": "Open-Meteo"
+  },
+  "extraescolares": {
+    "natacion": {
+      "dias": ["miércoles"],
+      "nombre": "Natación Mollete",
+      "hora": "18:30–19:00"
+    },
+    "futbol": {
+      "dias": ["lunes", "miércoles"],
+      "nombre": "Fútbol Nacho",
+      "desde": "2026-09-21"
+    }
+  }
+}

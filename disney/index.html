@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
   <title>Disneyland Paris · Álvaro GT</title>
   <style>
     :root { color-scheme:dark; --bg:#101214; --paper:#e9e5dc; --muted:#a7aaa9; --line:rgba(233,229,220,.17); --accent:#d7b36a; }
@@ -27,6 +28,7 @@
     <nav><a class="brand" href="../">Álvaro GT</a><a href="#plan">el viaje ↘</a></nav>
     <div><p class="eyebrow" id="trip-dates">—</p><h1 id="trip-title">—</h1><p class="sub" id="trip-description">—</p></div>
     <div class="topline"><span>Europe/Madrid · <span id="clock">—</span></span><span id="countdown">—</span></div>
+    <div class="topline"><span>Actualizado · <span id="updated">—</span></span></div>
   </header>
   <main class="wrap">
     <div class="maps" id="maps" aria-label="Mapas oficiales"></div>
@@ -38,7 +40,9 @@
 <script>
   const madrid = new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'});
   const clock = new Intl.DateTimeFormat('es-ES',{timeZone:'Europe/Madrid',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
-  const dateKey = () => madrid.format(new Date());
+  const requestedDay = new URLSearchParams(window.location.search).get('dia');
+  const simulatedDay = /^\d{4}-\d{2}-\d{2}$/.test(requestedDay || '') ? requestedDay : null;
+  const dateKey = () => simulatedDay || madrid.format(new Date());
   const tick = () => { document.querySelector('#clock').textContent = clock.format(new Date()); };
   const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const weatherName = code => ({0:'despejado',1:'casi despejado',2:'parcialmente nuboso',3:'nuboso',45:'niebla',48:'niebla',51:'llovizna',53:'llovizna',55:'llovizna',61:'lluvia',63:'lluvia',65:'lluvia',71:'nieve',73:'nieve',75:'nieve',80:'chubascos',81:'chubascos',82:'chubascos',95:'tormenta',96:'tormenta',99:'tormenta'}[code] || 'tiempo variable');
@@ -47,11 +51,12 @@
   async function start() {
     const data = await fetch('viaje.json').then(r => r.json());
     const today = dateKey(), first = data.dias[0].fecha, last = data.dias[data.dias.length-1].fecha;
-    const daysUntil = Math.ceil((new Date(first+'T00:00:00+02:00') - new Date()) / 86400000);
+    const todayDate = new Date(today+'T12:00:00+02:00');
+    const daysUntil = Math.ceil((new Date(first+'T12:00:00+02:00') - todayDate) / 86400000);
     document.querySelector('#countdown').textContent = today < first ? `${daysUntil} ${daysUntil===1?'día':'días'}` : today <= last ? 'Hoy, '+today.split('-').reverse().join('/') : 'Viaje terminado';
     const inTrip = today >= first && today <= last;
     document.querySelector('#mode').textContent = inTrip ? 'Hoy manda el día actual. El resto queda como referencia.' : 'Vista de conjunto para preparar el viaje.';
-    document.querySelector('#trip-dates').textContent=data.fechas; document.querySelector('#trip-title').innerHTML=esc(data.titulo).replace(' ','<br>'); document.querySelector('#trip-description').textContent=data.descripcion; document.querySelector('#hotel').textContent=data.hotel;
+    document.querySelector('#trip-dates').textContent=data.fechas; document.querySelector('#trip-title').innerHTML=esc(data.titulo).replace(' ','<br>'); document.querySelector('#trip-description').textContent=data.descripcion; document.querySelector('#hotel').textContent=data.hotel; document.querySelector('#updated').textContent=data.actualizado || '—';
     document.querySelector('#maps').innerHTML=data.mapas.map(m=>`<a class="map-card" href="${esc(m.url)}" target="_blank" rel="noopener"><img src="${esc(m.url)}" alt="${esc(m.texto)}"><span>${esc(m.texto)} · abrir imagen</span></a>`).join('');
     const visible = inTrip ? data.dias.filter(d=>d.fecha===today) : data.dias;
     document.querySelector('#days').innerHTML=visible.map(d=>`<article class="day ${d.fecha===today?'today':''}"><div class="date">${esc(d.etiqueta)} · ${d.fecha}</div><h3>${d.fecha===today?'Hoy':esc(d.etiqueta)}</h3><div class="park">${esc(d.parque)}</div><p class="plan">${esc(d.plan)}</p><div class="day-weather" data-date="${d.fecha}">Tiempo: consultando…</div></article>`).join('');
