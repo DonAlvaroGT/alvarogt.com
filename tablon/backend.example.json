@@ -1,7 +1,28 @@
 {
-  "notes": "Ejemplo de contrato, no contiene credenciales ni es configuración funcional.",
+  "notes": "Contrato orientativo; no contiene credenciales y no activa ningún backend.",
   "apiBase": "https://backend.example.invalid",
-  "adultSubjectAllowlist": ["ALVARO_SUBJECT_ID", "LUCITA_SUBJECT_ID"],
-  "endpoints": ["GET /tasks", "POST /tasks", "PATCH /tasks/:id", "POST /tasks/:id/actions"],
-  "requiredActionIdempotencyKey": true
+  "authProvider": "PENDIENTE_DECISION_FIREBASE_O_SUPABASE",
+  "adultSubjectAllowlist": ["PENDIENTE_ALVARO_SUBJECT_ID", "PENDIENTE_LUCITA_SUBJECT_ID"],
+  "identity": {
+    "login": "Proveedor OIDC elegido; callback/origen y método de sesión pendientes",
+    "session": "Cookie Secure HttpOnly SameSite=Lax o token corto; decidir con el proveedor",
+    "children": "No son credenciales técnicas: definir si tendrán identidad propia o enlaces/dispositivos supervisados"
+  },
+  "endpoints": [
+    "GET /session",
+    "POST /auth/logout",
+    "GET /tasks?period=YYYY-MM-DD",
+    "POST /tasks",
+    "PATCH /tasks/:id",
+    "POST /tasks/:id/instances/:instanceId/actions",
+    "GET /events?taskId=:id"
+  ],
+  "requiredActionIdempotencyKey": true,
+  "idempotency": "Cada comando mutante exige Idempotency-Key y devuelve el mismo resultado al reintentarse.",
+  "serverAuthority": ["actor", "role", "points", "balance", "state transitions", "visibility"],
+  "deployment": {
+    "frontendOrigin": "PENDIENTE_GITHUB_PAGES_ORIGIN",
+    "corsAllowlist": ["PENDIENTE_ORIGIN_EXACTO"],
+    "databaseMigration": "PENDIENTE_APLICAR_MIGRACION_CON_SEED_VACIO"
+  }
 }
