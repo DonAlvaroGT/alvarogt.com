@@ -45,9 +45,7 @@
   const pretty=d=>dayFmt.format(new Date(d+'T12:00:00Z'));
   const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const weekday=d=>new Intl.DateTimeFormat('es-ES',{timeZone:zone,weekday:'long'}).format(new Date(d+'T12:00:00Z'));
-  function clothes(min,max){const low=Number(min),high=Number(max);if(low<8)return 'largo, camiseta y abrigo gordo';if(low<14)return 'largo, camiseta y abrigo fino';if(high<22)return 'largo, camiseta y cortavientos';if(high<28)return 'corto y camiseta';return 'corto y camiseta';}
-  function activities(d,rules){const w=weekday(d),out=[];if(w==='miércoles')out.push('<strong>Molletito (Luz):</strong> natación, 18:30–19:00.');if(rules.extraescolares.futbol.dias.includes(w)&&d>=rules.extraescolares.futbol.desde)out.push('<strong>Nacho:</strong> fútbol.');return out.length?out.join(' '):'<span class="empty">No hay extraescolares apuntadas.</span>'}
-  function card(d,w,i,rules){const n=w.daily.time.indexOf(d);if(n<0)return `<article><div class="date">${safe(pretty(d))}</div><p class="error">No hay previsión disponible para este día.</p></article>`;const min=w.daily.temperature_2m_min[n],max=w.daily.temperature_2m_max[n];return `<article><div class="date">${i===0?'Hoy': 'Mañana'} · ${safe(pretty(d))}</div><h2 class="day-name">${i===0?'Hoy':'Mañana'}</h2><p class="copy">En Madrid, ${safe(min)}–${safe(max)} °C y ${safe(clothes(min,max))}.</p><div class="activities">${activities(d,rules)}</div></article>`}
+  function card(day,i){const label=i===0?'Hoy':'Mañana';const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C · ${safe(day.clothes)}${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');return `<article><div class="date">${label} · ${safe(pretty(day.date))}</div><h2 class="day-name">${label}</h2><p class="copy">${weather}</p><div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
 
   // Homer sustituye o rellena este bloque al cargar la agenda del día.
   // Cada elemento debe tener: deporte, competición, evento, hora Madrid, interés, enlace/fuente.
@@ -61,10 +59,9 @@
     if(!list.length){target.innerHTML='<p class="sports-empty">La agenda de hoy se carga al abrir; si no hay evento en la ventana, no aparece.</p>';return}
     target.innerHTML=list.map(e=>`<div class="sports-event"><div class="sports-time">${safe(e.hora)}<br><span class="sports-meta">${safe(e.deporte)}</span></div><p>${e.enlace?`<a href="${safe(e.enlace)}" rel="noopener">${safe(e.evento)}</a>`:safe(e.evento)}<br><span class="sports-meta">${safe(e.competición)}${e.interés?' · Interés '+safe(e.interés):''}</span></p></div>`).join('');
   }
-  async function start(){const rules=await fetch('condiciones.json').then(r=>r.json());const a=today(),b=addDay(a,1);const t=rules.tiempo;const url=`https://api.open-meteo.com/v1/forecast?latitude=${t.latitud}&longitude=${t.longitud}&daily=temperature_2m_min,temperature_2m_max&timezone=${encodeURIComponent(t.zona_horaria)}&forecast_days=2`;const w=await fetch(url).then(r=>{if(!r.ok)throw Error('weather');return r.json()});document.querySelector('#days').innerHTML=card(a,w,0,rules)+card(b,w,1,rules)}
+  async function start(){const payload=await fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('data');return r.json()});if(payload.schema_version!==1||!Array.isArray(payload.days)||payload.days.length!==2)throw Error('schema');document.querySelector('#days').innerHTML=payload.days.map(card).join('');document.querySelector('#updated').textContent=`Datos publicados: ${updatedFmt.format(new Date(payload.generated_at))}`}
   const tick=()=>document.querySelector('#clock').textContent=clockFmt.format(new Date());
-  document.querySelector('#updated').textContent=`Actualizado: ${updatedFmt.format(new Date())}`;
-  tick();setInterval(tick,1000);renderSportsAgenda();start().catch(()=>document.querySelector('#days').innerHTML='<p class="error">Ahora mismo no se puede consultar el tiempo.</p>');
+  tick();setInterval(tick,1000);renderSportsAgenda();start().catch(()=>document.querySelector('#days').innerHTML='<p class="error">No hay datos publicados para hoy y mañana. Vuelve a intentarlo más tarde.</p>');
 </script>
 </body>
 </html>
