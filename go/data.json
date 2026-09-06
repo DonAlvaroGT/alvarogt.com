@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-06T21:55:30.192537+02:00",
+  "timezone": "Europe/Madrid",
+  "source": {
+    "calendar": "EventKit",
+    "weather": "Open-Meteo",
+    "filters": [
+      "Nacho",
+      "Luz",
+      "Molletito",
+      "Mollete"
+    ],
+    "excluded_calendars": [
+      "Trabajo"
+    ]
+  },
+  "days": [
+    {
+      "date": "2026-09-06",
+      "min": 23.5,
+      "max": 35.9,
+      "rain_probability": 3,
+      "clothes": "ropa fresca y gorra",
+      "events": [],
+      "empty_label": "No hay extraescolares apuntadas"
+    },
+    {
+      "date": "2026-09-07",
+      "min": 21.0,
+      "max": 36.7,
+      "rain_probability": 0,
+      "clothes": "ropa fresca y gorra",
+      "events": [],
+      "empty_label": "No hay extraescolares apuntadas"
+    }
+  ]
+}
