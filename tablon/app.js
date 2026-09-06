@@ -1,0 +1,52 @@
+const CONFIG = { backendConfigured: false, apiBase: '' };
+const DEV_KEY = 'tablon-local-development-v1';
+const CHILDREN = ['Nacho', 'Luz'];
+const ADULTS = ['Alvaro', 'Lucita'];
+const state = { user: null, tasks: [], history: [], points: { Nacho: 0, Luz: 0 } };
+const $ = (selector) => document.querySelector(selector);
+const esc = (value) => String(value).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const now = () => new Date().toISOString();
+const actorName = () => state.user?.name || 'desarrollo local';
+const show = (el, yes = true) => el.classList.toggle('hidden', !yes);
+function toast(message) { const el = $('#toast'); el.textContent = message; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 2200); }
+function emptyState() { return { tasks: [], history: [], points: { Nacho: 0, Luz: 0 } }; }
+function loadLocal() { try { const saved = JSON.parse(localStorage.getItem(DEV_KEY)); if (saved) Object.assign(state, saved); } catch { toast('No se pudieron leer los datos locales.'); } }
+function saveLocal() { localStorage.setItem(DEV_KEY, JSON.stringify({ tasks: state.tasks, history: state.history, points: state.points })); }
+function isAdult() { return state.user?.role === 'adult'; }
+function frequencyLabel(task) { return task.frequency === 'weekly' ? `Semanal · ${(task.days || []).map(Number).sort().map((d) => ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][d]).join(', ') || 'sin días'}` : 'Diaria'; }
+function taskVisible(task, child) { return task.status === 'active' && (task.assignee === child || task.assignee === 'shared'); }
+function currentDone(task) { return task.instance?.status || 'pending'; }
+function renderTask(task, childView = false) {
+  const status = currentDone(task);
+  const statusText = { pending: 'Pendiente', child_done: 'Hecha por niño', validated: 'Validada', adult_done: 'Hecha por adulto' }[status];
+  let actions = '';
+  if (childView && ['pending'].includes(status)) actions += `<button class="button primary" data-action="child-done" data-id="${esc(task.id)}">Marcar hecha</button>`;
+  if (isAdult()) {
+    if (status === 'child_done' && task.requiresValidation) actions += `<button class="button primary" data-action="validate" data-id="${esc(task.id)}">Validar</button>`;
+    if (status === 'pending') actions += `<button class="button primary" data-action="adult-done" data-id="${esc(task.id)}">Marcar hecha</button>`;
+    if (status !== 'pending') actions += `<button class="button secondary" data-action="undo" data-id="${esc(task.id)}">Deshacer</button>`;
+    if (!childView) actions += `<button class="button secondary" data-action="edit" data-id="${esc(task.id)}">Editar</button>`;
+  }
+  return `<article class="task-card"><div><h3>${esc(task.title)}</h3><p class="meta">${task.assignee === 'shared' ? 'Nacho y Luz' : esc(task.assignee)} · ${frequencyLabel(task)} · ⭐ ${task.points} puntos</p></div><div class="task-actions"><span class="status ${status !== 'pending' ? 'pending' : ''}">${statusText}</span>${actions}</div></article>`;
+}
+function render() {
+  $('#pending-count').textContent = state.tasks.filter((t) => t.status === 'active' && currentDone(t) === 'pending').length;
+  $('#done-count').textContent = state.tasks.filter((t) => ['validated','adult_done'].includes(currentDone(t))).length;
+  $('#points-total').textContent = Object.values(state.points).reduce((a, b) => a + b, 0);
+  $('#nacho-points').textContent = state.points.Nacho; $('#luz-points').textContent = state.points.Luz;
+  $('#adult-task-list').innerHTML = state.tasks.length ? state.tasks.map((t) => renderTask(t)).join('') : '<p class="empty">No hay tareas. Crea la primera cuando quieras.</p>';
+  for (const child of CHILDREN) $(`#${child.toLowerCase()}-task-list`).innerHTML = state.tasks.filter((t) => taskVisible(t, child)).map((t) => renderTask(t, true)).join('') || '<p class="empty">No hay tareas activas.</p>';
+  $('#history-list').innerHTML = state.history.length ? state.history.slice().reverse().map((h) => `<div class="history-row"><strong>${esc(h.action)}</strong> · ${esc(h.taskTitle)}<br><span class="meta">${esc(h.actor)} · ${new Date(h.at).toLocaleString('es-ES')}</span></div>`).join('') : '<p class="empty">Aún no hay acciones.</p>';
+}
+function addHistory(action, task) { state.history.push({ action, taskTitle: task.title, actor: actorName(), at: now(), taskId: task.id }); }
+function award(task) { if (task.instance?.pointsAwarded) return; const people = task.assignee === 'shared' ? CHILDREN : [task.assignee]; people.forEach((p) => { state.points[p] += Number(task.points); }); task.instance.pointsAwarded = true; }
+function openForm(task = null) { $('#task-form').reset(); $('#task-id').value = task?.id || ''; $('#form-title').textContent = task ? 'Editar tarea' : 'Nueva tarea'; if (task) { $('#title').value = task.title; $('#assignee').value = task.assignee; $('#frequency').value = task.frequency; $('#points').value = task.points; $('#requires-validation').checked = task.requiresValidation; $('#task-state').value = task.status; (task.days || []).forEach((d) => { const box = document.querySelector(`#days-field input[value="${d}"]`); if (box) box.checked = true; }); } show($('#task-form')); $('#title').focus(); }
+function readForm() { const title = $('#title').value.trim(); const points = Number($('#points').value); const frequency = $('#frequency').value; const days = [...document.querySelectorAll('#days-field input:checked')].map((x) => Number(x.value)); if (!title) throw new Error('Escribe un título.'); if (!Number.isInteger(points) || points < 0 || points > 1000) throw new Error('Los puntos deben ser un entero entre 0 y 1000.'); if (frequency === 'weekly' && !days.length) throw new Error('Elige al menos un día semanal.'); return { title, assignee: $('#assignee').value, frequency, days: frequency === 'weekly' ? days : [], points, requiresValidation: $('#requires-validation').checked, status: $('#task-state').value }; }
+async function api(path, options = {}) { if (!CONFIG.backendConfigured) throw new Error('Backend no configurado'); const response = await fetch(CONFIG.apiBase + path, { ...options, headers: { 'Content-Type': 'application/json', ...(options.headers || {}) } }); if (!response.ok) throw new Error(`Error de red (${response.status})`); return response.json(); }
+function initAccess() { if (CONFIG.backendConfigured) { $('#mode-badge').textContent = 'Acceso seguro'; $('#sign-in').classList.remove('hidden'); $('#access-message').textContent = 'La autenticación está pendiente de conectar con el proveedor configurado.'; show($('#access-message')); return; } $('#mode-badge').textContent = 'Desarrollo local · no seguro'; $('#access-message').innerHTML = '<strong>Modo local de desarrollo.</strong> Los datos se guardan solo en este navegador. No es autenticación ni sirve para producción.'; show($('#access-message')); $('#sign-in').classList.remove('hidden'); }
+function enterLocal(role) { state.user = role === 'adult' ? { role: 'adult', name: 'Alvaro' } : { role, name: role === 'child-nacho' ? 'Nacho' : 'Luz' }; $('#sign-in').classList.add('hidden'); $('#sign-out').classList.remove('hidden'); $('#mode-badge').textContent = `Local · ${state.user.name}`; show($('#app')); render(); }
+document.addEventListener('click', async (event) => { const button = event.target.closest('[data-action]'); if (button) { const task = state.tasks.find((t) => t.id === button.dataset.id); if (!task) return; if (button.dataset.action === 'edit') openForm(task); if (button.dataset.action === 'child-done') { task.instance = { status: task.requiresValidation ? 'child_done' : 'validated', at: now(), pointsAwarded: false }; addHistory('Marcada por niño', task); if (!task.requiresValidation) award(task); toast('Tarea marcada.'); } if (button.dataset.action === 'validate') { task.instance.status = 'validated'; award(task); addHistory('Validada por adulto', task); toast('Validada y puntos sumados.'); } if (button.dataset.action === 'adult-done') { task.instance = { status: 'adult_done', at: now(), pointsAwarded: false }; award(task); addHistory('Marcada por adulto', task); } if (button.dataset.action === 'undo') { task.instance = { status: 'pending', at: now(), pointsAwarded: false }; addHistory('Deshecha por adulto', task); toast('Hecho: vuelve a pendiente.'); } saveLocal(); render(); return; } const view = event.target.closest('[data-view]'); if (view) { document.querySelectorAll('.tab').forEach((x) => x.classList.toggle('active', x === view)); document.querySelectorAll('.view').forEach((x) => x.classList.add('hidden')); show($(`#${view.dataset.view}-view`)); } if (event.target.id === 'new-task') openForm(); if (event.target.id === 'cancel-form') show($('#task-form'), false); if (event.target.id === 'refresh') { if (CONFIG.backendConfigured) { try { const data = await api('/tasks'); state.tasks = data.tasks; render(); } catch (error) { toast(error.message); } } else toast('Datos locales ya actualizados.'); } });
+$('#task-form').addEventListener('submit', (event) => { event.preventDefault(); try { const data = readForm(); const existing = state.tasks.find((t) => t.id === $('#task-id').value); if (existing) { Object.assign(existing, data); addHistory('Tarea editada', existing); } else { const task = { id: crypto.randomUUID(), ...data, instance: { status: 'pending', pointsAwarded: false } }; state.tasks.push(task); addHistory('Tarea creada', task); } saveLocal(); show($('#task-form'), false); render(); toast('Tarea guardada.'); } catch (error) { $('#form-error').textContent = error.message; } });
+$('#sign-in').addEventListener('click', () => { if (!CONFIG.backendConfigured) { const role = prompt('Modo local: escribe adulto, nacho o luz'); const map = { adulto: 'adult', nacho: 'child-nacho', luz: 'child-luz' }; if (map[role?.toLowerCase()]) enterLocal(map[role.toLowerCase()]); else toast('Acceso local cancelado.'); } else toast('Falta configurar el proveedor de autenticación.'); });
+$('#sign-out').addEventListener('click', () => { state.user = null; show($('#app'), false); $('#sign-out').classList.add('hidden'); $('#sign-in').classList.remove('hidden'); $('#mode-badge').textContent = CONFIG.backendConfigured ? 'Sin sesión' : 'Desarrollo local · no seguro'; });
+loadLocal(); initAccess();
