@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const html = fs.readFileSync(new URL('./index.html', import.meta.url), 'utf8');
+const js = fs.readFileSync(new URL('./app.js', import.meta.url), 'utf8');
+assert.match(html, /type="module"/);
+assert.match(html, /id="adult-view"/);
+assert.match(html, /id="nacho-view"/);
+assert.match(html, /id="luz-view"/);
+assert.match(js, /backendConfigured: false/);
+assert.match(js, /localStorage/);
+assert.match(js, /pointsAwarded/);
+assert.match(js, /const esc/);
+assert.doesNotMatch(js, /(password|secret|PIN)\s*[:=]/i);
+console.log('tablon smoke tests: ok');

@@ -1,0 +1,7 @@
+{
+  "notes": "Ejemplo de contrato, no contiene credenciales ni es configuración funcional.",
+  "apiBase": "https://backend.example.invalid",
+  "adultSubjectAllowlist": ["ALVARO_SUBJECT_ID", "LUCITA_SUBJECT_ID"],
+  "endpoints": ["GET /tasks", "POST /tasks", "PATCH /tasks/:id", "POST /tasks/:id/actions"],
+  "requiredActionIdempotencyKey": true
+}
