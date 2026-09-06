@@ -494,5 +494,5 @@
       "texto": "No cierro el parque: confirmar en la app Disneyland Park o Disney Adventure World, horarios, atracciones abiertas y Extra Magic Time de esa mañana. Todo puede cambiar por operación o meteorología."
     }
   ],
-  "nota_operativa": "Horarios, cierres, reaperturas, Extra Magic Time y espectáculos pueden cambiar. Confirmar siempre en la app oficial el mismo día. El calendario consultado no permite confirmar cierres de todo el periodo; si una atracción aparece con estado temporal o incierto, comprobar estado en la app. La agenda destacada se limita al día actual del viaje; fuera de las fechas, se muestra como referencia."
+  "nota_operativa": "Horarios, cierres, reaperturas, Extra Magic Time y espectáculos pueden cambiar. Confirmar siempre en la app oficial el mismo día. El calendario consultado no permite confirmar cierres de todo el periodo; si una atracción aparece con estado temporal o incierto, comprobar estado en la app. El consejo y la agenda destacados se muestran desde las 00:00, hora Europe/Madrid, y se limitan al día actual del viaje; fuera de las fechas, no se muestran."
 }
