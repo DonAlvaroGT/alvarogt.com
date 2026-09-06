@@ -4,7 +4,7 @@
   "descripcion": "Cuatro días para entrar en el ambiente sin correr: una base junto al lago, parques distintos y los momentos que merece la pena guardar.",
   "zona_horaria": "Europe/Madrid",
   "actualizado": "2026-09-06",
-  "leyenda_top": "Badges solo para prioridades claras: TOP NIÑOS, TOP TODOS y TOP MAYORES.",
+  "leyenda_top": "Estas etiquetas describen el tipo de experiencia, no un orden de prioridad. Criterio orientativo; Álvaro puede cambiarlo.",
   "fuentes_horarios": {
     "oficial": "https://www.disneylandparis.com/en-int/entertainment/shows-and-parades",
     "secundaria": "https://www.dlpstats.com/dlp/entertainment"
@@ -159,7 +159,7 @@
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
       "categoria": "TOP TODOS",
-      "motivo_top": "Gran espectáculo interior compartido, con Mickey, música y magia."
+      "motivo_top": "Espectáculo interior con Mickey, magia, música y personajes Disney; encaja en TOP TODOS por su formato compartido y sin intensidad física."
     },
     {
       "nombre": "Meet the Characters of Alice in Wonderland",
@@ -178,12 +178,12 @@
       "nombre": "The Lion King: Rhythms of the Pride Lands",
       "horario": "Confirmar en la app",
       "descripcion": "Espectáculo musical con danza y acrobacias inspirado en El Rey León.",
-      "consejo": "Prioridad alta; llegar con margen o reservar acceso garantizado si está disponible.",
+      "consejo": "llegar con margen o reservar acceso garantizado si está disponible.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
       "categoria": "TOP TODOS",
-      "motivo_top": "Espectáculo musical de gran nivel y prioridad familiar."
+      "motivo_top": "Espectáculo musical interior con danza, acrobacias y canciones inspiradas en El Rey León; encaja en TOP TODOS."
     },
     {
       "parque": "Disneyland Park",
@@ -196,7 +196,7 @@
       "top": true,
       "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)",
       "categoria": "TOP NIÑOS",
-      "motivo_top": "Desfile especialmente atractivo para niños por personajes y carrozas."
+      "motivo_top": "Desfile exterior de carrozas, personajes, música y vestuario colorido; encaja en TOP NIÑOS por su experiencia visual y familiar."
     },
     {
       "parque": "Disneyland Park",
@@ -209,7 +209,7 @@
       "top": true,
       "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)",
       "categoria": "TOP TODOS",
-      "motivo_top": "Nocturno visual de gran prioridad compartida, si se confirma."
+      "motivo_top": "Espectáculo nocturno de proyecciones, efectos y fuegos sobre el castillo; encaja en TOP TODOS, si se confirma y la meteorología lo permite."
     },
     {
       "parque": "Disney Adventure World",
@@ -228,7 +228,7 @@
       "nombre": "Frozen Ever After",
       "horario": "Confirmar en la app",
       "descripcion": "Paseo musical en barco por Arendelle, con Anna, Elsa y Olaf; incluye bajadas en oscuridad.",
-      "consejo": "Prioridad alta; puede salpicar y puede asustar a niños pequeños.",
+      "consejo": "puede salpicar y puede asustar a niños pequeños.",
       "aplicacion": "11–14 septiembre 2026",
       "top": false,
       "fuente": "Disneyland Paris oficial/app"
@@ -244,7 +244,7 @@
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
       "categoria": "TOP NIÑOS",
-      "motivo_top": "Opción prioritaria para niños aficionados a Frozen, si se confirma."
+      "motivo_top": "Espectáculo exterior con Anna, Elsa, Olaf, Kristoff y habitantes de Arendelle; encaja en TOP NIÑOS por sus personajes y formato familiar."
     },
     {
       "parque": "Disney Adventure World",
@@ -257,7 +257,7 @@
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
       "categoria": "TOP TODOS",
-      "motivo_top": "Nocturno visual de gran prioridad compartida, si se confirma."
+      "motivo_top": "Espectáculo nocturno con fuegos, pantallas de agua, drones, proyecciones y efectos visuales; encaja en TOP TODOS, si se confirma."
     }
   ],
   "atracciones": [
@@ -269,7 +269,7 @@
       "altura_minima_publicada": "Cualquier altura",
       "advertencia": "Puede ser complicado por edad/intensidad",
       "categoria": "TOP TODOS",
-      "motivo_top": "Gran prioridad familiar compartida."
+      "motivo_top": "Recorrido en barco por escenas de piratas, con oscuridad, efectos y posibles salpicaduras; cualquier altura, pero puede impresionar."
     },
     {
       "atraccion": "Indiana Jones and the Temple of Peril",
@@ -279,7 +279,7 @@
       "altura_minima_publicada": "1,40 m",
       "advertencia": "No pueden subir",
       "categoria": "TOP MAYORES",
-      "motivo_top": "Prioridad por intensidad para adultos y mayores."
+      "motivo_top": "Montaña rusa exterior de aventura con curvas, velocidad e inversión; mínimo 140 cm."
     },
     {
       "atraccion": "Star Wars Hyperspace Mountain",
@@ -289,7 +289,7 @@
       "altura_minima_publicada": "1,20 m",
       "advertencia": "No pueden subir",
       "categoria": "TOP MAYORES",
-      "motivo_top": "Prioridad por intensidad para adultos y mayores."
+      "motivo_top": "Montaña rusa oscura de Star Wars, rápida e intensa; mínimo 120 cm."
     },
     {
       "atraccion": "Buzz Lightyear Laser Blast",
@@ -298,7 +298,7 @@
       "descripcion": "Recorrido interactivo de disparos láser.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP TODOS",
-      "motivo_top": "Gran prioridad familiar compartida."
+      "motivo_top": "Recorrido oscuro interactivo con pistolas láser y giros; cualquier altura."
     },
     {
       "atraccion": "Star Tours: The Adventures Continue",
@@ -322,7 +322,7 @@
       "descripcion": "Recorrido a pie por un laberinto inspirado en Alicia.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP NIÑOS",
-      "motivo_top": "Prioridad infantil e intensidad asumible."
+      "motivo_top": "Laberinto exterior a pie inspirado en Alicia, con caminos y rincones para explorar; cualquier altura."
     },
     {
       "atraccion": "Dumbo the Flying Elephant",
@@ -331,7 +331,7 @@
       "descripcion": "Vuelo circular en elefante.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP NIÑOS",
-      "motivo_top": "Prioridad infantil e intensidad asumible."
+      "motivo_top": "Vuelo circular en un elefante que sube y baja; cualquier altura."
     },
     {
       "atraccion": "it’s a small world",
@@ -340,7 +340,7 @@
       "descripcion": "Paseo tranquilo en barco por escenas del mundo.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP NIÑOS",
-      "motivo_top": "Prioridad infantil e intensidad asumible."
+      "motivo_top": "Paseo tranquilo en barco por escenas musicales de distintos lugares del mundo; cualquier altura."
     },
     {
       "atraccion": "Big Thunder Mountain",
@@ -350,7 +350,7 @@
       "altura_minima_publicada": "1,02 m",
       "advertencia": "Puede ser complicado por edad/intensidad",
       "categoria": "TOP TODOS",
-      "motivo_top": "Gran prioridad familiar compartida."
+      "motivo_top": "Montaña rusa exterior con curvas, velocidad y traqueteo; mínimo 102 cm; puede impresionar."
     },
     {
       "atraccion": "Phantom Manor",
@@ -368,7 +368,7 @@
       "altura_minima_publicada": "1,02 m",
       "advertencia": "Puede ser complicado por edad/intensidad",
       "categoria": "TOP MAYORES",
-      "motivo_top": "Prioridad por intensidad para adultos y mayores."
+      "motivo_top": "Ascensor con caídas y ambientación de terror; mínimo 102 cm; puede asustar."
     },
     {
       "atraccion": "Avengers Assemble: Flight Force",
@@ -378,7 +378,7 @@
       "altura_minima_publicada": "1,20 m",
       "advertencia": "No pueden subir",
       "categoria": "TOP MAYORES",
-      "motivo_top": "Prioridad por intensidad para adultos y mayores."
+      "motivo_top": "Montaña rusa cubierta, rápida e intensa, ambientada en una misión de Marvel; mínimo 120 cm."
     },
     {
       "atraccion": "Spider-Man W.E.B. Adventure",
@@ -387,7 +387,7 @@
       "descripcion": "Experiencia interactiva para lanzar telarañas.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP TODOS",
-      "motivo_top": "Gran prioridad familiar compartida."
+      "motivo_top": "Recorrido interactivo para lanzar telarañas con los brazos; cualquier altura."
     },
     {
       "atraccion": "Frozen Ever After",
@@ -397,7 +397,7 @@
       "altura_minima_publicada": "Cualquier altura",
       "advertencia": "Puede ser complicado por edad/intensidad",
       "categoria": "TOP TODOS",
-      "motivo_top": "Gran prioridad familiar compartida."
+      "motivo_top": "Paseo en barco musical por Arendelle con pequeñas bajadas; sin altura mínima; puede salpicar y asustar a algunos niños."
     },
     {
       "atraccion": "Ratatouille: L’Aventure Totalement Toquée de Rémy",
@@ -407,7 +407,7 @@
       "altura_minima_publicada": "Cualquier altura",
       "advertencia": "Puede ser complicado por edad/intensidad",
       "categoria": "TOP TODOS",
-      "motivo_top": "Gran prioridad familiar compartida."
+      "motivo_top": "Recorrido 4D con movimiento y efectos siguiendo a Rémy por una cocina gigante; cualquier altura, pero puede impresionar."
     },
     {
       "atraccion": "Cars ROAD TRIP",
@@ -416,7 +416,7 @@
       "descripcion": "Recorrido familiar en vehículo por escenas y efectos de Cars.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP NIÑOS",
-      "motivo_top": "Prioridad infantil e intensidad asumible."
+      "motivo_top": "Recorrido familiar en vehículo por escenas y efectos de Cars; cualquier altura."
     },
     {
       "atraccion": "RC Racer",
@@ -433,7 +433,7 @@
       "descripcion": "Recorrido giratorio familiar.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP NIÑOS",
-      "motivo_top": "Prioridad infantil e intensidad asumible."
+      "motivo_top": "Atracción exterior de recorrido giratorio y ritmo suave inspirada en Slinky Dog; cualquier altura."
     },
     {
       "atraccion": "Toy Soldiers Parachute Drop",
@@ -450,7 +450,7 @@
       "descripcion": "Paseo oscuro por la historia de Pinocho.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP NIÑOS",
-      "motivo_top": "Prioridad infantil e intensidad asumible."
+      "motivo_top": "Paseo oscuro en vehículo por escenas de la historia de Pinocho; cualquier altura."
     },
     {
       "atraccion": "Le Pays des Contes de Fées",
@@ -459,7 +459,7 @@
       "descripcion": "Paseo tranquilo en barco por cuentos de hadas.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP NIÑOS",
-      "motivo_top": "Prioridad infantil e intensidad asumible."
+      "motivo_top": "Paseo tranquilo en barco por maquetas de cuentos de hadas; cualquier altura."
     }
   ],
   "alturas_niños": {
@@ -473,7 +473,7 @@
       "fecha": "2026-09-11",
       "dia": "viernes 11",
       "titulo": "Disneyland Park por la tarde",
-      "texto": "Abrir la app y comprobar colas, cierres y horarios. Priorizar Big Thunder Mountain, Buzz, Pirates y Fantasyland según colas. Buscar Meet the Characters of Alice in Wonderland."
+      "texto": "Abrir la app y comprobar colas, cierres y horarios. Dar preferencia a Big Thunder Mountain, Buzz, Pirates y Fantasyland según colas. Buscar Meet the Characters of Alice in Wonderland."
     },
     {
       "fecha": "2026-09-12",
@@ -485,7 +485,7 @@
       "fecha": "2026-09-13",
       "dia": "domingo 13",
       "titulo": "Disney Adventure World",
-      "texto": "Con Extra Magic Time confirmado en la app, prioridad a World of Frozen y Frozen Ever After. Después, A Celebration in Arendelle, Ratatouille y Spider-Man. Mirar la Virtual Queue de Anna y Elsa. Por la noche, Disney Cascade of Lights."
+      "texto": "Con Extra Magic Time confirmado en la app, dar preferencia a World of Frozen y Frozen Ever After. Después, A Celebration in Arendelle, Ratatouille y Spider-Man. Mirar la Virtual Queue de Anna y Elsa. Por la noche, Disney Cascade of Lights."
     },
     {
       "fecha": "2026-09-14",
