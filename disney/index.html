@@ -175,7 +175,6 @@
   const clock = new Intl.DateTimeFormat('es-ES',{timeZone:'Europe/Madrid',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
   const madridParts = () => { try { return Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date()).filter(p=>p.type !== 'literal').map(p=>[p.type,p.value])); } catch (_) { const d=new Date(); return {year:String(d.getFullYear()),month:String(d.getMonth()+1).padStart(2,'0'),day:String(d.getDate()).padStart(2,'0'),hour:String(d.getHours()).padStart(2,'0'),minute:String(d.getMinutes()).padStart(2,'0')}; } };
   const dateKey = () => { const p=madridParts(); return `${p.year}-${p.month}-${p.day}`; };
-  const madridHour = () => Number(madridParts().hour);
   const tick = () => { document.querySelector('#clock').textContent = clock.format(new Date()); if (window.refreshDailyFocus) window.refreshDailyFocus(); };
   const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const weatherName = code => ({0:'despejado',1:'casi despejado',2:'parcialmente nuboso',3:'nuboso',45:'niebla',48:'niebla',51:'llovizna',53:'llovizna',55:'llovizna',61:'lluvia',63:'lluvia',65:'lluvia',71:'nieve',73:'nieve',75:'nieve',80:'chubascos',81:'chubascos',82:'chubascos',95:'tormenta',96:'tormenta',99:'tormenta'}[code] || 'tiempo variable');
@@ -195,13 +194,13 @@
     const agendaFor = date => data.dias.find(d=>d.fecha===date) || data.dias[0];
     const emphasis = text => esc(text).replace(/(confirmar en la app|volver al hotel|reservas?\/colas?|TOP|\b(?:Disneyland|Disney Adventure World|Disneyland Park)\b|\b(?:8:30|10:00|13:30|13:45|15:00|17:30|21:00|22:00)\b)/gi, '<strong>$1</strong>');
     const renderDailyFocus = () => {
-      const current = dateKey(), duringTrip = current >= first && current <= last, afterNoon = madridHour() >= 12;
+      const current = dateKey(), duringTrip = current >= first && current <= last;
       const box = document.querySelector('#daily-focus');
-      if (!afterNoon) { box.hidden = true; return; }
-      const advice = adviceFor(duringTrip ? current : first), agenda = agendaFor(duringTrip ? current : first);
-      document.querySelector('#daily-advice-heading').textContent = duringTrip ? `${advice.dia} · ${advice.titulo}` : `Referencia · ${advice.dia} · ${advice.titulo}`;
+      if (!duringTrip) { box.hidden = true; return; }
+      const advice = adviceFor(current), agenda = agendaFor(current);
+      document.querySelector('#daily-advice-heading').textContent = `${advice.dia} · ${advice.titulo}`;
       document.querySelector('#daily-advice-content').innerHTML = `<p><strong>Parque:</strong> ${emphasis(advice.parque || advice.titulo)}</p><p><strong>Zona:</strong> ${emphasis(advice.zona || 'Consultar el plan y la app')}</p><p>${emphasis(advice.texto)}</p>`;
-      document.querySelector('#daily-agenda-heading').textContent = duringTrip ? `${agenda.etiqueta} · ${agenda.parque}` : `Referencia · ${agenda.etiqueta} · ${agenda.parque}`;
+      document.querySelector('#daily-agenda-heading').textContent = `${agenda.etiqueta} · ${agenda.parque}`;
       document.querySelector('#daily-agenda-content').innerHTML = (agenda.agenda || [{texto: agenda.plan}]).map(item => `<p>${item.hora ? `<strong>${esc(item.hora)}</strong> · ` : ''}${emphasis(item.texto)}${item.confirmar ? ' · <strong>Confirmar en la app</strong>' : ''}</p>`).join('');
       box.hidden = false;
     };
