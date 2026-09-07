@@ -37,7 +37,9 @@ async function command(action, request) {
   return db.runTransaction(async tx => {
     const previous = await tx.get(eventRef);
     if (previous.exists) return previous.data().result;
-    const [taskSnap, instanceSnap] = await Promise.all([tx.get(taskRef), tx.get(instanceRef)]);
+    // Lee todos los documentos de la transacción con getAll. Promise.all(tx.get(...))
+    // deja el callable en error interno en algunas versiones del cliente Firestore.
+    const [taskSnap, instanceSnap] = await tx.getAll(taskRef, instanceRef);
     if (!taskSnap.exists || !instanceSnap.exists) throw new HttpsError('not-found', 'Tarea o instancia no encontrada.');
     const task = { id: taskSnap.id, ...taskSnap.data() }, instance = { id: instanceSnap.id, ...instanceSnap.data() };
     let next;
