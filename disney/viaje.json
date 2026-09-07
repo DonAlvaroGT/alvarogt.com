@@ -4,7 +4,7 @@
   "descripcion": "Cuatro días para entrar en el ambiente sin correr: una base junto al lago, parques distintos y los momentos que merece la pena guardar.",
   "zona_horaria": "Europe/Madrid",
   "activacion_consejo_agenda": "2026-09-11T00:00:00+02:00",
-  "actualizado": "2026-09-06",
+  "actualizado": "2026-09-07",
   "fuentes_horarios": {
     "oficial": "https://www.disneylandparis.com/en-int/entertainment/shows-and-parades",
     "secundaria": "https://www.dlpstats.com/dlp/entertainment"
@@ -76,16 +76,16 @@
       "fecha": "2026-09-12",
       "etiqueta": "Sáb 12",
       "parque": "grande (Disneyland)",
-      "plan": "Por el hotel podemos entrar a las 8:30, una hora antes de que abra el parque (Extra Magic Time). Empezamos por Big Thunder. Al mediodía, si las colas están en su momento más alto, puede apetecer volver al hotel a descansar un rato, sin obligación. Por la tarde, personajes. Disney Stars on Parade está prevista a las 17:30 (confirmar en la app) y Disney Tales of Magic, al cierre previsto a las 22:00 según Thrill Data.",
+      "plan": "Entrada a las 8:30 por Extra Magic Time. Empezamos por Big Thunder Mountain y Peter Pan. Entre 13:30 y 16:30, si las colas se van a 60–80 min, puede apetecer volver al Newport Bay a comer y descansar. Por la tarde, personajes al aire libre y espectáculos.",
       "agenda": [
         {
           "hora": "8:30",
-          "texto": "Entrada por Extra Magic Time y prioridad a Big Thunder.",
+          "texto": "Entrada por Extra Magic Time y prioridad a Big Thunder Mountain y Peter Pan.",
           "confirmar": true
         },
         {
-          "hora": "13:30",
-          "texto": "Si suben las **colas**, **volver al hotel** a descansar.",
+          "hora": "13:30–16:30",
+          "texto": "Si las colas se van a 60–80 min, volver al Newport Bay a comer y descansar.",
           "confirmar": false
         },
         {
@@ -104,11 +104,11 @@
       "fecha": "2026-09-13",
       "etiqueta": "Dom 13",
       "parque": "pequeño (Adventure World)",
-      "plan": "Por el hotel podemos entrar a las 8:30, una hora antes de que abra el parque (Extra Magic Time). El domingo empezamos por Remy’s / Ratatouille y dejamos sitio para World of Frozen, abierto desde marzo de 2026, además de los espectáculos centrales. Al mediodía, si las colas están en su momento más alto, puede apetecer volver al hotel a descansar un rato, sin obligación. A las 10:00 toca la cola virtual de Hero Training. El nocturno es Disney Cascade of Lights, al cierre previsto a las 22:00 según Thrill Data.",
+      "plan": "Día completo en el parque pequeño, con Ratatouille como referencia y espacio para los espectáculos centrales. A partir de las 16:00–17:00 suele bajar el público del fin de semana. A las 10:00 toca la cola virtual de Hero Training.",
       "agenda": [
         {
           "hora": "8:30",
-          "texto": "Entrada por Extra Magic Time; prioridad a Remy / Ratatouille y World of Frozen.",
+          "texto": "Entrada por Extra Magic Time; prioridad a Ratatouille.",
           "confirmar": true
         },
         {
@@ -117,8 +117,8 @@
           "confirmar": true
         },
         {
-          "hora": "13:30",
-          "texto": "Si suben las **colas**, **volver al hotel** a descansar.",
+          "hora": "horas centrales",
+          "texto": "Dejar sitio para los espectáculos cerrados.",
           "confirmar": false
         },
         {
@@ -132,11 +132,11 @@
       "fecha": "2026-09-14",
       "etiqueta": "Lun 14",
       "parque": "parque, mañana",
-      "plan": "La mañana es de parque, de 8:30 a 13:30. A las 13:45 recogemos las maletas y después toca el vuelo de vuelta. No hay nocturno: salimos a las 13:45.",
+      "plan": "Mañana de parque de 8:30 a 13:30. A las 13:45 recogemos las maletas y después toca el vuelo de vuelta.",
       "agenda": [
         {
           "hora": "8:30–13:30",
-          "texto": "Mañana de parque; parque y horario por confirmar.",
+          "texto": "Mañana de parque de 8:30 a 13:30; parque por confirmar.",
           "confirmar": true
         },
         {
@@ -170,18 +170,6 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": false,
       "fuente": "Disneyland Paris oficial/app"
-    },
-    {
-      "parque": "Disneyland Park",
-      "zona": "Frontierland Theater",
-      "nombre": "The Lion King: Rhythms of the Pride Lands",
-      "horario": "Confirmar en la app",
-      "descripcion": "Espectáculo musical con danza y acrobacias inspirado en El Rey León.",
-      "consejo": "llegar con margen o reservar acceso garantizado si está disponible.",
-      "aplicacion": "11–14 septiembre 2026",
-      "top": true,
-      "fuente": "Disneyland Paris oficial/app",
-      "categoria": "TOP TODOS"
     },
     {
       "parque": "Disneyland Park",
@@ -432,7 +420,7 @@
       "fecha": "2026-09-12",
       "dia": "sábado 12",
       "titulo": "Disneyland Park",
-      "texto": "Comprobar Extra Magic Time por alojaros en Newport Bay Club y usarlo según indique la app. Después, Lion King, Alice y Disney Stars on Parade; por la noche, Disney Tales of Magic si se confirma."
+      "texto": "Comprobar Extra Magic Time por alojaros en Newport Bay Club y usarlo según indique la app. Después, Alice y Disney Stars on Parade; por la noche, Disney Tales of Magic si se confirma."
     },
     {
       "fecha": "2026-09-13",
