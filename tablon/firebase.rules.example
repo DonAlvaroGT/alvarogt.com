@@ -47,6 +47,7 @@ service cloud.firestore {
       allow update: if child()
         && resource.data.status == 'pending'
         && request.resource.data.status == 'child_done'
+        && get(/databases/$(database)/documents/tasks/$(resource.data.taskId)).data.assignee in ['Nacho','Luz','shared']
         && sameImmutable(['status','childMarkedAt']);
       // El adulto puede cambiar el estado, pero nunca conceder puntos desde el cliente.
       allow update: if adult()
