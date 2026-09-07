@@ -89,11 +89,19 @@ async function command(action, request) {
   });
 }
 
-export const childDone = onCall({ region: 'europe-west1' }, request => command('child_done', request));
-export const validateTask = onCall({ region: 'europe-west1' }, request => command('validate_task', request));
-export const adultDone = onCall({ region: 'europe-west1' }, request => command('adult_done', request));
-export const undoDone = onCall({ region: 'europe-west1' }, request => command('undo_done', request));
-export const rejectTask = onCall({ region: 'europe-west1' }, request => command('undo_done', request));
+const CALLABLE_OPTIONS = {
+  region: 'europe-west1',
+  cors: ['https://alvarogt.com', 'https://www.alvarogt.com'],
+  // Cloud Run debe aceptar la preflight sin identidad; la callable sigue
+  // exigiendo Firebase Auth y claims en actorFrom().
+  invoker: 'public',
+};
+
+export const childDone = onCall(CALLABLE_OPTIONS, request => command('child_done', request));
+export const validateTask = onCall(CALLABLE_OPTIONS, request => command('validate_task', request));
+export const adultDone = onCall(CALLABLE_OPTIONS, request => command('adult_done', request));
+export const undoDone = onCall(CALLABLE_OPTIONS, request => command('undo_done', request));
+export const rejectTask = onCall(CALLABLE_OPTIONS, request => command('undo_done', request));
 
 function redemptionInput(data) {
   const rewardId = String(data?.rewardId || ''), redemptionId = String(data?.redemptionId || ''), eventId = String(data?.eventId || '');
