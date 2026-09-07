@@ -47,21 +47,23 @@
   const weekday=d=>new Intl.DateTimeFormat('es-ES',{timeZone:zone,weekday:'long'}).format(new Date(d+'T12:00:00Z'));
   function card(day,i){const label=i===0?'Hoy':'Mañana';const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C · ${safe(day.clothes)}${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');return `<article><div class="date">${label} · ${safe(pretty(day.date))}</div><h2 class="day-name">${label}</h2><p class="copy">${weather}</p><div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
 
-  // Homer sustituye o rellena este bloque al cargar la agenda del día.
-  // Cada elemento debe tener: deporte, competición, evento, hora Madrid, interés, enlace/fuente.
-  // Ejemplo: {deporte:'MLB',competición:'',evento:'',hora:'20:10',interés:5,enlace:'https://…'}
-  window.sportsAgenda=[];
-  const sportsOrder=['MLB','NCAA Football','Fútbol masculino','NFL','Fórmula 1'];
-  const agendaTime=e=>String(e.hora||'').match(/^(\d{1,2}):(\d{2})$/);
-  function renderSportsAgenda(){
-    const list=window.sportsAgenda.filter(e=>{const m=agendaTime(e);if(!m)return false;const mins=Number(m[1])*60+Number(m[2]);return mins>=600&&mins<=1350}).sort((a,b)=>{const ao=sportsOrder.indexOf(a.deporte),bo=sportsOrder.indexOf(b.deporte);return (ao<0?99:ao)-(bo<0?99:bo)||String(a.hora).localeCompare(String(b.hora))});
+  const sportsOrder=['MLB','NCAA Football AP Top 25','Real Madrid / Barcelona / Atlético','Miami Dolphins','Fórmula 1'];
+  const agendaTime=e=>String(e.hora_madrid||'').match(/^(\d{1,2}):(\d{2})$/);
+  const noEventMessages={
+    ncaa_football_ap_top_25:'NCAA Football AP Top 25: ningún partido en la ventana.',
+    real_madrid_barcelona_atletico:'Real Madrid / Barcelona / Atlético: sin partido hoy.',
+    miami_dolphins:'Miami Dolphins: sin partido hoy.',
+    formula_1:'Fórmula 1: sin sesión hoy.'
+  };
+  function renderSportsAgenda(payload){
+    const list=(payload.eventos||[]).filter(e=>{const m=agendaTime(e);if(!m)return false;const mins=Number(m[1])*60+Number(m[2]);return mins>=600&&mins<=1350}).sort((a,b)=>{const ab=/Brewers/i.test(a.evento)?-1:0,bb=/Brewers/i.test(b.evento)?-1:0;const ao=sportsOrder.indexOf(a.competicion),bo=sportsOrder.indexOf(b.competicion);return ab-bb||(ao<0?99:ao)-(bo<0?99:bo)||String(a.hora_madrid).localeCompare(String(b.hora_madrid))});
+    const empty=Object.entries(payload.sin_evento_en_ventana||{}).map(([key,text])=>`<p>${safe(text)}</p>`).join('');
     const target=document.querySelector('#sports-agenda');
-    if(!list.length){target.innerHTML='<p class="sports-empty">La agenda de hoy se carga al abrir; si no hay evento en la ventana, no aparece.</p>';return}
-    target.innerHTML=list.map(e=>`<div class="sports-event"><div class="sports-time">${safe(e.hora)}<br><span class="sports-meta">${safe(e.deporte)}</span></div><p>${e.enlace?`<a href="${safe(e.enlace)}" rel="noopener">${safe(e.evento)}</a>`:safe(e.evento)}<br><span class="sports-meta">${safe(e.competición)}${e.interés?' · Interés '+safe(e.interés):''}</span></p></div>`).join('');
+    target.innerHTML=(list.length?list.map(e=>`<div class="sports-event"><div class="sports-time">${safe(e.hora_madrid)}<br><span class="sports-meta">${safe(e.deporte)}</span></div><p><a href="${safe(e.fuente)}" rel="noopener">${safe(e.evento)}</a><br><span class="sports-meta">${safe(e.competicion)} · Interés ${safe(e.interes)}</span></p></div>`).join(''):'<p class="sports-empty">No hay eventos en la ventana.</p>')+(empty?`<div class="sports-empty">${empty}</div>`:'');
   }
-  async function start(){const payload=await fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('data');return r.json()});if(payload.schema_version!==1||!Array.isArray(payload.days)||payload.days.length!==2)throw Error('schema');document.querySelector('#days').innerHTML=payload.days.map(card).join('');document.querySelector('#updated').textContent=`Datos publicados: ${updatedFmt.format(new Date(payload.generated_at))}`}
+  async function start(){const payload=await fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('data');return r.json()});if(payload.schema_version!==1||!Array.isArray(payload.days)||payload.days.length!==2)throw Error('schema');document.querySelector('#days').innerHTML=payload.days.map(card).join('');const sports=await fetch('sports.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('sports');return r.json()});if(sports.schema_version!==1||!Array.isArray(sports.eventos))throw Error('sports-schema');renderSportsAgenda(sports);document.querySelector('#updated').textContent=`Datos publicados: ${updatedFmt.format(new Date(sports.comprobado))}`}
   const tick=()=>document.querySelector('#clock').textContent=clockFmt.format(new Date());
-  tick();setInterval(tick,1000);renderSportsAgenda();start().catch(()=>document.querySelector('#days').innerHTML='<p class="error">No hay datos publicados para hoy y mañana. Vuelve a intentarlo más tarde.</p>');
+  tick();setInterval(tick,1000);start().catch(()=>{document.querySelector('#days').innerHTML='<p class="error">No hay datos publicados para hoy y mañana. Vuelve a intentarlo más tarde.</p>';document.querySelector('#sports-agenda').innerHTML='<p class="error">No hay agenda deportiva publicada.</p>'});
 </script>
 </body>
 </html>
