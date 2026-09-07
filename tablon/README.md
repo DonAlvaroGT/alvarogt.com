@@ -69,22 +69,24 @@ Cloud Functions (o un servidor confiable con Admin SDK) debe:
 4. En una única transacción, comprobar el estado y crear `pointAwards/{instanceId_beneficiary}` con clave determinista. Solo si no existe, sumar el balance. Marcar la instancia como premiada únicamente dentro de esa operación. Nunca aceptar `points`, `actor`, `role` o `balance` del cliente como autoridad.
 5. Mantener el historial aunque se deshaga una tarea. Una nueva validación tras un deshacer no debe volver a sumar el mismo premio de la misma instancia.
 
-## Checklist exacta pendiente
+## Guía para la siguiente fase (no hacer ahora)
 
-- [x] Crear el proyecto Firebase `tablongo`.
-- [x] Registrar la aplicación web y guardar su `firebaseConfig` público en `firebase.example.json`.
-- [x] Activar Google Auth y configurar los dominios autorizados `localhost` y `alvarogt.com`.
-- [ ] Probar los dos adultos con Google: `agarciatimon@gmail.com` y `luzolivas@gmail.com`; comprobar email verificado y allowlist del backend.
-- [ ] Definir y desplegar la identidad infantil compartida sin login propio y el mecanismo supervisado que emita `childRole=child`; comprobar que no se puede falsificar desde el cliente.
-- [x] Crear Firestore en modo producción.
-- [ ] Aplicar `firebase.rules.example` tras probarlo en Firebase Emulator Suite; revisar las restricciones de visibilidad de tareas por asignación.
-- [ ] Implementar y desplegar Functions/backend para transiciones, historial, idempotencia, premios y balances atómicos.
-- [ ] Cargar tareas reales sustituyendo las cuatro de `EJEMPLO`; no hay seed real en este commit.
-- [ ] Conectar el adaptador de Google Auth, Firestore y Functions en la app; mantener `backend pendiente` hasta verificarlo.
-- [ ] Configurar el origen publicado exacto, CORS si procede, y el despliegue del tablón.
-- [ ] Ejecutar pruebas del emulador con ambos adultos, identidad infantil, reintentos, acceso denegado, visibilidad, validación y duplicación concurrente.
+La configuración pública y el nombre `tablongo` son documentación, no demuestran que exista una conexión operativa. Cuando Álvaro autorice la siguiente fase, comprobarlo en estas URLs oficiales, sin copiar aquí credenciales ni secretos:
 
-No se ejecuta esta checklist desde este repo: requiere proyecto, decisiones de configuración y/o credenciales de Álvaro.
+1. Proyecto: [Firebase Console](https://console.firebase.google.com/) → confirmar que el proyecto seleccionado es `tablongo` y que su configuración coincide con `firebase.example.json`.
+2. Authentication / Google: [Authentication](https://console.firebase.google.com/project/_/authentication/providers) → comprobar que Google está habilitado y que el acceso funciona para `agarciatimon@gmail.com` y `luzolivas@gmail.com`, con email verificado.
+3. Dominios: [Authentication → Settings → Authorized domains](https://console.firebase.google.com/project/_/authentication/settings) → comprobar el origen publicado exacto, `localhost` solo para desarrollo y ningún dominio sobrante.
+4. Firestore producción: [Firestore Database](https://console.firebase.google.com/project/_/firestore) → comprobar que la base de producción existe y que no se usa una base de pruebas.
+5. Allowlist: comprobar en la autenticación/backend que solo están permitidos `agarciatimon@gmail.com` y `luzolivas@gmail.com`; no confiar en una allowlist escrita por el navegador.
+6. Identidad infantil supervisada: acordar y comprobar el mecanismo compartido sin login propio, con autorización supervisada y un `childRole` emitido de forma confiable; verificar que JavaScript no puede falsificarlo.
+7. Reglas: revisar y probar `firebase.rules.example` en el [Rules Playground](https://console.firebase.google.com/project/_/firestore/rules) o en un entorno local autorizado; comprobar lectura por asignación, escritura adulta, transición infantil, append-only e idempotencia. No desplegar esta plantilla por el mero hecho de existir.
+8. Functions: comprobar en [Functions](https://console.firebase.google.com/project/_/functions) que existe un backend confiable desplegado para autenticación, transiciones, historial, premios y balances atómicos; hoy no existe en esta app.
+9. CORS: comprobar que el origen publicado exacto está permitido únicamente donde corresponda y que las peticiones no dependen de credenciales expuestas.
+10. Prueba de ambos adultos: repetir login y una operación autorizada con cada cuenta, comprobar rechazo de una cuenta no permitida y verificar los efectos en Firestore sin duplicación.
+
+La facturación puede aparecer al crear Firestore en producción o al desplegar Functions: [Billing](https://console.firebase.google.com/project/_/usage/details). No activar ningún plan, vincular facturación ni aceptar cargos sin autorización expresa de Álvaro.
+
+Checklist de estado documental: proyecto, Authentication/Google y Firestore no están verificados desde este repo; dominios, allowlist, identidad infantil supervisada, reglas, Functions, CORS y prueba de ambos adultos siguen pendientes. No se ejecuta esta guía desde este repo: requiere decisiones y acceso de Álvaro.
 
 ## Pruebas
 

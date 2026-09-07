@@ -10,8 +10,8 @@
     "agarciatimon@gmail.com",
     "luzolivas@gmail.com"
   ],
-  "googleAuth": "activado en el proyecto; login aún no conectado en esta app",
-  "firestore": "creado en producción; sincronización aún no conectada en esta app",
+  "googleAuth": "configuración documentada; activación y prueba pendientes",
+  "firestore": "configuración documentada; creación y prueba de producción pendientes",
   "authorizedDomains": ["localhost", "alvarogt.com"],
-  "notes": "Configuración pública del proyecto Firebase. No activa backend, login, sincronización, reglas, Functions ni Hosting."
+  "notes": "Referencia pública documentada, no conexión operativa. No activa backend, login, sincronización, reglas, Functions ni Hosting. Verificar cada dato en Firebase Console antes de usarlo."
 }

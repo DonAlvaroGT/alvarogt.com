@@ -10,6 +10,7 @@ assert.match(html, /type="module"/);
 assert.match(js, /no sincroniza dispositivos/);
 assert.match(js, /credentials: 'include'/);
 assert.doesNotMatch(js, /backendConfigured:\s*true/);
+assert.doesNotMatch(read('config.mjs'), /globalThis\.TABLON_CONFIG/);
 assert.deepEqual(allowedBackendKeys, ['backendConfigured', 'apiBase', 'authProvider']);
 assert.deepEqual(ADULT_ALLOWLIST, ['agarciatimon@gmail.com', 'luzolivas@gmail.com']);
 assert.equal(CHILD_ROLE, 'child');
@@ -18,4 +19,5 @@ assert.equal(validateRuntimeConfig({}, { protocol: 'https:', hostname: 'alvarogt
 assert.match(read('README.md'), /backend pendiente/);
 assert.match(read('firebase.rules.example'), /pointAwards/);
 assert.match(read('firebase.example.json'), /agarciatimon@gmail.com/);
+assert.match(read('firebase.example.json'), /activaci[oó]n y prueba pendientes/);
 console.log('tablon smoke and configuration tests: ok');

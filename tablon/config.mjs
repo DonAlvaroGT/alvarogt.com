@@ -23,8 +23,9 @@ export function validateRuntimeConfig(raw = {}, locationLike = globalThis.locati
 }
 
 export function readRuntimeConfig(locationLike = globalThis.location) {
-  const raw = typeof globalThis.TABLON_CONFIG === 'object' ? globalThis.TABLON_CONFIG : {};
-  return validateRuntimeConfig(raw, locationLike);
+  // La configuración pública no habilita producción: el adaptador remoto aún
+  // no está conectado y TABLON_CONFIG se ignora deliberadamente en esta fase.
+  return validateRuntimeConfig({}, locationLike);
 }
 
 export const allowedBackendKeys = ALLOWED_BACKEND_KEYS;
