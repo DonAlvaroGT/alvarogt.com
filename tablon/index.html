@@ -73,13 +73,13 @@ const remoteCall=async(name,item)=>{
   if(!instanceId) throw new Error('La tarea todavía no tiene instancia diaria.');
   return functionsApi.httpsCallable(functionsClient,name)({taskId,instanceId,eventId});
 };
-const remoteMode=()=>location.hostname==='localhost'&&!!authService?.currentUser;
+const remoteMode=()=>!!authService?.currentUser && !!functionsClient;
 const setSignedIn=(user,role)=>{window.tablonAdult=role==='adult';window.tablonChild=role==='child';setStatus((role==='adult'?'Adulto · ':'Niños · ')+(user.displayName||user.email||'cuenta'));signIn.hidden=!!user;childSignIn.hidden=!!user;signOut.hidden=!user;childLogin.hidden=true;render()};
 childSignIn.addEventListener('click',()=>{childLogin.hidden=!childLogin.hidden});
 childLogin.addEventListener('submit',async e=>{e.preventDefault();try{const user=await authApi.signInWithEmailAndPassword(authService,childEmail.value.trim().toLowerCase(),childPassword.value);if(!childEmails.includes((user.user.email||'').toLowerCase())){await authApi.signOut(authService);setStatus('Cuenta infantil no autorizada');return}setSignedIn(user.user,'child');childPassword.value=''}catch(e){setStatus('Niños · acceso no válido')}});
 const setStatus=(text)=>{status.textContent=text};
 async function setupGoogle(){
-  if(!['localhost','tablongo.web.app','tablongo.firebaseapp.com'].includes(location.hostname)){setStatus('Acceso · dominio no autorizado');return}
+  if(!['localhost','alvarogt.com','www.alvarogt.com','tablongo.web.app','tablongo.firebaseapp.com'].includes(location.hostname)){setStatus('Acceso · dominio no autorizado');return}
   try{
     const config=await fetch('./firebase.public.json').then(r=>r.json());
     const [{initializeApp},auth,firestore,functions]=await Promise.all([
