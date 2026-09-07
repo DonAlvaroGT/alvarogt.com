@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-07T06:30:09.529526+02:00",
+  "generated_at": "2026-09-07T19:30:38.873418+02:00",
   "timezone": "Europe/Madrid",
   "source": {
     "calendar": "EventKit",
@@ -18,8 +18,8 @@
   "days": [
     {
       "date": "2026-09-07",
-      "min": 21.3,
-      "max": 36.6,
+      "min": 20.9,
+      "max": 36.3,
       "rain_probability": 0,
       "clothes": "ropa fresca y gorra",
       "events": [],
@@ -27,7 +27,7 @@
     },
     {
       "date": "2026-09-08",
-      "min": 22.9,
+      "min": 22.7,
       "max": 34.7,
       "rain_probability": 0,
       "clothes": "ropa fresca y gorra",
