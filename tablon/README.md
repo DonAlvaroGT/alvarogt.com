@@ -30,6 +30,37 @@ La configuración local no es seguridad: cualquiera que abra la demo puede escri
 
 ## Backend obligatorio para validar y sumar
 
+### Contrato de Cloud Functions/Admin SDK (pendiente de implementación)
+
+El módulo puro `backend.contract.mjs` fija validaciones reutilizables sin SDK;
+no conecta Firebase ni simula sincronización. Las Functions deben exponer estas
+operaciones callable/HTTP y devolver `{ ok, instance, actionId }` (o un error de
+autorización/validación). `eventId` es obligatorio, estable para reintentos, y
+una misma clave con payload distinto debe fallar.
+
+| Operación | Entrada | Actor | Transición | Escritura atómica |
+|---|---|---|---|---|
+| `child_done` | `taskId`, `instanceId`, `eventId` | identidad infantil supervisada | `pending → child_done` | instancia + acción append-only |
+| `validate_task` | `taskId`, `instanceId`, `eventId` | adulto allowlist + correo verificado | `child_done → validated` | instancia + acción + premio/balance |
+| `adult_done` | `taskId`, `instanceId`, `eventId` | adulto allowlist + correo verificado | `pending → adult_done` | instancia + acción + premio/balance |
+| `undo_done` | `taskId`, `instanceId`, `eventId` | adulto allowlist + correo verificado | `child_done/validated/adult_done → pending` | instancia + acción; nunca resta |
+
+La Function debe leer tarea/instancia del servidor, rechazar tareas archivadas o
+no activas, derivar puntos y beneficiarios de la tarea (nunca de la petición),
+y usar una transacción Firestore. La clave de instancia es `taskId:period`; la
+de premio es `instanceId:beneficiary`. El premio solo se crea si el estado final
+es `validated` o `adult_done` y no existe aún; después se incrementa el balance
+en la misma transacción. Un replay de `eventId` devuelve el resultado guardado
+sin repetir efectos. La creación periódica de instancias debe ser un job
+confiable: para cada tarea activa, crear idempotentemente `taskId:period` solo si
+su frecuencia (diaria o días semanales) coincide; no acepta periodos inventados
+por el cliente.
+
+No se deben usar escrituras directas del navegador para estas operaciones: el
+cliente solo llama a Functions. Admin SDK omite reglas, por lo que la Function
+debe repetir autenticación, allowlist, email verificado, rol infantil
+supervisado y autorización de asignación.
+
 Cloud Functions (o un servidor confiable con Admin SDK) debe:
 
 1. Verificar Firebase Auth, email verificado y allowlist adulta en cada llamada; resolver la identidad infantil solo mediante el mecanismo supervisado acordado.
