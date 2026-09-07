@@ -81,8 +81,7 @@ window.tablonRemoteCall=async(name,item)=>{
   const eventId=crypto.randomUUID();
   if(name==='requestRedemption') return functionsApi.httpsCallable(functionsClient,name)({rewardId:item.id,eventId});
   if(name==='validateRedemption'||name==='rejectRedemption') return functionsApi.httpsCallable(functionsClient,name)({redemptionId:item.redemptionId,eventId});
-  if(!item.instanceId) throw new Error('La tarea todavía no tiene instancia diaria.');
-    return functionsApi.httpsCallable(functionsClient,name)({taskId:item.id,instanceId:item.instanceId,eventId});
+    return functionsApi.httpsCallable(functionsClient,name)({taskId:item.id,eventId});
 };
 const remoteMode=()=>!!authService?.currentUser && !!functionsClient; window.tablonRemoteMode=remoteMode; window.tablonCatalogCall=(collection,operation,id,payload)=>{if(!remoteMode())throw new Error('Sesión adulta necesaria.');return functionsApi.httpsCallable(functionsClient,'manageCatalog')({collection,operation,id,payload})};
 const setSignedIn=(user,role)=>{window.tablonAdult=role==='adult';window.tablonChild=role==='child';setStatus((role==='adult'?'Adulto · ':'Niños · ')+(user.displayName||user.email||'cuenta'));signIn.hidden=!!user;childSignIn.hidden=false;signOut.hidden=!user;childLogin.hidden=true;window.tablonRender()};
