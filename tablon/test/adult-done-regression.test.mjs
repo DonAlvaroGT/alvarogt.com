@@ -13,7 +13,8 @@ assert.doesNotMatch(html, /La tarea todavía no tiene instancia diaria/, 'el nav
 assert.doesNotMatch(html, /instanceId:item\.instanceId/, 'el payload no debe depender de instanceId');
 const source = await readFile(new URL('../functions/src/index.mjs', import.meta.url), 'utf8');
 assert.match(source, /periodForTask\(task\)/, 'el backend resuelve el periodo en Madrid');
-assert.match(source, /tx\.create\(instanceRef, instance\)/, 'el backend crea la instancia en la transacción');
+assert.match(source, /if \(!instanceSnap\.exists\) tx\.create\(instanceRef, \{ \.\.\.instance, \.\.\.instanceWrite \}\);/, 'el backend crea la instancia nueva una sola vez');
+assert.doesNotMatch(source, /if \(!instanceSnap\.exists\) tx\.create\(instanceRef, instance\)[\s\S]{0,500}tx\.update\(instanceRef,/, 'no se actualiza una instancia recién creada en la misma transacción');
 assert.match(source, /tx\.getAll\(instanceRef\)/, 'la instancia se lee con getAll');
 assert.match(source, /tx\.getAll\(balanceRef, rewardRef\)/, 'las lecturas de transacción no usan Promise.all');
 assert.doesNotMatch(source, /Promise\.all\(\[tx\.get/, 'no hay Promise.all de lecturas tx');

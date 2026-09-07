@@ -62,13 +62,13 @@ async function command(action, request) {
     const instance = instanceSnap.exists
       ? { id: instanceSnap.id, ...instanceSnap.data() }
       : { id: expectedInstanceId, taskId: task.id, period, status: 'pending', pointsAwarded: false };
-    if (!instanceSnap.exists) tx.create(instanceRef, instance); // crea la instancia de forma idempotente dentro de la misma transacción
-
     let next;
     try { next = applyCommand(instance, commandFor(action, actor, task, instance, eventId)); }
     catch (error) { throw new HttpsError('failed-precondition', error.message); }
     const result = { ok: true, instance: next, actionId: `${action}:${eventId}` };
-    tx.update(instanceRef, { status: next.status, lastEventId: eventId, updatedAt: FieldValue.serverTimestamp() });
+    const instanceWrite = { status: next.status, lastEventId: eventId, updatedAt: FieldValue.serverTimestamp() };
+    if (!instanceSnap.exists) tx.create(instanceRef, { ...instance, ...instanceWrite });
+    else tx.update(instanceRef, instanceWrite);
     tx.create(eventRef, { taskId, instanceId, action, actorUid: actor.uid, actorRole: actor.role, createdAt: FieldValue.serverTimestamp(), idempotencyKey: eventId, result });
     // Tanto niño como adulto dejan la tarea pendiente. Solo la validación
     // adulta concede puntos; marcar hecha nunca puede alterar el saldo.
@@ -78,7 +78,7 @@ async function command(action, request) {
       for (const beneficiary of beneficiaries) {
         const award = awardPoints(next, task, beneficiary);
         const awardRef = db.doc(`pointAwards/${award.awardId}`);
-        tx.create(awardRef, { ...award, instanceId, beneficiary, createdAt: FieldValue.serverTimestamp() });
+        tx.create(awardRef, { ...award, instanceId: expectedInstanceId, beneficiary, createdAt: FieldValue.serverTimestamp() });
         tx.set(db.doc(`balances/${beneficiary}`), { points: FieldValue.increment(award.points), updatedAt: FieldValue.serverTimestamp() }, { merge: true });
         awards.push(award);
       }
