@@ -30,13 +30,32 @@ La configuración local no es seguridad: cualquiera que abra la demo puede escri
 
 ## Backend obligatorio para validar y sumar
 
-### Contrato de Cloud Functions/Admin SDK (pendiente de implementación)
+### Contrato de Cloud Functions/Admin SDK (implementación portable pendiente de conexión)
 
-El módulo puro `backend.contract.mjs` fija validaciones reutilizables sin SDK;
-no conecta Firebase ni simula sincronización. Las Functions deben exponer estas
-operaciones callable/HTTP y devolver `{ ok, instance, actionId }` (o un error de
-autorización/validación). `eventId` es obligatorio, estable para reintentos, y
-una misma clave con payload distinto debe fallar.
+La carpeta `functions/` contiene la capa pura y stubs de handlers, sin SDK, red,
+credenciales ni despliegue. `backend.contract.mjs` fija validaciones reutilizables.
+Las Functions deben exponer estas operaciones callable/HTTP y devolver `{ ok,
+instance, actionId }` (o un error de autorización/validación). `eventId` es
+obligatorio, estable para reintentos, y una misma clave con payload distinto debe
+fallar.
+
+Archivos nuevos:
+
+- `functions/package.json`: scripts locales, sin dependencias instaladas.
+- `functions/src/pure.mjs`: actor confiable, comandos, replay, premio idempotente e instancias periódicas.
+- `functions/src/index.mjs`: stubs explícitos `child_done`, `validate_task`, `adult_done`, `undo_done` y job periódico.
+- `functions/src/firebase-admin.adapter.mjs`: adaptador aislado; no se carga en las pruebas.
+- `functions/test/backend.test.mjs`: pruebas sin SDK ni red.
+
+Cuando Álvaro lo autorice, instalar dependencias dentro de `functions/` con `npm
+install firebase-admin firebase-functions` y probar con el emulador de Firebase.
+No se ejecuta aquí para no guardar secretos ni activar servicios. Falta conectar
+el adaptador a Firestore transaccional, Auth y exports reales, y probarlo con el
+emulador. La configuración de Console del proyecto `tablongo`, Auth/Google,
+Firestore, dominios, identidad infantil confiable, reglas, CORS y Functions
+sigue pendiente de comprobación. Blaze/facturación sigue pendiente: no activar,
+ vincular ni aceptar cargos.
+
 
 | Operación | Entrada | Actor | Transición | Escritura atómica |
 |---|---|---|---|---|

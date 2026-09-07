@@ -1,0 +1,10 @@
+{
+  "name": "tablongo-functions",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test test/backend.test.mjs",
+    "check": "node --check src/pure.mjs && node --check src/index.mjs && node --check src/firebase-admin.adapter.mjs"
+  }
+}
