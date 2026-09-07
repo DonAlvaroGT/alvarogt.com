@@ -27,21 +27,43 @@ function actorFrom(request) {
 
 function input(data) {
   const taskId = String(data?.taskId || ''), instanceId = String(data?.instanceId || ''), eventId = String(data?.eventId || '');
-  if (!taskId || !instanceId || !eventId) throw new HttpsError('invalid-argument', 'Faltan taskId, instanceId o eventId.');
+  if (!taskId || !eventId) throw new HttpsError('invalid-argument', 'Faltan taskId o eventId.');
   return { taskId, instanceId, eventId };
 }
 
+function madridParts(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid', year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' }).formatToParts(date);
+  return Object.fromEntries(parts.filter(p => p.type !== 'literal').map(p => [p.type, p.value]));
+}
+
+function periodForTask(task, date = new Date()) {
+  const p = madridParts(date), today = `${p.year}-${p.month}-${p.day}`;
+  if (task.frequency !== 'weekly') return today;
+  const day = new Date(`${today}T12:00:00Z`).getUTCDay();
+  if (!Array.isArray(task.days) || !task.days.map(Number).includes(day)) throw new HttpsError('failed-precondition', 'La tarea semanal no corresponde a hoy.');
+  return today;
+}
+
 async function command(action, request) {
-  const actor = actorFrom(request), { taskId, instanceId, eventId } = input(request.data);
-  const taskRef = db.doc(`tasks/${taskId}`), instanceRef = db.doc(`taskInstances/${instanceId}`), eventRef = db.doc(`actions/${action}:${eventId}`);
+  const actor = actorFrom(request), { taskId, instanceId: requestedInstanceId, eventId } = input(request.data);
+  const taskRef = db.doc(`tasks/${taskId}`), eventRef = db.doc(`actions/${action}:${eventId}`);
   return db.runTransaction(async tx => {
     const previous = await tx.get(eventRef);
     if (previous.exists) return previous.data().result;
-    // Lee todos los documentos de la transacción con getAll. Promise.all(tx.get(...))
-    // deja el callable en error interno en algunas versiones del cliente Firestore.
-    const [taskSnap, instanceSnap] = await tx.getAll(taskRef, instanceRef);
-    if (!taskSnap.exists || !instanceSnap.exists) throw new HttpsError('not-found', 'Tarea o instancia no encontrada.');
-    const task = { id: taskSnap.id, ...taskSnap.data() }, instance = { id: instanceSnap.id, ...instanceSnap.data() };
+    const [taskSnap] = await tx.getAll(taskRef);
+    if (!taskSnap.exists) throw new HttpsError('not-found', 'Tarea no encontrada.');
+    const task = { id: taskSnap.id, ...taskSnap.data() };
+    if (task.status !== 'active') throw new HttpsError('failed-precondition', 'La tarea no está activa.');
+    const period = periodForTask(task);
+    const expectedInstanceId = createInstanceId(task.id, period);
+    if (requestedInstanceId && requestedInstanceId !== expectedInstanceId) throw new HttpsError('failed-precondition', 'La instancia no corresponde al periodo actual.');
+    const instanceRef = db.doc(`taskInstances/${expectedInstanceId}`);
+    const [instanceSnap] = await tx.getAll(instanceRef);
+    const instance = instanceSnap.exists
+      ? { id: instanceSnap.id, ...instanceSnap.data() }
+      : { id: expectedInstanceId, taskId: task.id, period, status: 'pending', pointsAwarded: false };
+    if (!instanceSnap.exists) tx.create(instanceRef, instance); // crea la instancia de forma idempotente dentro de la misma transacción
+
     let next;
     try { next = applyCommand(instance, commandFor(action, actor, task, instance, eventId)); }
     catch (error) { throw new HttpsError('failed-precondition', error.message); }
@@ -111,7 +133,7 @@ async function redemptionCommand(action, request) {
       const result = { ok: true, redemptionId, status: 'rejected' }; tx.create(eventRef, { result, createdAt: FieldValue.serverTimestamp(), actorUid: actor.uid }); return result;
     }
     const balanceRef = db.doc(`balances/${redemption.childId}`), rewardRef = db.doc(`rewards/${redemption.rewardId}`);
-    const [balanceSnap, rewardSnap] = await Promise.all([tx.get(balanceRef), tx.get(rewardRef)]), current = Number(balanceSnap.data()?.points || 0);
+    const [balanceSnap, rewardSnap] = await tx.getAll(balanceRef, rewardRef), current = Number(balanceSnap.data()?.points || 0);
     if (!rewardSnap.exists || current < redemption.cost) throw new HttpsError('failed-precondition', 'Saldo o premio no disponible.');
     tx.update(redemptionRef, { status: 'validated', validatedBy: actor.uid, updatedAt: FieldValue.serverTimestamp() });
     tx.update(balanceRef, { points: FieldValue.increment(-redemption.cost), updatedAt: FieldValue.serverTimestamp() });
