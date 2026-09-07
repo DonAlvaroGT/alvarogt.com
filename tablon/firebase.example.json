@@ -1,0 +1,14 @@
+{
+  "status": "backend pendiente",
+  "projectId": "PENDIENTE_CREAR_PROYECTO_FIREBASE",
+  "authDomain": "PENDIENTE.firebaseapp.com",
+  "apiKey": "PENDIENTE_CLAVE_PUBLICA_DEL_PROYECTO",
+  "storageBucket": "PENDIENTE.appspot.com",
+  "messagingSenderId": "PENDIENTE",
+  "appId": "PENDIENTE",
+  "adultAllowlist": [
+    "agarciatimon@gmail.com",
+    "luzolivas@gmail.com"
+  ],
+  "notes": "Ejemplo sin secretos. Sustituir solo con la configuración pública del proyecto Firebase antes de activar producción."
+}

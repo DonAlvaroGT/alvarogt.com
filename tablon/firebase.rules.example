@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function adult() {
+      return signedIn() && request.auth.token.email in [
+        'agarciatimon@gmail.com',
+        'luzolivas@gmail.com'
+      ];
+    }
+    // La identidad infantil compartida se configura en la app como rol child
+    // tras el mecanismo de acceso que Álvaro decida; nunca recibe permisos de adulto.
+    function child() { return signedIn() && request.auth.token.childRole == 'child'; }
+
+    match /tasks/{taskId} {
+      allow read: if adult() || child();
+      allow create, update, delete: if adult();
+    }
+    match /taskInstances/{instanceId} {
+      allow read: if adult() || child();
+      allow create, update: if adult() || (child() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'childMarkedAt', 'childActor']));
+      allow delete: if false;
+    }
+    match /actions/{actionId} {
+      allow read: if adult() || child();
+      allow create: if adult() || (child() && request.resource.data.action == 'child_done');
+      allow update, delete: if false;
+    }
+    match /pointAwards/{awardId} {
+      allow read: if adult() || child();
+      allow create: if adult() && !exists(/databases/$(database)/documents/pointAwards/$(awardId));
+      allow update, delete: if false;
+    }
+  }
+}

@@ -1,49 +1,68 @@
 # Tablón familiar
 
-Producto estático de `/tablon/`. No incluye secretos, PIN ni contraseñas.
+Estado: backend pendiente. Esta fase deja preparado Firebase, pero no existe todavía proyecto Firebase ni configuración real; no se afirma que haya sincronización o autenticación funcionando.
 
-## Estado real
+La aplicación publicada sin configuración válida muestra «Backend pendiente» y no ofrece un login falso. En `file:`, `localhost` o `127.0.0.1` permite un modo local claramente separado y no seguro: guarda datos en `localStorage`, y el rol escrito en el prompt no verifica identidad.
 
-La interfaz tiene una demo local y un contrato de integración, pero no hay backend, autenticación ni sincronización remota funcionando. No se debe presentar el modo local como seguridad: `localStorage`, el rol escrito en un `prompt` y JavaScript del navegador solo sirven para probar la interfaz en el mismo navegador.
+## Decisiones implementadas
 
-El modo local se habilita únicamente en `file:`, `localhost`, `127.0.0.1` o `[::1]`. En cualquier origen publicado, si no existe una configuración válida, la aplicación muestra «Integración pendiente» y no ofrece un login falso ni lee `localStorage`.
+- Firebase como proveedor previsto: Authentication con Google y Firestore.
+- Allowlist adulta: `agarciatimon@gmail.com` y `luzolivas@gmail.com`. Es configuración, no un secreto.
+- Cuenta infantil compartida: rol `child`, sin login propio; solo puede leer tareas infantiles/compartidas y marcar hechas.
+- Una marca infantil queda `child_done` y requiere validación adulta. Un adulto puede validar, marcar directamente o deshacer.
+- Puntos acumulativos: una concesión por instancia y beneficiario, con operación idempotente; no hay reinicio.
+- Cuatro tareas iniciales provisionales, todas rotuladas `EJEMPLO`, para individual, compartida, diaria y semanal. Se sustituyen o cargan después.
 
-`backendConfigured` no está activado. No cambiarlo a `true` hasta tener proveedor, backend HTTPS, origen exacto, sujetos autorizados, esquema, reglas, migraciones y pruebas de sesión decididos.
+## Archivos Firebase
 
-## Configuración segura pendiente
+- `firebase.example.json`: plantilla explícita sin secretos. Sustituir `PENDIENTE_*` solo con la configuración pública del proyecto.
+- `firebase.rules.example`: reglas orientativas para tareas, instancias, acciones y concesiones de puntos. Revisarlas en el emulador antes de publicar.
+- `domain.mjs`: roles, permisos, ejemplos y transiciones idempotentes probables, compartidos por la demo y los tests.
 
-`config.mjs` valida una configuración de despliegue opcional (`TABLON_CONFIG`) con solo estas claves: `backendConfigured`, `apiBase` y `authProvider`. `apiBase` debe ser HTTPS y no puede llevar usuario ni contraseña. Nunca pongas secretos en GitHub Pages, `app.js` ni este repositorio. Una clave pública del proveedor no es un secreto, pero debe documentarse como tal.
+No guardar service accounts, claves privadas, contraseñas ni tokens en el repositorio. La configuración pública de Firebase no sustituye las reglas de Firestore.
 
-El adaptador actual solo deja preparado `fetch` con `credentials: include` y mensajes explícitos para 401/403; no implementa login, logout, refresco de sesión, lectura remota ni escrituras remotas completas. Por tanto no hay sincronización falsa.
+## Modelo Firestore propuesto
 
-## Ruta concreta de integración backend
+`users/{uid}`: `role` (`adult` o `child`), email verificado/allowlist y metadatos mínimos. La cuenta infantil compartida no tiene identidad infantil propia: el mecanismo de acceso supervisado debe quedar definido antes de producción.
 
-1. Decisión de arquitectura: elegir proveedor de identidad y persistencia. Confirmar si Nacho y Luz tendrán identidad propia o acceso supervisado; no inventar cuentas.
-2. Identidad: crear las cuentas de Álvaro y Lucita en el proveedor elegido y guardar sus subject IDs en una allowlist del servidor. El frontend nunca decide el rol. Definir callback/origen, caducidad, logout, recuperación y política de cookies/tokens.
-3. Autenticación: backend verifica la sesión en cada petición; usa HTTPS, cookies `Secure`, `HttpOnly`, `SameSite=Lax` (o tokens cortos con rotación si el proveedor lo exige), CORS exacto para el origen publicado y protección CSRF si se usan cookies.
-4. Autorización: derivar `actor` y `role` de la sesión. Álvaro y Lucita pueden crear, editar, pausar, archivar, validar, marcar como adulto y deshacer. Un niño solo puede ver sus tareas (y compartidas) y emitir `child_done`. El servidor aplica control de acceso por objeto y no acepta del cliente actor, puntos, saldo, permisos, estado final ni visibilidad.
-5. API: implementar `GET /session`, `POST /auth/logout`, `GET /tasks?period=...`, `POST /tasks`, `PATCH /tasks/:id`, `POST /tasks/:id/instances/:instanceId/actions` y `GET /events?taskId=...`. Las acciones mutantes requieren `Idempotency-Key`; reintentar debe devolver el mismo resultado.
-6. Esquema: `tasks(id, title, assignee, frequency, days, points, requires_validation, status, created_at, updated_at)`; `task_instances(id, task_id, period, status, points_awarded, created_at, updated_at)`; `events(id, task_id, instance_id, action, actor_subject, created_at)`, append-only. Añadir índices por periodo/asignatario y unicidad de concesión por `(instance_id, beneficiary)`.
-7. Reglas de acciones: niño pasa a `child_done`; si requiere validación no suma. Adulto valida o marca `adult_done`; la concesión de puntos y el saldo son transaccionales e idempotentes. Deshacer solo adulto, registra evento y no borra historial. El rollover diario/semanal crea una instancia nueva sin borrar eventos ni saldo.
-8. Validación: título 1–120 y sin HTML/script; puntos entero 0–1000; enums estrictos para asignatario, frecuencia, días y estado; IDs y periodos válidos; límites de tamaño y rate limiting. Rechazar campos desconocidos sensibles si el framework lo permite.
-9. Migración: crear tablas, constraints, índices, reglas de acceso y auditoría; aplicar en un entorno de prueba; seed vacío. Migrar solo datos locales si Álvaro los revisa explícitamente: son datos de navegador, no una fuente fiable ni identidad.
-10. Despliegue: backend HTTPS, secretos en el gestor de secretos del proveedor, CORS exacto, logs sin tokens, monitorización de 401/403/5xx y backups. Configurar `TABLON_CONFIG` durante el build/despliegue, nunca secretos en el repo. Probar ventana limpia, dos sesiones, caducidad, permisos cruzados, reintentos, CSRF, rollover y recuperación antes de activar.
+`tasks/{taskId}`: `title`, `assignee` (`Nacho`, `Luz`, `shared`), `frequency` (`daily`/`weekly`), `days`, `points`, `requiresValidation`, `status`, `example`, `createdAt`, `updatedAt`.
 
-## Firebase frente a Supabase: decisión pendiente
+`taskInstances/{instanceId}`: `taskId`, `period`, `status` (`pending`, `child_done`, `validated`, `adult_done`), `pointsAwarded`, timestamps. Crear una instancia por periodo sin borrar historial.
 
-- Firebase: Auth + Firestore/Cloud Functions y reglas declarativas. Suele acelerar identidad y tiempo real; exige decidir reglas Firestore, modelo de costes por lecturas/escrituras y dependencia fuerte del ecosistema Firebase.
-- Supabase: Auth + Postgres + RLS y Edge Functions. Da SQL, constraints y transacciones familiares para este esquema; exige diseñar RLS, funciones seguras y revisar costes/operativa del proyecto.
+`actions/{actionId}`: `taskId`, `instanceId`, `action`, `actorUid`, `actorRole`, `createdAt`, `idempotencyKey`. Colección append-only.
 
-No elijo por Álvaro: cambian coste, modelo de seguridad y arquitectura. Falta decidir proveedor, presupuesto, región, si se necesita tiempo real y quién operará las migraciones.
+`pointAwards/{instanceId_beneficiary}`: clave determinista, `instanceId`, `beneficiary`, `points`, `createdAt`. Su unicidad impide sumar dos veces; una transacción debe comprobar la concesión antes de crearla. Los puntos del adulto no se aceptan del cliente.
 
-## Archivos
+## Reglas de autorización
 
-- `index.html`: estructura y mensajes de acceso.
-- `app.js`: demo local separada; adaptador remoto deliberadamente incompleto.
-- `config.mjs`: validación sin red ni secretos.
-- `backend.example.json`: contrato y pendientes explícitos.
-- `test-app.mjs`: pruebas Node sin paquetes ni red.
+Adultos: solo los dos correos de la allowlist, autenticados con Google y con email verificado; pueden crear/editar tareas, marcar, validar, deshacer y gestionar la concesión de puntos.
 
-## Límites
+Infantil compartida: leer tareas asignadas a Nacho, Luz o `shared`, y crear únicamente la acción `child_done`/cambio equivalente de marcado. Nunca crear o editar tareas, cambiar puntos, validar, deshacer o cambiar visibilidad.
 
-No hay credenciales, cuentas, proveedor elegido, backend desplegado, migración aplicada ni autenticación real. No se debe afirmar que el tablón sincroniza entre dispositivos ni que protege datos mientras siga en este estado.
+La autorización real debe estar en Firebase Rules y, para operaciones que necesiten transacción, en Cloud Functions/servidor confiable. El frontend no es una frontera de seguridad.
+
+## Cómo configurarlo cuando Álvaro tenga el proyecto
+
+1. Crear un proyecto en Firebase Console, activar Authentication y el proveedor Google.
+2. Añadir como usuarios autorizados/verificados a `agarciatimon@gmail.com` y `luzolivas@gmail.com`. No crearles contraseñas: entran con Google.
+3. Crear Firestore en modo producción. Aplicar y probar `firebase.rules.example` con Firebase Emulator Suite; ajustar el mecanismo de cuenta infantil compartida antes de publicar. No se debe inventar un login infantil ni elevar sus claims desde el navegador.
+4. Registrar la aplicación web y copiar solo la configuración pública en una copia de `firebase.example.json` fuera del control de versiones o en la variable de build documentada. Mantener `status` como `backend pendiente` hasta completar la integración real.
+5. Definir el origen publicado exacto, dominios autorizados de Firebase y reglas de CORS si se añade API/Functions.
+6. Publicar las reglas desde un entorno autenticado, hacer pruebas con ambos adultos y con la identidad infantil compartida, y verificar: lectura limitada, `child_done`, validación, deshacer, marcado adulto, reintentos y no duplicación de puntos.
+
+No ejecutar esos pasos desde este repo: requieren cuenta, proyecto y/o credenciales de Álvaro.
+
+## Pruebas
+
+Sin red ni credenciales:
+
+```sh
+node test-app.mjs
+node domain.test.mjs
+```
+
+Cubren configuración, allowlist, permisos por rol, ejemplos, validación, deshacer y puntos una sola vez.
+
+## Límites actuales
+
+No hay proyecto Firebase, `firebaseConfig` real, login Google, reglas publicadas, sincronización remota ni backend funcionando. El modo local no es seguro y solo sirve para probar la interfaz.
