@@ -2,9 +2,19 @@
   "name": "tablongo-functions",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "test": "node --test test/backend.test.mjs",
-    "check": "node --check src/pure.mjs && node --check src/index.mjs && node --check src/firebase-admin.adapter.mjs"
+    "check": "node --check src/pure.mjs && node --check src/index.mjs && node --check src/firebase-admin.adapter.mjs",
+    "set-child-claim": "node scripts/set-child-claim.mjs"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.3.0",
+    "firebase-functions": "^7.3.2"
+  },
+  "devDependencies": {
+    "firebase-tools": "^15.29.0"
   }
 }

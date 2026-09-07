@@ -14,7 +14,8 @@ service cloud.firestore {
     // Debe ser un claim emitido por un mecanismo de acceso supervisado.
     // Nunca se debe aceptar un rol enviado por el navegador como autorización.
     function child() {
-      return signedIn() && request.auth.token.childRole == 'child';
+      return signedIn()
+        && request.auth.token.email == 'alvarogt@alvarogt.com';
     }
     function onlyKeys(keys) {
       return request.resource.data.keys().hasOnly(keys);
@@ -45,17 +46,9 @@ service cloud.firestore {
       // La instancia la crea/prepara un proceso confiable. El cliente no puede inventar periodos.
       allow create: if false;
       // El niño solo puede pasar de pending a child_done; no puede tocar puntos ni actor.
-      allow update: if child()
-        && resource.data.status == 'pending'
-        && request.resource.data.status == 'child_done'
-        && get(/databases/$(database)/documents/tasks/$(resource.data.taskId)).data.assignee in ['Nacho','Luz','shared']
-        && sameImmutable(['status','childMarkedAt']);
-      // El adulto puede cambiar el estado, pero nunca conceder puntos desde el cliente.
-      allow update: if adult()
-        && sameImmutable(['status','adultValidatedAt','adultMarkedAt','updatedAt'])
-        && ((resource.data.status == 'child_done' && request.resource.data.status == 'validated')
-          || (resource.data.status == 'pending' && request.resource.data.status == 'adult_done')
-          || (request.resource.data.status == 'pending' && resource.data.status in ['child_done','validated','adult_done']));
+      // Todas las transiciones pasan por Cloud Functions/Admin SDK.
+      // El navegador no puede modificar estados ni intentar conceder puntos.
+      allow update: if false;
       allow delete: if false;
     }
 

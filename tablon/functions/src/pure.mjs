@@ -5,7 +5,7 @@ import {
   awardPoints,
   createInstanceId,
   frequencyPeriods,
-} from '../../backend.contract.mjs';
+} from './backend.contract.mjs';
 
 export function resolveTrustedActor(auth) {
   const token = auth?.token;

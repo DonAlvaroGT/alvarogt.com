@@ -1,4 +1,15 @@
-const ALLOWED_BACKEND_KEYS = ['backendConfigured', 'apiBase', 'authProvider'];
+const ALLOWED_BACKEND_KEYS = ['backendConfigured', 'apiBase', 'authProvider', 'firebaseConfig'];
+
+// Configuración pública documentada por Álvaro. Leerla no activa Auth, Firestore
+// ni sincronización: el backend confiable todavía no existe.
+export const PUBLIC_FIREBASE_CONFIG = Object.freeze({
+  projectId: 'tablongo',
+  authDomain: 'tablongo.firebaseapp.com',
+  apiKey: 'AIzaSyBdbo1iSi9OjNzEzqvCQF9cyXnlCcXt_MQ',
+  storageBucket: 'tablongo.firebasestorage.app',
+  messagingSenderId: '639440141487',
+  appId: '1:639440141487:web:76132e8c01c030b4e1e85a',
+});
 
 export function isLocalDevelopment(locationLike = globalThis.location) {
   if (!locationLike) return false;
@@ -6,7 +17,7 @@ export function isLocalDevelopment(locationLike = globalThis.location) {
 }
 
 export function validateRuntimeConfig(raw = {}, locationLike = globalThis.location) {
-  const config = { backendConfigured: false, apiBase: '', authProvider: '', ...raw };
+  const config = { backendConfigured: false, apiBase: '', authProvider: '', firebaseConfig: PUBLIC_FIREBASE_CONFIG, ...raw };
   const localDevelopment = isLocalDevelopment(locationLike);
   const errors = [];
   if (typeof config.backendConfigured !== 'boolean') errors.push('backendConfigured debe ser booleano.');
@@ -23,9 +34,9 @@ export function validateRuntimeConfig(raw = {}, locationLike = globalThis.locati
 }
 
 export function readRuntimeConfig(locationLike = globalThis.location) {
-  // La configuración pública no habilita producción: el adaptador remoto aún
-  // no está conectado y TABLON_CONFIG se ignora deliberadamente en esta fase.
-  return validateRuntimeConfig({}, locationLike);
+  // La configuración pública queda conectada como metadato de arranque, pero
+  // no habilita producción: no hay adaptador remoto ni autenticación conectados.
+  return validateRuntimeConfig({ firebaseConfig: PUBLIC_FIREBASE_CONFIG }, locationLike);
 }
 
 export const allowedBackendKeys = ALLOWED_BACKEND_KEYS;
