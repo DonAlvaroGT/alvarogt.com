@@ -24,7 +24,7 @@ function renderTask(task, childView = false) {
   let actions = '';
   if (childView && status === 'pending') actions += `<button class="button primary" data-action="child-done" data-id="${esc(task.id)}">Marcar hecha</button>`;
   if (isAdult()) {
-    if (status === 'child_done' && task.requiresValidation) actions += `<button class="button primary" data-action="validate" data-id="${esc(task.id)}">Validar</button>`;
+    if (status === 'child_done') actions += `<button class="button primary" data-action="validate" data-id="${esc(task.id)}">Validar</button>`;
     if (status === 'pending') actions += `<button class="button primary" data-action="adult-done" data-id="${esc(task.id)}">Marcar hecha</button>`;
     if (status !== 'pending') actions += `<button class="button secondary" data-action="undo" data-id="${esc(task.id)}">Deshacer</button>`;
     if (!childView) actions += `<button class="button secondary" data-action="edit" data-id="${esc(task.id)}">Editar</button>`;
@@ -36,6 +36,7 @@ function render() {
   show($('#adult-view'), adult);
   show($('#new-task'), adult);
   show(document.querySelector('[data-view="adult"]'), adult);
+  document.querySelectorAll('.tabs [data-view="adult"]').forEach((tab) => show(tab, adult));
   show($('.history'), adult);
   $('#pending-count').textContent = state.tasks.filter((t) => t.status === 'active' && currentDone(t) === 'pending').length;
   $('#done-count').textContent = state.tasks.filter((t) => ['validated','adult_done'].includes(currentDone(t))).length;
