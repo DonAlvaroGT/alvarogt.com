@@ -9,13 +9,16 @@ if (!getApps().length) initializeApp();
 const auth = getAuth();
 const db = getFirestore();
 const ADULTS = new Set(['agarciatimon@gmail.com', 'luzolivas@gmail.com']);
+const CHILD_EMAIL = 'alvarogt@alvarogt.com';
+
+function isAdult(actor) { return actor.role === 'adult'; }
 
 function actorFrom(request) {
   if (!request.auth?.uid) throw new HttpsError('unauthenticated', 'Inicia sesión.');
   const token = request.auth.token || {};
   const email = String(token.email || '').toLowerCase();
-  if (token.email_verified === true && ADULTS.has(email)) return { uid: request.auth.uid, role: 'adult', email, emailVerified: true };
-  if (email === 'alvarogt@alvarogt.com') return { uid: request.auth.uid, role: 'child', email, emailVerified: token.email_verified === true };
+  if (ADULTS.has(email)) return { uid: request.auth.uid, role: 'adult', email, emailVerified: token.email_verified === true };
+  if (email === CHILD_EMAIL) return { uid: request.auth.uid, role: 'child', email, emailVerified: token.email_verified === true };
   throw new HttpsError('permission-denied', 'Cuenta no autorizada.');
 }
 
