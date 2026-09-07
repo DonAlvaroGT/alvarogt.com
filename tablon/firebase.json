@@ -1,0 +1,17 @@
+{
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs22",
+    "region": "europe-west1"
+  },
+  "firestore": {
+    "rules": "firebase.rules.example",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "public": ".",
+    "ignore": ["firebase.json", "firebase.local.json", "firebase.example.json", "firestore.indexes.json", "functions/**", "README.md", "*.mjs", "*.txt", "node_modules/**"],
+    "cleanUrls": true,
+    "trailingSlash": false
+  }
+}

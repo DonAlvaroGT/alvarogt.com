@@ -1,6 +1,6 @@
 # Tablón familiar
 
-Estado: backend pendiente. El proyecto Firebase `tablongo` y su configuración pública ya están anotados en `firebase.example.json`; no se afirma que haya sincronización o autenticación funcionando.
+Estado: backend desplegado, frontend aún en modo local. El proyecto Firebase `tablongo` tiene Firestore, reglas y cinco Cloud Functions activas en `europe-west1`. La UI aprobada sigue funcionando en `localStorage`; la sincronización remota y la carga inicial de datos todavía no están conectadas.
 
 La aplicación publicada sin configuración válida muestra «Backend pendiente» y no ofrece un login falso. En `file:`, `localhost` o `127.0.0.1` permite un modo local claramente separado y no seguro: guarda datos en `localStorage`, y el rol escrito en el prompt no verifica identidad.
 
@@ -32,8 +32,7 @@ La configuración local no es seguridad: cualquiera que abra la demo puede escri
 
 ### Contrato de Cloud Functions/Admin SDK (implementación portable pendiente de conexión)
 
-La carpeta `functions/` contiene la capa pura y stubs de handlers, sin SDK, red,
-credenciales ni despliegue. `backend.contract.mjs` fija validaciones reutilizables.
+La carpeta `functions/` contiene la capa pura, handlers con Admin SDK y pruebas; las Functions están desplegadas en el proyecto real sin conservar credenciales en el repositorio. `backend.contract.mjs` fija validaciones reutilizables.
 Las Functions deben exponer estas operaciones callable/HTTP y devolver `{ ok,
 instance, actionId }` (o un error de autorización/validación). `eventId` es
 obligatorio, estable para reintentos, y una misma clave con payload distinto debe
@@ -123,6 +122,6 @@ git diff --check
 
 ## Límites actuales
 
-El proyecto Firebase y su `firebaseConfig` público están documentados, pero no hay login Google conectado en la app, reglas publicadas, sincronización remota ni backend funcionando. El modo local no es seguro y solo sirve para probar la interfaz.
+La configuración pública documentada del proyecto `tablongo` queda cargada por `config.mjs` como metadato de arranque, pero no hay login Google conectado en la app, reglas publicadas, sincronización remota ni backend funcionando. El modo local no es seguro y solo sirve para probar la interfaz.
 
-No se activan `TABLON_CONFIG`, login Google, sincronización, reglas, Functions ni Hosting en este encargo. La configuración pública no demuestra que el backend esté operativo.
+No se activan `TABLON_CONFIG`, login Google, sincronización, reglas, Functions ni Hosting en este encargo. La configuración pública cargada no demuestra que el backend esté operativo.

@@ -9,10 +9,10 @@ export function can(role, permission) { return permissions[role]?.has(permission
 
 export function demoTasks() {
   return [
-    { id: 'example-individual', title: 'EJEMPLO · Guardar juguetes', assignee: 'Nacho', frequency: 'daily', days: [], points: 5, requiresValidation: true, status: 'active', example: true, instance: { status: 'pending', pointsAwarded: false } },
-    { id: 'example-shared', title: 'EJEMPLO · Poner la mesa', assignee: 'shared', frequency: 'daily', days: [], points: 8, requiresValidation: true, status: 'active', example: true, instance: { status: 'pending', pointsAwarded: false } },
-    { id: 'example-weekly', title: 'EJEMPLO · Ordenar mochila', assignee: 'Luz', frequency: 'weekly', days: [0], points: 10, requiresValidation: true, status: 'active', example: true, instance: { status: 'pending', pointsAwarded: false } },
-    { id: 'example-adult', title: 'EJEMPLO · Revisar el tablón', assignee: 'shared', frequency: 'weekly', days: [6], points: 3, requiresValidation: false, status: 'active', example: true, instance: { status: 'pending', pointsAwarded: false } },
+    { id: 'example-breakfast', title: 'Desayuno', icon: '🥣', assignee: 'Luz', frequency: 'daily', days: [], points: 5, requiresValidation: true, status: 'active', example: true, instance: { status: 'pending', pointsAwarded: false } },
+    { id: 'example-backpack', title: 'Preparar la mochila', icon: '🎒', assignee: 'Nacho', frequency: 'daily', days: [], points: 5, requiresValidation: true, status: 'active', example: true, instance: { status: 'pending', pointsAwarded: false } },
+    { id: 'example-table', title: 'Poner la mesa', icon: '🍴', assignee: 'shared', frequency: 'daily', days: [], points: 8, requiresValidation: true, status: 'active', example: true, instance: { status: 'pending', pointsAwarded: false } },
+    { id: 'example-reading', title: 'Lectura', icon: '📖', assignee: 'shared', frequency: 'weekly', days: [0], points: 5, requiresValidation: true, status: 'active', example: true, instance: { status: 'pending', pointsAwarded: false } },
   ];
 }
 
