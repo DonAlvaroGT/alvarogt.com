@@ -4,7 +4,7 @@ import { validateRuntimeConfig, readRuntimeConfig, allowedBackendKeys, PUBLIC_FI
 import { ADULT_ALLOWLIST, CHILD_ROLE } from './domain.mjs';
 
 const html = fs.readFileSync(new URL('./index.html', import.meta.url), 'utf8');
-const js = fs.readFileSync(new URL('./app.js', import.meta.url), 'utf8');
+const js = fs.readFileSync(new URL('./frontend-alternative/app.js', import.meta.url), 'utf8');
 const read = (path) => fs.readFileSync(new URL(path, import.meta.url), 'utf8');
 assert.match(html, /type="module"/);
 assert.match(js, /no sincroniza dispositivos/);

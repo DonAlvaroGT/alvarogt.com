@@ -14,7 +14,7 @@ service cloud.firestore {
     // Nunca se debe aceptar un rol enviado por el navegador como autorización.
     function child() {
       return signedIn()
-        && request.auth.token.email == 'alvarogt@alvarogt.com';
+        && request.auth.token.childRole == 'supervised';
     }
     function onlyKeys(keys) {
       return request.resource.data.keys().hasOnly(keys);
@@ -72,7 +72,6 @@ service cloud.firestore {
       allow read: if adult() || child();
       allow create, update, delete: if false;
     }
-
     // Los premios y balances los escribe únicamente Cloud Functions/Admin SDK.
     // Admin SDK no evalúa estas reglas: la Function debe autenticar al llamante,
     // validar la transición y usar una transacción con una clave determinista.
@@ -84,5 +83,11 @@ service cloud.firestore {
       allow read: if adult() || (child() && beneficiary in ['Nacho','Luz']);
       allow write: if false;
     }
+    match /redemptions/{id} {
+      allow read: if adult() || (child() && resource.data.childId in ['Nacho','Luz']);
+      allow write: if false;
+    }
+    match /awards/{id} { allow read: if adult(); allow write: if false; }
+    match /events/{id} { allow read: if adult(); allow write: if false; }
   }
 }
