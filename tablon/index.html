@@ -122,7 +122,7 @@ async function setupGoogle(){
     auth.onAuthStateChanged(service,user=>{
       if(!user){window.tablonAdult=false;window.tablonChild=false;stopDataListeners();setStatus('Acceso · sin sesión');signIn.hidden=false;childSignIn.hidden=false;signOut.hidden=true;render();return}
       const email=(user.email||'').toLowerCase();
-      if(allowed.includes(email)){startDataListeners(user);setSignedIn(user,'adult');return}
+      if(allowed.includes(email)){setSignedIn(user,'adult');startDataListeners(user);return}
       if(childEmails.includes(email)){user.getIdTokenResult(true).then(({claims})=>{if(claims.childRole!=='supervised'){auth.signOut(service);setStatus('Cuenta infantil pendiente de supervisión');return}startDataListeners(user);setSignedIn(user,'child')}).catch(error=>{console.error('child claims',error);setStatus('Niños · no se pudo comprobar la supervisión')});return}
       auth.signOut(service);window.tablonAdult=false;window.tablonChild=false;setStatus('Cuenta no autorizada');render();
     });
