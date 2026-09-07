@@ -75,7 +75,7 @@ const remoteCall=async(name,item)=>{
 };
 const remoteMode=()=>!!authService?.currentUser && !!functionsClient;
 const setSignedIn=(user,role)=>{window.tablonAdult=role==='adult';window.tablonChild=role==='child';setStatus((role==='adult'?'Adulto · ':'Niños · ')+(user.displayName||user.email||'cuenta'));signIn.hidden=!!user;childSignIn.hidden=!!user;signOut.hidden=!user;childLogin.hidden=true;render()};
-childSignIn.addEventListener('click',()=>{childLogin.hidden=!childLogin.hidden});
+childSignIn.addEventListener('click',()=>{childLogin.hidden=!childLogin.hidden; if(!childLogin.hidden) childEmail.focus()});
 childLogin.addEventListener('submit',async e=>{e.preventDefault();try{const user=await authApi.signInWithEmailAndPassword(authService,childEmail.value.trim().toLowerCase(),childPassword.value);if(!childEmails.includes((user.user.email||'').toLowerCase())){await authApi.signOut(authService);setStatus('Cuenta infantil no autorizada');return}setSignedIn(user.user,'child');childPassword.value=''}catch(e){setStatus('Niños · acceso no válido')}});
 const setStatus=(text)=>{status.textContent=text};
 async function setupGoogle(){
@@ -91,7 +91,8 @@ async function setupGoogle(){
     const app=initializeApp(config);authApi=auth;authService=auth.getAuth(app);firestoreApi=firestore;firestoreDb=firestore.getFirestore(app);functionsApi=functions;functionsClient=functions.getFunctions(app,'europe-west1');const service=authService, provider=new auth.GoogleAuthProvider();
     window.tablonFirebase={app,auth:service,firestore:firestoreDb,functions:functionsClient,api:firestore};
     firestore.onSnapshot(firestore.collection(firestoreDb,'balances'),snap=>{for(const doc of snap.docs){if(state.children[doc.id] && Number.isInteger(doc.data().points))state.children[doc.id].points=doc.data().points}render()},()=>setStatus('Acceso · Firestore sin lectura'));
-    firestore.onSnapshot(firestore.query(firestore.collection(firestoreDb,'tasks'),firestore.where('status','==','active')),snap=>{state.tasks=snap.docs.map(doc=>({id:doc.id,...doc.data(),status:doc.data().state||'open'}));render()},()=>setStatus('Acceso · tareas sin lectura'));
+    firestore.onSnapshot(firestore.collection(firestoreDb,'tasks'),snap=>{state.tasks=snap.docs.map(doc=>{const d=doc.data();return {id:doc.id,...d,status:d.state==='validated'?'done':d.state==='child_done'?'waiting':(d.status==='active'||!d.status?'open':d.status)}}).filter(t=>t.status!=='archived');render()},error=>{console.error('tasks',error);setStatus('Adultos · tareas sin lectura')});
+    firestore.onSnapshot(firestore.collection(firestoreDb,'rewards'),snap=>{state.rewards=snap.docs.map(doc=>{const d=doc.data();return {id:doc.id,...d,status:d.status||d.state||'available',title:d.title||d.name,cost:Number(d.cost??d.points??0),repeatable:Boolean(d.repeatable)}}).filter(r=>r.status!=='archived');render()},error=>{console.error('rewards',error);setStatus('Adultos · premios sin lectura')});
     firestore.onSnapshot(firestore.collection(firestoreDb,'taskInstances'),snap=>{for(const doc of snap.docs){const t=state.tasks.find(x=>x.id===doc.data().taskId);if(t)t.instanceId=doc.id,t.status=doc.data().status==='pending'?'open':doc.data().status==='child_done'?'waiting':doc.data().status==='validated'?'done':t.status}render()},()=>{});
     auth.onAuthStateChanged(service,user=>{
       if(!user){window.tablonAdult=false;window.tablonChild=false;setStatus('Acceso · sin sesión');signIn.hidden=false;childSignIn.hidden=false;signOut.hidden=true;render();return}
@@ -100,9 +101,9 @@ async function setupGoogle(){
       if(childEmails.includes(email)){setSignedIn(user,'child');return}
       auth.signOut(service);window.tablonAdult=false;window.tablonChild=false;setStatus('Cuenta no autorizada');render();
     });
-    signIn.addEventListener('click',async()=>{try{await auth.signInWithPopup(service,provider)}catch(e){setStatus('Google · '+(e.code==='auth/popup-closed-by-user'?'cancelado':'error'))}});
+    signIn.addEventListener('click',async()=>{try{setStatus('Google · entrando…');await auth.signInWithPopup(service,provider)}catch(e){console.error('adult login',e);setStatus('Google · '+(e.code||'error'))}});
     signOut.addEventListener('click',()=>auth.signOut(service));
-  }catch(e){setStatus('Google · configuración local pendiente')}
+  }catch(e){console.error('Firebase setup',e);setStatus('Acceso · configuración no disponible')}
 }
 setupGoogle();
 </script></body></html>
