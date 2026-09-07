@@ -3,34 +3,87 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
     function adult() {
-      return signedIn() && request.auth.token.email in [
-        'agarciatimon@gmail.com',
-        'luzolivas@gmail.com'
-      ];
+      return signedIn()
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in [
+          'agarciatimon@gmail.com',
+          'luzolivas@gmail.com'
+        ];
     }
-    // La identidad infantil compartida se configura en la app como rol child
-    // tras el mecanismo de acceso que Álvaro decida; nunca recibe permisos de adulto.
-    function child() { return signedIn() && request.auth.token.childRole == 'child'; }
+    // Debe ser un claim emitido por un mecanismo de acceso supervisado.
+    // Nunca se debe aceptar un rol enviado por el navegador como autorización.
+    function child() {
+      return signedIn() && request.auth.token.childRole == 'child';
+    }
+    function onlyKeys(keys) {
+      return request.resource.data.keys().hasOnly(keys);
+    }
+    function sameImmutable(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
 
     match /tasks/{taskId} {
-      allow read: if adult() || child();
-      allow create, update, delete: if adult();
-    }
-    match /taskInstances/{instanceId} {
-      allow read: if adult() || child();
-      allow create, update: if adult() || (child() &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'childMarkedAt', 'childActor']));
+      allow read: if adult() || (child() && resource.data.assignee in ['Nacho','Luz','shared']);
+      allow create: if adult()
+        && request.resource.data.keys().hasOnly(['title','assignee','frequency','days','points','requiresValidation','status','example','createdAt','updatedAt'])
+        && request.resource.data.points is int
+        && request.resource.data.points >= 0
+        && request.resource.data.points <= 1000
+        && request.resource.data.assignee in ['Nacho','Luz','shared']
+        && request.resource.data.frequency in ['daily','weekly'];
+      allow update: if adult()
+        && sameImmutable(['title','assignee','frequency','days','points','requiresValidation','status','example','updatedAt'])
+        && request.resource.data.points is int
+        && request.resource.data.points >= 0
+        && request.resource.data.points <= 1000;
       allow delete: if false;
     }
+
+    match /taskInstances/{instanceId} {
+      allow read: if adult() || (child() && get(/databases/$(database)/documents/tasks/$(resource.data.taskId)).data.assignee in ['Nacho','Luz','shared']);
+      // La instancia la crea/prepara un proceso confiable. El cliente no puede inventar periodos.
+      allow create: if false;
+      // El niño solo puede pasar de pending a child_done; no puede tocar puntos ni actor.
+      allow update: if child()
+        && resource.data.status == 'pending'
+        && request.resource.data.status == 'child_done'
+        && sameImmutable(['status','childMarkedAt']);
+      // El adulto puede cambiar el estado, pero nunca conceder puntos desde el cliente.
+      allow update: if adult()
+        && sameImmutable(['status','adultValidatedAt','adultMarkedAt','updatedAt'])
+        && ((resource.data.status == 'child_done' && request.resource.data.status == 'validated')
+          || (resource.data.status == 'pending' && request.resource.data.status == 'adult_done')
+          || (request.resource.data.status == 'pending' && resource.data.status in ['child_done','validated','adult_done']));
+      allow delete: if false;
+    }
+
     match /actions/{actionId} {
-      allow read: if adult() || child();
-      allow create: if adult() || (child() && request.resource.data.action == 'child_done');
+      // Historial y acciones son información adulta; la identidad infantil no los enumera.
+      allow read: if adult();
+      allow create: if adult()
+        && onlyKeys(['taskId','instanceId','action','actorUid','actorRole','createdAt','idempotencyKey'])
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.actorRole == 'adult'
+        && request.resource.data.action in ['adult_done','validate','undo'];
+      allow create: if child()
+        && onlyKeys(['taskId','instanceId','action','actorUid','actorRole','createdAt','idempotencyKey'])
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.actorRole == 'child'
+        && request.resource.data.action == 'child_done'
+        && get(/databases/$(database)/documents/tasks/$(request.resource.data.taskId)).data.assignee in ['Nacho','Luz','shared'];
       allow update, delete: if false;
     }
+
+    // Los premios y balances los escribe únicamente Cloud Functions/Admin SDK.
+    // Admin SDK no evalúa estas reglas: la Function debe autenticar al llamante,
+    // validar la transición y usar una transacción con una clave determinista.
     match /pointAwards/{awardId} {
-      allow read: if adult() || child();
-      allow create: if adult() && !exists(/databases/$(database)/documents/pointAwards/$(awardId));
-      allow update, delete: if false;
+      allow read: if adult();
+      allow create, update, delete: if false;
+    }
+    match /balances/{beneficiary} {
+      allow read: if adult() || (child() && beneficiary in ['Nacho','Luz']);
+      allow write: if false;
     }
   }
 }
