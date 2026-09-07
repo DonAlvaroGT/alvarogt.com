@@ -67,6 +67,7 @@ export const childDone = onCall({ region: 'europe-west1' }, request => command('
 export const validateTask = onCall({ region: 'europe-west1' }, request => command('validate_task', request));
 export const adultDone = onCall({ region: 'europe-west1' }, request => command('adult_done', request));
 export const undoDone = onCall({ region: 'europe-west1' }, request => command('undo_done', request));
+export const rejectTask = onCall({ region: 'europe-west1' }, request => command('undo_done', request));
 
 function redemptionInput(data) {
   const rewardId = String(data?.rewardId || ''), redemptionId = String(data?.redemptionId || ''), eventId = String(data?.eventId || '');
@@ -110,7 +111,9 @@ async function redemptionCommand(action, request) {
     if (!rewardSnap.exists || current < redemption.cost) throw new HttpsError('failed-precondition', 'Saldo o premio no disponible.');
     tx.update(redemptionRef, { status: 'validated', validatedBy: actor.uid, updatedAt: FieldValue.serverTimestamp() });
     tx.update(balanceRef, { points: FieldValue.increment(-redemption.cost), updatedAt: FieldValue.serverTimestamp() });
+    const historyRef = db.doc(`history/${redemptionId}`);
     tx.create(db.doc(`awards/${redemptionId}`), { type: 'redemption', redemptionId, rewardId: redemption.rewardId, childId: redemption.childId, cost: redemption.cost, createdAt: FieldValue.serverTimestamp() });
+    tx.create(historyRef, { type: 'redemption', redemptionId, rewardId: redemption.rewardId, childId: redemption.childId, cost: redemption.cost, createdAt: FieldValue.serverTimestamp() });
     if (rewardSnap.data().repeatable !== true) tx.update(rewardRef, { status: 'spent', updatedAt: FieldValue.serverTimestamp() });
     const result = { ok: true, redemptionId, status: 'validated', childId: redemption.childId, cost: redemption.cost };
     tx.create(eventRef, { result, createdAt: FieldValue.serverTimestamp(), actorUid: actor.uid }); return result;
@@ -120,6 +123,28 @@ async function redemptionCommand(action, request) {
 export const requestRedemption = onCall({ region: 'europe-west1' }, request => redemptionCommand('request_redemption', request));
 export const rejectRedemption = onCall({ region: 'europe-west1' }, request => redemptionCommand('reject_redemption', request));
 export const validateRedemption = onCall({ region: 'europe-west1' }, request => redemptionCommand('validate_redemption', request));
+
+function catalogInput(data) {
+  const collection = String(data?.collection || ''), operation = String(data?.operation || ''), id = String(data?.id || '');
+  if (!['tasks', 'rewards'].includes(collection) || !['create', 'update', 'archive'].includes(operation)) throw new HttpsError('invalid-argument', 'Operación de catálogo no válida.');
+  if (operation !== 'create' && !id) throw new HttpsError('invalid-argument', 'Falta el identificador.');
+  return { collection, operation, id };
+}
+
+export const manageCatalog = onCall({ region: 'europe-west1' }, async request => {
+  const actor = actorFrom(request); if (actor.role !== 'adult') throw new HttpsError('permission-denied', 'Solo adultos.');
+  const { collection, operation, id } = catalogInput(request.data), payload = request.data?.payload || {};
+  const ref = operation === 'create' ? db.collection(collection).doc() : db.doc(`${collection}/${id}`);
+  const clean = collection === 'tasks'
+    ? { title: String(payload.title || '').trim(), icon: String(payload.icon || '✅'), assignee: payload.assignee === 'Compartida' ? 'shared' : String(payload.assignee || payload.child || ''), frequency: payload.frequency || (payload.cadence === 'Semanal' ? 'weekly' : 'daily'), days: Array.isArray(payload.days) ? payload.days : [], points: Number(payload.points), requiresValidation: true }
+    : { title: String(payload.title || '').trim(), icon: String(payload.icon || '🎁'), assignee: String(payload.assignee || payload.child || ''), cost: Number(payload.cost), repeatable: payload.repeatable === true };
+  if (operation === 'archive') { await ref.update({ status: 'archived', updatedAt: FieldValue.serverTimestamp() }); return { ok: true, id, status: 'archived' }; }
+  if (!clean.title || !['Nacho','Luz','shared'].includes(clean.assignee) || !Number.isInteger(collection === 'tasks' ? clean.points : clean.cost) || (collection === 'tasks' ? clean.points < 0 : clean.cost < 1)) throw new HttpsError('invalid-argument', 'Datos de catálogo no válidos.');
+  const data = { ...clean, status: operation === 'create' ? 'active' : 'active', updatedAt: FieldValue.serverTimestamp() };
+  if (operation === 'create') data.createdAt = FieldValue.serverTimestamp();
+  await ref.set(data, { merge: operation === 'update' });
+  return { ok: true, id: ref.id, ...clean, status: data.status };
+});
 
 export const createDailyInstances = onSchedule({ schedule: 'every day 00:10', timeZone: 'Europe/Madrid', region: 'europe-west1', retryCount: 1 }, async () => {
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid' }).format(new Date());

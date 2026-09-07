@@ -2,6 +2,7 @@
   "name": "tablongo-functions",
   "private": true,
   "type": "module",
+  "main": "src/index.mjs",
   "engines": {
     "node": ">=22"
   },

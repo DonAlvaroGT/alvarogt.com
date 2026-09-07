@@ -5,6 +5,7 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function adult() {
       return signedIn()
+        && request.auth.token.email_verified == true
         && request.auth.token.email in [
           'agarciatimon@gmail.com',
           'luzolivas@gmail.com'
@@ -89,5 +90,6 @@ service cloud.firestore {
     }
     match /awards/{id} { allow read: if adult(); allow write: if false; }
     match /events/{id} { allow read: if adult(); allow write: if false; }
+    match /history/{id} { allow read: if adult(); allow write: if false; }
   }
 }
