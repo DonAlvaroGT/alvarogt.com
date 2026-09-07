@@ -69,6 +69,7 @@ let firestoreApi=null, firestoreDb=null, functionsApi=null, functionsClient=null
 const remoteAction={mark:'childDone',validate:'validateTask'};
 const remoteCall=async(name,item)=>{
   if(!authService?.currentUser||!functionsClient) throw new Error('Sesión no autenticada.');
+  await authApi.getIdToken(authService.currentUser,true);
   const eventId=crypto.randomUUID(), taskId=item.id, instanceId=item.instanceId;
   if(!instanceId) throw new Error('La tarea todavía no tiene instancia diaria.');
   return functionsApi.httpsCallable(functionsClient,name)({taskId,instanceId,eventId});
@@ -88,7 +89,7 @@ async function setupGoogle(){
       import('https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js'),
       import('https://www.gstatic.com/firebasejs/12.1.0/firebase-functions.js')
     ]);
-    const app=initializeApp(config);authApi=auth;authService=auth.getAuth(app);firestoreApi=firestore;firestoreDb=firestore.getFirestore(app);functionsApi=functions;functionsClient=functions.getFunctions(app,'europe-west1');const service=authService, provider=new auth.GoogleAuthProvider();
+    const app=initializeApp(config);authApi=auth;authService=auth.getAuth(app);await auth.setPersistence(authService,auth.browserLocalPersistence);firestoreApi=firestore;firestoreDb=firestore.getFirestore(app);functionsApi=functions;functionsClient=functions.getFunctions(app,'europe-west1');const service=authService, provider=new auth.GoogleAuthProvider();
     provider.setCustomParameters({prompt:'select_account'});
     window.tablonFirebase={app,auth:service,firestore:firestoreDb,functions:functionsClient,api:firestore};
     let dataListenersStarted=false;
@@ -96,7 +97,7 @@ async function setupGoogle(){
       firestore.onSnapshot(firestore.collection(firestoreDb,'balances'),snap=>{for(const doc of snap.docs){if(state.children[doc.id] && Number.isInteger(doc.data().points))state.children[doc.id].points=doc.data().points}render()},error=>console.error('balances',error));
       firestore.onSnapshot(firestore.collection(firestoreDb,'tasks'),snap=>{if(snap.size){state.tasks=snap.docs.map(doc=>{const d=doc.data();return {id:doc.id,...d,title:d.title||d.name,icon:d.icon||'✅',child:d.child||d.assignee,scope:d.scope||(d.assignee==='shared'?'shared':'individual'),cadence:d.cadence||({daily:'Diaria',weekly:'Semanal'}[d.frequency]||'Diaria'),points:Number(d.points||0),status:d.state==='validated'?'done':d.state==='child_done'?'waiting':(d.status==='active'||!d.status?'open':d.status)}}).filter(t=>t.status!=='archived');render()}},error=>{console.error('tasks',error);setStatus('Adultos · tareas sin lectura')});
       firestore.onSnapshot(firestore.collection(firestoreDb,'rewards'),snap=>{if(snap.size){state.rewards=snap.docs.map(doc=>{const d=doc.data();return {id:doc.id,...d,status:d.status||d.state||'available',title:d.title||d.name,icon:d.icon||'🎁',child:d.child||d.assignee,cost:Number(d.cost??d.points??0),repeatable:Boolean(d.repeatable)}}).filter(r=>r.status!=='archived');render()}},error=>{console.error('rewards',error);setStatus('Adultos · premios sin lectura')});
-      firestore.onSnapshot(firestore.collection(firestoreDb,'taskInstances'),snap=>{for(const doc of snap.docs){const t=state.tasks.find(x=>x.id===doc.data().taskId);if(t)t.instanceId=doc.id,t.status=doc.data().status==='pending'?'open':doc.data().status==='child_done'?'waiting':doc.data().status==='validated'?'done':t.status}render()},error=>console.error('instances',error));
+      firestore.onSnapshot(firestore.collection(firestoreDb,'taskInstances'),snap=>{for(const doc of snap.docs){const d=doc.data(),t=state.tasks.find(x=>x.id===d.taskId);if(t){t.instanceId=doc.id;t.status=d.status==='pending'?'open':d.status==='child_done'?'waiting':d.status==='validated'?'done':t.status;t.markedAt=d.updatedAt?.toDate?.()?.toLocaleString('es-ES')||t.markedAt}}render()},error=>{console.error('instances',error);setStatus('Acceso · no se pueden leer las instancias')});
     };
     auth.onAuthStateChanged(service,user=>{
       if(!user){window.tablonAdult=false;window.tablonChild=false;setStatus('Acceso · sin sesión');signIn.hidden=false;childSignIn.hidden=false;signOut.hidden=true;render();return}
