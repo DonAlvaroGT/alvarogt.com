@@ -1,7 +1,6 @@
 export const ADULT_EMAILS = ['agarciatimon@gmail.com', 'luzolivas@gmail.com'];
 export const CHILD_ROLE = 'child';
 export const COMMANDS = ['child_done', 'validate_task', 'adult_done', 'undo_done'];
-export const REDEMPTION_COMMANDS = ['request_redemption', 'reject_redemption', 'validate_redemption'];
 
 const transitions = {
   child_done: ['pending', 'child_done'],
@@ -51,9 +50,4 @@ export function awardPoints(instance, task, beneficiary) {
 export function frequencyPeriods(task, dates) {
   if (!task || task.status !== 'active') return [];
   return dates.filter((period) => task.frequency === 'daily' || (task.frequency === 'weekly' && task.days.includes(period.getUTCDay())));
-}
-
-export function redemptionId(rewardId, childId, eventId) {
-  if (!rewardId || !childId || !eventId) throw new Error('rewardId, childId y eventId son obligatorios.');
-  return `${rewardId}:${childId}:${eventId}`;
 }
