@@ -76,11 +76,11 @@
       "fecha": "2026-09-12",
       "etiqueta": "Sáb 12",
       "parque": "grande (Disneyland)",
-      "plan": "Entrada a las 8:30 por Extra Magic Time. Empezamos por Big Thunder Mountain y Peter Pan. Entre 13:30 y 16:30, si las colas se van a 60–80 min, puede apetecer volver al Newport Bay a comer y descansar. Por la tarde, personajes al aire libre y espectáculos.",
+      "plan": "Entrada a las 8:30 por Extra Magic Time. Empezamos por Big Thunder Mountain; Peter Pan está cerrado durante la visita. Entre 13:30 y 16:30, si las colas se van a 60–80 min, puede apetecer volver al Newport Bay a comer y descansar. Por la tarde, personajes al aire libre y espectáculos.",
       "agenda": [
         {
           "hora": "8:30",
-          "texto": "Entrada por Extra Magic Time y prioridad a Big Thunder Mountain y Peter Pan.",
+          "texto": "Entrada por Extra Magic Time y prioridad a Big Thunder Mountain; Peter Pan está cerrado durante la visita.",
           "confirmar": true
         },
         {
