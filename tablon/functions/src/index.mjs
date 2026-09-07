@@ -69,7 +69,7 @@ async function command(action, request) {
     const instanceWrite = { status: next.status, lastEventId: eventId, updatedAt: FieldValue.serverTimestamp() };
     if (!instanceSnap.exists) tx.create(instanceRef, { ...instance, ...instanceWrite });
     else tx.update(instanceRef, instanceWrite);
-    tx.create(eventRef, { taskId, instanceId, action, actorUid: actor.uid, actorRole: actor.role, createdAt: FieldValue.serverTimestamp(), idempotencyKey: eventId, result });
+    tx.create(eventRef, { taskId, instanceId: expectedInstanceId, action, actorUid: actor.uid, actorRole: actor.role, createdAt: FieldValue.serverTimestamp(), idempotencyKey: eventId, result });
     // Tanto niño como adulto dejan la tarea pendiente. Solo la validación
     // adulta concede puntos; marcar hecha nunca puede alterar el saldo.
     if (next.status === 'validated' && !instance.pointsAwarded) {

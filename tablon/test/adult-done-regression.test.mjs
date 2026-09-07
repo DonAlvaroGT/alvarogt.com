@@ -16,8 +16,10 @@ assert.match(source, /periodForTask\(task\)/, 'el backend resuelve el periodo en
 assert.match(source, /if \(!instanceSnap\.exists\) tx\.create\(instanceRef, \{ \.\.\.instance, \.\.\.instanceWrite \}\);/, 'el backend crea la instancia nueva una sola vez');
 assert.doesNotMatch(source, /if \(!instanceSnap\.exists\) tx\.create\(instanceRef, instance\)[\s\S]{0,500}tx\.update\(instanceRef,/, 'no se actualiza una instancia recién creada en la misma transacción');
 assert.match(source, /tx\.getAll\(instanceRef\)/, 'la instancia se lee con getAll');
-assert.match(source, /tx\.getAll\(balanceRef, rewardRef\)/, 'las lecturas de transacción no usan Promise.all');
-assert.doesNotMatch(source, /Promise\.all\(\[tx\.get/, 'no hay Promise.all de lecturas tx');
+assert.match(source, /tx\.getAll\(balanceRef, rewardRef\)/, 'las lecturas de transacción no usan Promise\.all');
+assert.doesNotMatch(source, /Promise\.all\(\[tx\.get/, 'no hay Promise\.all de lecturas tx');
+assert.doesNotMatch(source, /instanceId, action, actorUid/, 'el evento no debe usar una variable inexistente');
+assert.match(source, /instanceId: expectedInstanceId, action, actorUid/, 'el evento debe guardar la instancia resuelta');
 assert.deepEqual(commandFor('adult_done', adult, task, pending, 'adult-event').transition, ['pending', 'adult_done']);
 assert.equal(awardPoints({ ...pending, status: 'adult_done' }, task, 'Nacho'), null, 'adultDone no puede puntuar antes de validar');
 console.log('adult done regression: ok');
