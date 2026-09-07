@@ -9,7 +9,7 @@ if (!getApps().length) initializeApp();
 const auth = getAuth();
 const db = getFirestore();
 const ADULTS = new Set(['agarciatimon@gmail.com', 'luzolivas@gmail.com']);
-const CHILD_EMAIL = 'alvarogt@alvarogt.com';
+
 
 function isAdult(actor) { return actor.role === 'adult'; }
 
@@ -17,8 +17,11 @@ function actorFrom(request) {
   if (!request.auth?.uid) throw new HttpsError('unauthenticated', 'Inicia sesión.');
   const token = request.auth.token || {};
   const email = String(token.email || '').toLowerCase();
-  if (ADULTS.has(email)) return { uid: request.auth.uid, role: 'adult', email, emailVerified: token.email_verified === true };
-  if (email === CHILD_EMAIL) return { uid: request.auth.uid, role: 'child', email, emailVerified: token.email_verified === true };
+  if (ADULTS.has(email)) {
+    if (token.email_verified !== true) throw new HttpsError('permission-denied', 'El correo adulto no está verificado.');
+    return { uid: request.auth.uid, role: 'adult', email, emailVerified: true };
+  }
+  if (token.childRole === 'supervised') return { uid: request.auth.uid, role: 'child', childId: token.childId || 'shared' };
   throw new HttpsError('permission-denied', 'Cuenta no autorizada.');
 }
 
@@ -65,6 +68,59 @@ export const validateTask = onCall({ region: 'europe-west1' }, request => comman
 export const adultDone = onCall({ region: 'europe-west1' }, request => command('adult_done', request));
 export const undoDone = onCall({ region: 'europe-west1' }, request => command('undo_done', request));
 
+function redemptionInput(data) {
+  const rewardId = String(data?.rewardId || ''), redemptionId = String(data?.redemptionId || ''), eventId = String(data?.eventId || '');
+  if (!eventId || (!rewardId && !redemptionId)) throw new HttpsError('invalid-argument', 'Faltan identificador y eventId.');
+  return { rewardId, redemptionId, eventId };
+}
+
+async function redemptionCommand(action, request) {
+  const actor = actorFrom(request), { rewardId, redemptionId, eventId } = redemptionInput(request.data);
+  if (action === 'request_redemption' && actor.role !== 'child') throw new HttpsError('permission-denied', 'Solo la cuenta infantil puede solicitar un canje.');
+  if (action !== 'request_redemption' && actor.role !== 'adult') throw new HttpsError('permission-denied', 'Solo un adulto puede validar o rechazar.');
+  const eventRef = db.doc(`events/redemption:${action}:${eventId}`);
+  return db.runTransaction(async tx => {
+    const prior = await tx.get(eventRef);
+    if (prior.exists) return prior.data().result;
+    if (action === 'request_redemption') {
+      const rewardRef = db.doc(`rewards/${rewardId}`), rewardSnap = await tx.get(rewardRef);
+      if (!rewardSnap.exists) throw new HttpsError('not-found', 'Premio no encontrado.');
+      const reward = { id: rewardSnap.id, ...rewardSnap.data() }, childId = reward.assignee || reward.child;
+      if (!['Nacho', 'Luz'].includes(childId) || (actor.childId !== 'shared' && actor.childId !== childId)) throw new HttpsError('permission-denied', 'Premio no asignado a esta cuenta.');
+      const balanceSnap = await tx.get(db.doc(`balances/${childId}`));
+      const balance = Number(balanceSnap.data()?.points || 0), cost = Number(reward.cost);
+      if (!Number.isInteger(cost) || cost < 1 || balance < cost) throw new HttpsError('failed-precondition', 'No hay puntos suficientes.');
+      const redemptionRef = db.doc(`redemptions/${eventId}`);
+      const redemption = { rewardId, childId, cost, status: 'pending', eventId, requestedBy: actor.uid, createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() };
+      tx.create(redemptionRef, redemption);
+      const result = { ok: true, redemptionId: redemptionRef.id, status: 'pending', childId, cost };
+      tx.create(eventRef, { result, createdAt: FieldValue.serverTimestamp(), actorUid: actor.uid });
+      return result;
+    }
+    const redemptionRef = db.doc(`redemptions/${redemptionId}`), snap = await tx.get(redemptionRef);
+    if (!snap.exists) throw new HttpsError('not-found', 'Canje no encontrado.');
+    const redemption = snap.data();
+    if (redemption.status !== 'pending') throw new HttpsError('failed-precondition', 'El canje ya está cerrado.');
+    if (action === 'reject_redemption') {
+      tx.update(redemptionRef, { status: 'rejected', rejectedBy: actor.uid, updatedAt: FieldValue.serverTimestamp() });
+      const result = { ok: true, redemptionId, status: 'rejected' }; tx.create(eventRef, { result, createdAt: FieldValue.serverTimestamp(), actorUid: actor.uid }); return result;
+    }
+    const balanceRef = db.doc(`balances/${redemption.childId}`), rewardRef = db.doc(`rewards/${redemption.rewardId}`);
+    const [balanceSnap, rewardSnap] = await Promise.all([tx.get(balanceRef), tx.get(rewardRef)]), current = Number(balanceSnap.data()?.points || 0);
+    if (!rewardSnap.exists || current < redemption.cost) throw new HttpsError('failed-precondition', 'Saldo o premio no disponible.');
+    tx.update(redemptionRef, { status: 'validated', validatedBy: actor.uid, updatedAt: FieldValue.serverTimestamp() });
+    tx.update(balanceRef, { points: FieldValue.increment(-redemption.cost), updatedAt: FieldValue.serverTimestamp() });
+    tx.create(db.doc(`awards/${redemptionId}`), { type: 'redemption', redemptionId, rewardId: redemption.rewardId, childId: redemption.childId, cost: redemption.cost, createdAt: FieldValue.serverTimestamp() });
+    if (rewardSnap.data().repeatable !== true) tx.update(rewardRef, { status: 'spent', updatedAt: FieldValue.serverTimestamp() });
+    const result = { ok: true, redemptionId, status: 'validated', childId: redemption.childId, cost: redemption.cost };
+    tx.create(eventRef, { result, createdAt: FieldValue.serverTimestamp(), actorUid: actor.uid }); return result;
+  });
+}
+
+export const requestRedemption = onCall({ region: 'europe-west1' }, request => redemptionCommand('request_redemption', request));
+export const rejectRedemption = onCall({ region: 'europe-west1' }, request => redemptionCommand('reject_redemption', request));
+export const validateRedemption = onCall({ region: 'europe-west1' }, request => redemptionCommand('validate_redemption', request));
+
 export const createDailyInstances = onSchedule({ schedule: 'every day 00:10', timeZone: 'Europe/Madrid', region: 'europe-west1', retryCount: 1 }, async () => {
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid' }).format(new Date());
   const snap = await db.collection('tasks').where('status', '==', 'active').get();
@@ -83,6 +139,7 @@ export const createDailyInstances = onSchedule({ schedule: 'every day 00:10', ti
 export async function setChildClaim(uid) {
   const user = await auth.getUser(uid);
   if ((user.email || '').toLowerCase() !== 'alvarogt@alvarogt.com') throw new Error('No es la cuenta infantil autorizada.');
-  await auth.setCustomUserClaims(uid, { childRole: 'supervised' });
-  return { uid, childRole: 'supervised' };
+  const existing = user.customClaims || {};
+  await auth.setCustomUserClaims(uid, { ...existing, childRole: 'supervised', childId: existing.childId || 'shared' });
+  return { uid, childRole: 'supervised', childId: existing.childId || 'shared' };
 }

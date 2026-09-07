@@ -125,3 +125,6 @@ git diff --check
 La configuración pública documentada del proyecto `tablongo` queda cargada por `config.mjs` como metadato de arranque, pero no hay login Google conectado en la app, reglas publicadas, sincronización remota ni backend funcionando. El modo local no es seguro y solo sirve para probar la interfaz.
 
 No se activan `TABLON_CONFIG`, login Google, sincronización, reglas, Functions ni Hosting en este encargo. La configuración pública cargada no demuestra que el backend esté operativo.
+
+Frontend canónico: index.html (implementación inline única servida).
+La implementación alternativa se conserva fuera de la ruta activa en frontend-alternative/app.js.
