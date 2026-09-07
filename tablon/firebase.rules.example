@@ -69,6 +69,11 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    match /rewards/{rewardId} {
+      allow read: if adult() || child();
+      allow create, update, delete: if false;
+    }
+
     // Los premios y balances los escribe únicamente Cloud Functions/Admin SDK.
     // Admin SDK no evalúa estas reglas: la Function debe autenticar al llamante,
     // validar la transición y usar una transacción con una clave determinista.
