@@ -1,14 +1,17 @@
 {
   "status": "backend pendiente",
-  "projectId": "PENDIENTE_CREAR_PROYECTO_FIREBASE",
-  "authDomain": "PENDIENTE.firebaseapp.com",
-  "apiKey": "PENDIENTE_CLAVE_PUBLICA_DEL_PROYECTO",
-  "storageBucket": "PENDIENTE.appspot.com",
-  "messagingSenderId": "PENDIENTE",
-  "appId": "PENDIENTE",
+  "projectId": "tablongo",
+  "authDomain": "tablongo.firebaseapp.com",
+  "apiKey": "AIzaSyBdbo1iSi9OjNzEzqvCQF9cyXnlCcXt_MQ",
+  "storageBucket": "tablongo.firebasestorage.app",
+  "messagingSenderId": "639440141487",
+  "appId": "1:639440141487:web:76132e8c01c030b4e1e85a",
   "adultAllowlist": [
     "agarciatimon@gmail.com",
     "luzolivas@gmail.com"
   ],
-  "notes": "Ejemplo sin secretos. Sustituir solo con la configuración pública del proyecto Firebase antes de activar producción."
+  "googleAuth": "activado en el proyecto; login aún no conectado en esta app",
+  "firestore": "creado en producción; sincronización aún no conectada en esta app",
+  "authorizedDomains": ["localhost", "alvarogt.com"],
+  "notes": "Configuración pública del proyecto Firebase. No activa backend, login, sincronización, reglas, Functions ni Hosting."
 }

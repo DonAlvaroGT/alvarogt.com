@@ -1,6 +1,6 @@
 # Tablón familiar
 
-Estado: backend pendiente. Esta fase deja preparado Firebase, pero no existe todavía proyecto Firebase ni configuración real; no se afirma que haya sincronización o autenticación funcionando.
+Estado: backend pendiente. El proyecto Firebase `tablongo` y su configuración pública ya están anotados en `firebase.example.json`; no se afirma que haya sincronización o autenticación funcionando.
 
 La aplicación publicada sin configuración válida muestra «Backend pendiente» y no ofrece un login falso. En `file:`, `localhost` o `127.0.0.1` permite un modo local claramente separado y no seguro: guarda datos en `localStorage`, y el rol escrito en el prompt no verifica identidad.
 
@@ -71,12 +71,12 @@ Cloud Functions (o un servidor confiable con Admin SDK) debe:
 
 ## Checklist exacta pendiente
 
-- [ ] Crear el proyecto Firebase (ID real pendiente; no inventado).
-- [ ] Registrar la aplicación web y obtener el `firebaseConfig` público real: `apiKey`, `authDomain`, `projectId`, `storageBucket`, `messagingSenderId` y `appId`.
-- [ ] Activar Google Auth y configurar los dominios autorizados reales.
+- [x] Crear el proyecto Firebase `tablongo`.
+- [x] Registrar la aplicación web y guardar su `firebaseConfig` público en `firebase.example.json`.
+- [x] Activar Google Auth y configurar los dominios autorizados `localhost` y `alvarogt.com`.
 - [ ] Probar los dos adultos con Google: `agarciatimon@gmail.com` y `luzolivas@gmail.com`; comprobar email verificado y allowlist del backend.
 - [ ] Definir y desplegar la identidad infantil compartida sin login propio y el mecanismo supervisado que emita `childRole=child`; comprobar que no se puede falsificar desde el cliente.
-- [ ] Crear Firestore en modo producción.
+- [x] Crear Firestore en modo producción.
 - [ ] Aplicar `firebase.rules.example` tras probarlo en Firebase Emulator Suite; revisar las restricciones de visibilidad de tareas por asignación.
 - [ ] Implementar y desplegar Functions/backend para transiciones, historial, idempotencia, premios y balances atómicos.
 - [ ] Cargar tareas reales sustituyendo las cuatro de `EJEMPLO`; no hay seed real en este commit.
@@ -102,6 +102,6 @@ git diff --check
 
 ## Límites actuales
 
-No hay proyecto Firebase, `firebaseConfig` real, login Google, reglas publicadas, sincronización remota ni backend funcionando. El modo local no es seguro y solo sirve para probar la interfaz.
+El proyecto Firebase y su `firebaseConfig` público están documentados, pero no hay login Google conectado en la app, reglas publicadas, sincronización remota ni backend funcionando. El modo local no es seguro y solo sirve para probar la interfaz.
 
-Decisiones de Álvaro pendientes: ninguna dentro de este encargo; queda pendiente únicamente la configuración técnica anterior, que requiere proyecto y credenciales.
+No se activan `TABLON_CONFIG`, login Google, sincronización, reglas, Functions ni Hosting en este encargo. La configuración pública no demuestra que el backend esté operativo.
