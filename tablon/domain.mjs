@@ -21,13 +21,19 @@ export function childAction(task, role) {
   if (!can(role, 'task.mark')) throw new Error('No autorizado.');
   if (task.instance.status !== 'pending') return clone(task);
   const next = clone(task);
-  next.instance.status = next.requiresValidation ? 'child_done' : 'validated';
+  next.instance.status = 'child_done';
   return next;
 }
 export function adultValidate(task) {
   const next = clone(task);
   if (next.instance.status !== 'child_done') throw new Error('Solo se puede validar una tarea marcada por niño.');
   next.instance.status = 'validated';
+  return next;
+}
+export function adultMark(task) {
+  const next = clone(task);
+  if (next.instance.status !== 'pending') return next;
+  next.instance.status = 'adult_done';
   return next;
 }
 export function awardPointsOnce(task) {
