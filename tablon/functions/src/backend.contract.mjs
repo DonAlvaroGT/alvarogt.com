@@ -43,7 +43,7 @@ export function createInstanceId(taskId, period) {
 }
 
 export function awardPoints(instance, task, beneficiary) {
-  if (!instance || instance.pointsAwarded || !['validated', 'adult_done'].includes(instance.status)) return null;
+  if (!instance || instance.pointsAwarded || instance.status !== 'validated') return null;
   if (!task || !beneficiary || !Number.isInteger(task.points) || task.points < 0) throw new Error('Premio inválido.');
   return { awardId: `${instance.id}:${beneficiary}`, points: task.points };
 }
