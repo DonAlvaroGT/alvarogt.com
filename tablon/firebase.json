@@ -5,7 +5,7 @@
     "region": "europe-west1"
   },
   "firestore": {
-    "rules": "firebase.rules.example",
+    "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
