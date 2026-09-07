@@ -1,0 +1,95 @@
+rules_version = '2';
+// PLANTILLA SIN DESPLEGAR. Revisar y probar antes de publicar en Firestore.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function adult() {
+      return signedIn()
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in [
+          'agarciatimon@gmail.com',
+          'luzolivas@gmail.com'
+        ];
+    }
+    // Debe ser un claim emitido por un mecanismo de acceso supervisado.
+    // Nunca se debe aceptar un rol enviado por el navegador como autorización.
+    function child() {
+      return signedIn()
+        && request.auth.token.childRole == 'supervised';
+    }
+    function onlyKeys(keys) {
+      return request.resource.data.keys().hasOnly(keys);
+    }
+    function sameImmutable(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    match /tasks/{taskId} {
+      allow read: if adult() || (child() && resource.data.assignee in ['Nacho','Luz','shared']);
+      allow create: if adult()
+        && request.resource.data.keys().hasOnly(['title','assignee','frequency','days','points','requiresValidation','status','example','createdAt','updatedAt'])
+        && request.resource.data.points is int
+        && request.resource.data.points >= 0
+        && request.resource.data.points <= 1000
+        && request.resource.data.assignee in ['Nacho','Luz','shared']
+        && request.resource.data.frequency in ['daily','weekly'];
+      allow update: if adult()
+        && sameImmutable(['title','assignee','frequency','days','points','requiresValidation','status','example','updatedAt'])
+        && request.resource.data.points is int
+        && request.resource.data.points >= 0
+        && request.resource.data.points <= 1000;
+      allow delete: if false;
+    }
+
+    match /taskInstances/{instanceId} {
+      allow read: if adult() || (child() && get(/databases/$(database)/documents/tasks/$(resource.data.taskId)).data.assignee in ['Nacho','Luz','shared']);
+      // La instancia la crea/prepara un proceso confiable. El cliente no puede inventar periodos.
+      allow create: if false;
+      // El niño solo puede pasar de pending a child_done; no puede tocar puntos ni actor.
+      // Todas las transiciones pasan por Cloud Functions/Admin SDK.
+      // El navegador no puede modificar estados ni intentar conceder puntos.
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    match /actions/{actionId} {
+      // Historial y acciones son información adulta; la identidad infantil no los enumera.
+      allow read: if adult();
+      allow create: if adult()
+        && onlyKeys(['taskId','instanceId','action','actorUid','actorRole','createdAt','idempotencyKey'])
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.actorRole == 'adult'
+        && request.resource.data.action in ['adult_done','validate','undo'];
+      allow create: if child()
+        && onlyKeys(['taskId','instanceId','action','actorUid','actorRole','createdAt','idempotencyKey'])
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.actorRole == 'child'
+        && request.resource.data.action == 'child_done'
+        && get(/databases/$(database)/documents/tasks/$(request.resource.data.taskId)).data.assignee in ['Nacho','Luz','shared'];
+      allow update, delete: if false;
+    }
+
+    match /rewards/{rewardId} {
+      allow read: if adult() || child();
+      allow create, update, delete: if false;
+    }
+    // Los premios y balances los escribe únicamente Cloud Functions/Admin SDK.
+    // Admin SDK no evalúa estas reglas: la Function debe autenticar al llamante,
+    // validar la transición y usar una transacción con una clave determinista.
+    match /pointAwards/{awardId} {
+      allow read: if adult();
+      allow create, update, delete: if false;
+    }
+    match /balances/{beneficiary} {
+      allow read: if adult() || (child() && beneficiary in ['Nacho','Luz']);
+      allow write: if false;
+    }
+    match /redemptions/{id} {
+      allow read: if adult() || (child() && resource.data.childId in ['Nacho','Luz']);
+      allow write: if false;
+    }
+    match /awards/{id} { allow read: if adult(); allow write: if false; }
+    match /events/{id} { allow read: if adult(); allow write: if false; }
+    match /history/{id} { allow read: if adult(); allow write: if false; }
+  }
+}
