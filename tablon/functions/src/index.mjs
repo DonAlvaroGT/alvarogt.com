@@ -48,7 +48,9 @@ async function command(action, request) {
     const result = { ok: true, instance: next, actionId: `${action}:${eventId}` };
     tx.update(instanceRef, { status: next.status, lastEventId: eventId, updatedAt: FieldValue.serverTimestamp() });
     tx.create(eventRef, { taskId, instanceId, action, actorUid: actor.uid, actorRole: actor.role, createdAt: FieldValue.serverTimestamp(), idempotencyKey: eventId, result });
-    if (['validated', 'adult_done'].includes(next.status) && !instance.pointsAwarded) {
+    // Tanto niño como adulto dejan la tarea pendiente. Solo la validación
+    // adulta concede puntos; marcar hecha nunca puede alterar el saldo.
+    if (next.status === 'validated' && !instance.pointsAwarded) {
       const beneficiaries = task.assignee === 'shared' ? ['Nacho', 'Luz'] : [task.assignee];
       const awards = [];
       for (const beneficiary of beneficiaries) {
