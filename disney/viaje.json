@@ -4,7 +4,15 @@
   "descripcion": "Cuatro días para entrar en el ambiente sin correr: una base junto al lago, parques distintos y los momentos que merece la pena guardar.",
   "zona_horaria": "Europe/Madrid",
   "activacion_consejo_agenda": "2026-09-11T00:00:00+02:00",
-  "actualizado": "2026-09-07",
+  "actualizado": "2026-09-08",
+  "hoy": {
+    "fecha": "2026-09-08",
+    "modo": "prep",
+    "titulo": "Preparar el viaje",
+    "texto": "Hoy toca dejar claro el plan: viernes 11, parque grande desde las 15:00; sábado 12, parque grande con Extra Magic Time a las 8:30; domingo 13, parque pequeño con Ratatouille; lunes 14, mañana de parque y maletas a las 13:45.",
+    "novedad": "La revisión de Otto del 8 de septiembre marca como cerrados Disneyland Railroad — Main Street Station, Pirate Galleon y Toy Soldiers Parachute Drop. The Lion King: Rhythms of the Pride Lands vuelve el 1 de octubre y no entra en este viaje.",
+    "fuente": "Disneyland Paris oficial, comprobado por Otto el 8 de septiembre de 2026"
+  },
   "fuentes_horarios": {
     "oficial": "https://www.disneylandparis.com/en-int/entertainment/shows-and-parades",
     "secundaria": "https://www.dlpstats.com/dlp/entertainment"
@@ -175,8 +183,8 @@
       "parque": "Disneyland Park",
       "zona": "Frontierland Theater",
       "nombre": "The Lion King: Rhythms of the Pride Lands",
-      "estado": "abierto",
-      "horario": "Confirmar en la app",
+      "estado": "cerrado durante este viaje",
+      "horario": "Vuelve el 1 de octubre; no entra en este viaje",
       "descripcion": "Espectáculo musical con danza y acrobacias inspirado en El Rey León.",
       "consejo": "Prioridad alta; llegar con margen o reservar acceso garantizado si está disponible.",
       "aplicacion": "11–14 septiembre 2026"
@@ -394,8 +402,11 @@
       "atraccion": "Toy Soldiers Parachute Drop",
       "parque": "Disney Adventure World",
       "zona": "Worlds of Pixar · Toy Story Playland",
-      "descripcion": "Atracción tematizada en soldados de juguete. Cerrada actualmente según la fuente consultada; comprobar reapertura en la app.",
-      "altura_minima_publicada": "81 cm"
+      "descripcion": "Atracción tematizada en soldados de juguete.",
+      "altura_minima_publicada": "81 cm",
+      "estado": "cerrado durante este viaje",
+      "incluida": false,
+      "fuente": "Disneyland Paris oficial, comprobado por Otto el 8 de septiembre de 2026"
     },
     {
       "atraccion": "Les Voyages de Pinocchio",
