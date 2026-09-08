@@ -195,7 +195,7 @@
     renderDailyFocus();
     const badgeClass = category => ({'TOP NIÑOS':'ninos','TOP TODOS':'todos','TOP MAYORES':'mayores'}[category] || '');
     const badge = category => category ? `<span class="top-badge ${badgeClass(category)}">${esc(category)}</span>` : '';
-    const schedule = s => s.nombre === 'Disney Stars on Parade' ? 'Orientativo, no garantizado: 17:30 · referencia secundaria DLP Stats/calendario; no confirma 11–14 sep; confirmar en la app' : s.nombre === 'Disney Tales of Magic' ? 'Orientativo, no garantizado: 21:00–22:00 · referencia secundaria DLP Stats/calendario; no confirma 11–14 sep; confirmar en la app' : 'Confirmar en la app';
+    const schedule = s => s.nombre === 'Disney Stars on Parade' ? 'Orientativo, no garantizado: 17:30 · referencia secundaria DLP Stats/calendario; no confirma 11–14 sep; confirmar en la app' : s.nombre === 'Disney Tales of Magic' ? 'Orientativo, no garantizado: 21:00–22:00 · referencia secundaria DLP Stats/calendario; no confirma 11–14 sep; confirmar en la app' : `${s.estado === 'abierto' ? 'ABIERTO · ' : ''}${s.horario || 'Confirmar en la app'}`;
     const source = s => s.nombre === 'Disney Stars on Parade' || s.nombre === 'Disney Tales of Magic' ? 'Disneyland Paris oficial/app + DLP Stats (secundaria)' : 'Disneyland Paris oficial/app';
     const liveShowCategory = s => s.categoria || '';
     const showRows = data.espectaculos.map(s=>`<tr><td><strong>${esc(s.nombre)}</strong>${badge(liveShowCategory(s))}</td><td>${esc(s.parque)}</td><td>${esc(s.zona)}</td><td>${esc(schedule(s))}<br><small>${esc(source(s))}</small></td><td>${esc(s.descripcion)}</td><td>${esc(s.consejo)}</td></tr>`).join('');
