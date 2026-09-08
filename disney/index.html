@@ -183,7 +183,16 @@
     const renderDailyFocus = () => {
       const current = dateKey(), duringTrip = new Date() >= new Date(activationDate) && current <= last;
       const box = document.querySelector('#daily-focus');
-      if (!duringTrip) { box.hidden = true; return; }
+      const prep = !duringTrip && data.hoy?.fecha === current ? data.hoy : null;
+      if (!duringTrip && !prep) { box.hidden = true; return; }
+      if (prep) {
+        document.querySelector('#daily-advice-heading').textContent = `${prep.fecha} · ${prep.titulo}`;
+        document.querySelector('#daily-advice-content').innerHTML = `<p>${emphasis(prep.texto)}</p><p>${emphasis(prep.novedad)}</p><p><strong>Fuente:</strong> ${esc(prep.fuente)}</p>`;
+        document.querySelector('#daily-agenda-heading').textContent = 'Plan del viaje';
+        document.querySelector('#daily-agenda-content').innerHTML = data.dias.map(d => `<p><strong>${esc(d.etiqueta)}</strong> · ${emphasis(d.plan)}</p>`).join('');
+        box.hidden = false;
+        return;
+      }
       const advice = adviceFor(current), agenda = agendaFor(current);
       document.querySelector('#daily-advice-heading').textContent = `${advice.dia} · ${advice.titulo}`;
       document.querySelector('#daily-advice-content').innerHTML = `<p><strong>Parque:</strong> ${emphasis(advice.parque || advice.titulo)}</p><p><strong>Zona:</strong> ${emphasis(advice.zona || 'Consultar el plan y la app')}</p><p>${emphasis(advice.texto)}</p>`;
