@@ -3,7 +3,7 @@ import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
-import { commandFor, applyCommand, awardPoints, createInstanceId, frequencyPeriods } from './backend.contract.mjs';
+import { commandFor, applyCommand, awardPoints, createInstanceId, frequencyPeriods, canonicalInstanceStatus } from './backend.contract.mjs';
 
 if (!getApps().length) initializeApp();
 const auth = getAuth();
@@ -60,7 +60,7 @@ async function command(action, request) {
     const instanceRef = db.doc(`taskInstances/${expectedInstanceId}`);
     const [instanceSnap] = await tx.getAll(instanceRef);
     const instance = instanceSnap.exists
-      ? { id: instanceSnap.id, ...instanceSnap.data() }
+      ? { id: instanceSnap.id, ...instanceSnap.data(), status: canonicalInstanceStatus(instanceSnap.data().status) }
       : { id: expectedInstanceId, taskId: task.id, period, status: 'pending', pointsAwarded: false };
     let next;
     try { next = applyCommand(instance, commandFor(action, actor, task, instance, eventId)); }

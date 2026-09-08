@@ -22,4 +22,5 @@ assert.doesNotMatch(source, /instanceId, action, actorUid/, 'el evento no debe u
 assert.match(source, /instanceId: expectedInstanceId, action, actorUid/, 'el evento debe guardar la instancia resuelta');
 assert.deepEqual(commandFor('adult_done', adult, task, pending, 'adult-event').transition, ['pending', 'adult_done']);
 assert.equal(awardPoints({ ...pending, status: 'adult_done' }, task, 'Nacho'), null, 'adultDone no puede puntuar antes de validar');
+assert.deepEqual(commandFor('validate_task', adult, task, { ...pending, status: 'adult_done' }, 'validate-event').transition, ['adult_done', 'validated']);
 console.log('adult done regression: ok');
