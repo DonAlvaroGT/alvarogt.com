@@ -133,7 +133,7 @@
       "fecha": "2026-09-13",
       "etiqueta": "Dom 13",
       "parque": "pequeño (Adventure World)",
-      "plan": "Día completo en el parque pequeño: Ratatouille y Spider-Man como referencias; añadir Crush’s Coaster o Slinky Dog si apetecen montañas rusas. Frozen Ever After queda como alternativa tranquila. A las 10:00 toca la cola virtual de Hero Training.",
+      "plan": "Día completo en el parque pequeño: Ratatouille y Spider-Man como referencias; añadir Slinky Dog si apetecen montañas rusas. Frozen Ever After queda como alternativa tranquila. A las 10:00 toca la cola virtual de Hero Training.",
       "agenda": [
         {
           "hora": "8:30",
@@ -147,7 +147,7 @@
         },
         {
           "hora": "después",
-          "texto": "Elegir Crush’s Coaster o Slinky Dog si apetecen montañas rusas; Frozen Ever After como alternativa tranquila.",
+          "texto": "Elegir Slinky Dog si apetece una montaña rusa; Frozen Ever After como alternativa tranquila.",
           "confirmar": false
         },
         {
@@ -183,7 +183,7 @@
       "nombre": "Mickey and the Magician",
       "horario": "Confirmar en la app",
       "descripcion": "Espectáculo interior de Mickey con magia, música y personajes Disney.",
-      "consejo": "Llegar con margen; el aforo es limitado.",
+      "consejo": "Consejo de Belén: entrar pronto para intentar asegurar sitio en un espectáculo interior.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
@@ -206,7 +206,7 @@
       "nombre": "Disney Stars on Parade",
       "horario": "Orientativo, no garantizado: referencia secundaria DLP Stats/calendario; no confirma 11–14 sep; confirmar en la app",
       "descripcion": "Desfile de personajes Disney en carrozas, con música y vestuario colorido.",
-      "consejo": "Buscar sitio con antelación.",
+      "consejo": "Consejo de Belén: buscar sitio con antelación para verla sin prisas.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)",
@@ -218,7 +218,7 @@
       "nombre": "Disney Tales of Magic",
       "horario": "Orientativo, no garantizado: referencia secundaria DLP Stats/calendario; no confirma 11–14 sep; confirmar en la app",
       "descripcion": "Espectáculo nocturno de proyecciones, efectos y fuegos sobre el castillo.",
-      "consejo": "Puede cambiar por meteorología; las salidas se congestionan.",
+      "consejo": "Consejo de Belén: colocarse sin bloquear una salida si queréis marcharos al terminar.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)",
@@ -241,7 +241,7 @@
       "nombre": "A Celebration in Arendelle",
       "horario": "Confirmar en la app",
       "descripcion": "Espectáculo exterior con Anna, Elsa, Olaf, Kristoff y habitantes de Arendelle.",
-      "consejo": "Exterior: el sitio y la sesión pueden cambiar por meteorología.",
+      "consejo": "Consejo de Belén: llevar un plan alternativo si la sesión exterior cambia por meteorología.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
@@ -468,15 +468,6 @@
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "prescindible según esta opinión",
       "opinion_etiqueta": "Prescindible según la opinión de Belén"
-    },
-    {
-      "atraccion": "Crush’s Coaster",
-      "parque": "Disney Adventure World",
-      "zona": "Worlds of Pixar",
-      "descripcion": "Atracción tematizada en Buscando a Nemo.",
-      "categoria": "TOP TODOS",
-      "opinion_etiqueta": "TOP Belén",
-      "opinion_contexto": "Montaña rusa familiar; conviene reservarla para quien disfrute de giros y movimiento."
     }
   ],
   "alturas_niños": {
@@ -501,7 +492,7 @@
       "fecha": "2026-09-13",
       "dia": "domingo 13",
       "titulo": "Disney Adventure World",
-      "texto": "En el parque pequeño, priorizar Ratatouille y Spider-Man; si gustan las montañas rusas, añadir Crush’s Coaster y Slinky Dog. Frozen Ever After queda como opción familiar tranquila. Consultar colas y estados en la app."
+      "texto": "En el parque pequeño, priorizar Ratatouille y Spider-Man; si gustan las montañas rusas, añadir Slinky Dog. Frozen Ever After queda como opción familiar tranquila. Consultar colas y estados en la app."
     },
     {
       "fecha": "2026-09-14",
@@ -512,7 +503,7 @@
   ],
   "nota_operativa": "Horarios, cierres, reaperturas, Extra Magic Time y espectáculos pueden cambiar. Confirmar siempre en la app oficial el mismo día. El calendario consultado no permite confirmar cierres de todo el periodo; si una atracción aparece con estado temporal o incierto, comprobar estado en la app. El consejo y la agenda destacados se muestran desde las 00:00, hora Europe/Madrid, y se limitan al día actual del viaje; fuera de las fechas, no se muestran.",
   "nota_consejos_amiga": "Consejos de la amiga (verificar en la app/oficial): disfrutad del ambiente y de los espectáculos, y ajustad el recorrido con calma a lo que esté disponible cada día.",
-  "nota_opinion_belen": "Opinión de Belén: experiencia personal de otra familia; no es una valoración oficial de Disney.",
+  "nota_opinion_belen": "experiencia personal de otra familia; no es una valoración oficial de Disney.",
   "recomendaciones_belen": [
     {
       "nombre": "Robinson",

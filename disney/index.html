@@ -228,10 +228,11 @@
     document.querySelector('#belen-recommendations').innerHTML=data.recomendaciones_belen?.length ? `<div class="recommendations"><strong>Alternativas breves según la Opinión de Belén</strong><p class="data-note">${data.recomendaciones_belen.map(r=>`${esc(r.nombre)} — ${esc(r.texto)}`).join(' · ')}</p></div>` : '';
 
 
-    // Antes del 11, el plan general no forma parte de la agenda diaria: solo se muestra la preparación.
+    // El plan general permanece separado de «Agenda de hoy» también antes del 11.
+    // Durante el viaje se resalta el día actual, sin perder los cuatro días desarrollados.
     const planSection = document.querySelector('#plan');
-    planSection.hidden = !inTrip;
-    const visible = inTrip ? data.dias.filter(d=>d.fecha===today) : [];
+    planSection.hidden = false;
+    const visible = data.dias;
     document.querySelector('#days').innerHTML=visible.map(d=>`<article class="day ${d.fecha===today?'today':''}"><div class="date">${esc(d.etiqueta)} · ${d.fecha}</div><h3>${d.fecha===today?'Hoy':esc(d.etiqueta)}</h3><div class="park">${esc(d.parque)}</div><p class="plan">${esc(d.plan)}</p><div class="day-weather" data-date="${d.fecha}">Tiempo: consultando…</div></article>`).join('');
     document.querySelector('#flights').innerHTML=data.vuelos.map(v=>`<div class="flight"><div class="code">${esc(v.codigo)}</div><p>${esc(v.detalle)}</p><p class="route">Salida: ${esc(v.salida)}<br>Llegada: ${esc(v.llegada)}</p>${v.nota?`<p class="note">${esc(v.nota)}</p>`:''}</div>`).join('');
     const t=data.tiempo;
