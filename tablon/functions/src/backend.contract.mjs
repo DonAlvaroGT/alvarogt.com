@@ -47,6 +47,41 @@ export function createInstanceId(taskId, period) {
   return `${taskId}:${period}`;
 }
 
+const WEEKDAY_NAMES = new Map([
+  ['domingo', 0], ['lunes', 1], ['martes', 2], ['miércoles', 3], ['miercoles', 3],
+  ['jueves', 4], ['viernes', 5], ['sábado', 6], ['sabado', 6],
+  ['sunday', 0], ['monday', 1], ['tuesday', 2], ['wednesday', 3],
+  ['thursday', 4], ['friday', 5], ['saturday', 6],
+]);
+
+export function normalizeWeeklyDays(value) {
+  let values = value;
+  if (typeof values === 'string') {
+    const text = values.trim();
+    if (!text) return [];
+    try { values = JSON.parse(text); } catch { values = text.split(','); }
+  }
+  if (!Array.isArray(values)) values = [values];
+  return [...new Set(values.flatMap((item) => {
+    if (typeof item === 'number' && Number.isInteger(item)) return [item];
+    const text = String(item).trim().toLowerCase();
+    if (/^[0-6]$/.test(text)) return [Number(text)];
+    return WEEKDAY_NAMES.has(text) ? [WEEKDAY_NAMES.get(text)] : [];
+  }).filter((day) => day >= 0 && day <= 6))];
+}
+
+export function madridWeekday(date = new Date()) {
+  const weekday = new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Madrid', weekday: 'short' }).format(date);
+  return { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }[weekday];
+}
+
+export function madridWeekdayForCalendarDate(value) {
+  const calendarDate = value instanceof Date
+    ? value.toISOString().slice(0, 10)
+    : String(value).slice(0, 10);
+  return madridWeekday(new Date(`${calendarDate}T12:00:00Z`));
+}
+
 export function awardPoints(instance, task, beneficiary) {
   if (!instance || instance.pointsAwarded || instance.status !== 'validated') return null;
   if (!task || !beneficiary || !Number.isInteger(task.points) || task.points < 0) throw new Error('Premio inválido.');
@@ -55,6 +90,6 @@ export function awardPoints(instance, task, beneficiary) {
 
 export function frequencyPeriods(task, dates) {
   if (!task || task.status !== 'active') return [];
-  const days = Array.isArray(task.days) ? task.days.map(Number) : [];
-  return dates.filter((period) => task.frequency === 'daily' || (task.frequency === 'weekly' && days.includes(period.getUTCDay())));
+  const days = normalizeWeeklyDays(task.days);
+  return dates.filter((period) => task.frequency === 'daily' || (task.frequency === 'weekly' && days.includes(madridWeekdayForCalendarDate(period))));
 }

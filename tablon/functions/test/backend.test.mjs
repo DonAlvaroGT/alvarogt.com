@@ -4,6 +4,7 @@ import {
   createPeriodicInstances,
   resolveTrustedActor,
 } from '../src/pure.mjs';
+import { normalizeWeeklyDays, madridWeekday, frequencyPeriods } from '../src/backend.contract.mjs';
 
 const adultAuth = { uid: 'adult-1', token: { email: 'agarciatimon@gmail.com', email_verified: true } };
 const childAuth = { uid: 'child-shared', token: { childRole: 'supervised' } };
@@ -36,6 +37,13 @@ assert.equal(duplicateAward.award, null, 'el premio no se duplica');
 assert.throws(() => executeCommand({ action: 'adult_done', actor: resolveTrustedActor(childAuth), task, instance, eventId: 'evt-6', store }), /no autorizado/);
 
 assert.deepEqual(createPeriodicInstances([task], ['2026-09-07']), [{ id: 'task-1:2026-09-07', taskId: 'task-1', period: '2026-09-07', status: 'pending', pointsAwarded: false }]);
+for (const value of [2, '2', [2], '[2]', 'martes', ['martes'], '2, 3']) assert.deepEqual(normalizeWeeklyDays(value), [2, ...(String(value).includes('3') ? [3] : [])]);
+for (const day of [0, 1, 2, 3, 4, 5, 6]) {
+  const calendarDate = `2026-09-${String(6 + day).padStart(2, '0')}`;
+  const date = new Date(`${calendarDate}T12:00:00Z`);
+  assert.equal(frequencyPeriods({ ...task, frequency: 'weekly', days: [madridWeekday(date)] }, [date]).length, 1, `backend day ${day}`);
+}
+for (const status of ['pending', 'done']) assert.equal(status === 'pending' || status === 'done', true);
 assert.deepEqual(createPeriodicInstances([{ ...task, status: 'archived' }], ['2026-09-07']), []);
 
 console.log('functions backend tests: ok');

@@ -3,7 +3,7 @@ import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
-import { commandFor, applyCommand, awardPoints, createInstanceId, frequencyPeriods, canonicalInstanceStatus } from './backend.contract.mjs';
+import { commandFor, applyCommand, awardPoints, createInstanceId, frequencyPeriods, canonicalInstanceStatus, normalizeWeeklyDays, madridWeekday } from './backend.contract.mjs';
 
 if (!getApps().length) initializeApp();
 const auth = getAuth();
@@ -39,8 +39,8 @@ function madridParts(date = new Date()) {
 function periodForTask(task, date = new Date()) {
   const p = madridParts(date), today = `${p.year}-${p.month}-${p.day}`;
   if (task.frequency !== 'weekly') return today;
-  const day = new Date(`${today}T12:00:00Z`).getUTCDay();
-  if (!Array.isArray(task.days) || !task.days.map(Number).includes(day)) throw new HttpsError('failed-precondition', 'La tarea semanal no corresponde a hoy.');
+  const day = madridWeekday(date);
+  if (!normalizeWeeklyDays(task.days).includes(day)) throw new HttpsError('failed-precondition', 'La tarea semanal no corresponde a hoy.');
   return today;
 }
 
