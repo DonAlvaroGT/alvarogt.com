@@ -9,10 +9,27 @@
     "fecha": "2026-09-08",
     "modo": "prep",
     "titulo": "Preparar el viaje",
-    "texto": "Hoy toca dejar claro el plan: viernes 11, parque grande desde las 15:00; sábado 12, parque grande con Extra Magic Time a las 8:30; domingo 13, parque pequeño con Ratatouille; lunes 14, mañana de parque y maletas a las 13:45.",
-    "novedad": "La revisión de Otto del 8 de septiembre marca como cerrados Disneyland Railroad — Main Street Station, Pirate Galleon y Toy Soldiers Parachute Drop. The Lion King: Rhythms of the Pride Lands vuelve el 1 de octubre y no entra en este viaje.",
-    "fuente": "Disneyland Paris oficial, comprobado por Otto el 8 de septiembre de 2026"
+    "texto": "Previsión disponible para Disneyland Paris: hoy, 16,1–26,7 °C y chubascos (85%); el miércoles 9, 12,0–20,7 °C y nuboso; el jueves 10, 7,6–21,3 °C y niebla. Consultarla de nuevo antes de cerrar las maletas.",
+    "novedad": "No constan en los datos actuales tareas concretas de Cole ni una actividad de preparar las maletas para hoy. La agenda del día queda sin actividades registradas.",
+    "fuente": "Open-Meteo, consultado el 8 de septiembre de 2026; datos del viaje viaje.json",
+    "agenda": []
   },
+  "preparacion": [
+    {
+      "fecha": "2026-09-09",
+      "titulo": "Preparar el viaje",
+      "texto": "Previsión disponible para Disneyland Paris: 12,0–20,7 °C y nuboso. Consultarla de nuevo antes de cerrar las maletas.",
+      "fuente": "Open-Meteo, consultado el 8 de septiembre de 2026",
+      "agenda": []
+    },
+    {
+      "fecha": "2026-09-10",
+      "titulo": "Preparar el viaje",
+      "texto": "Previsión disponible para Disneyland Paris: 7,6–21,3 °C y niebla. Consultarla de nuevo antes de cerrar las maletas.",
+      "fuente": "Open-Meteo, consultado el 8 de septiembre de 2026",
+      "agenda": []
+    }
+  ],
   "fuentes_horarios": {
     "oficial": "https://www.disneylandparis.com/en-int/entertainment/shows-and-parades",
     "secundaria": "https://www.dlpstats.com/dlp/entertainment"

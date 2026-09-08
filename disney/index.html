@@ -178,18 +178,19 @@
     document.querySelector('#trip-dates').textContent=data.fechas; document.querySelector('#trip-title').innerHTML=esc(data.titulo).replace(' ','<br>'); document.querySelector('#trip-description').textContent=data.descripcion; document.querySelector('#hotel').textContent=data.hotel; document.querySelector('#updated').textContent=data.actualizado || '—';
     document.querySelector('#maps').innerHTML=data.mapas.map(m=>`<a class="map-card" href="${esc(m.url)}" target="_blank" rel="noopener"><img src="${esc(m.url)}" alt="${esc(m.texto)}"><span>${esc(m.texto)}</span></a>`).join('');
     const adviceFor = date => data.consejos_practicos.find(t=>t.fecha===date) || data.consejos_practicos[0];
+    const prepFor = date => date === data.hoy?.fecha ? data.hoy : (data.preparacion || []).find(t=>t.fecha===date);
     const agendaFor = date => data.dias.find(d=>d.fecha===date) || data.dias[0];
     const emphasis = text => esc(text).replace(/(confirmar en la app|volver al hotel|reservas?\/colas?|TOP|\b(?:Disneyland|Disney Adventure World|Disneyland Park)\b|\b(?:8:30|10:00|13:30|13:45|15:00|17:30|21:00|22:00)\b)/gi, '<strong>$1</strong>');
     const renderDailyFocus = () => {
       const current = dateKey(), duringTrip = new Date() >= new Date(activationDate) && current <= last;
       const box = document.querySelector('#daily-focus');
-      const prep = !duringTrip && data.hoy?.fecha === current ? data.hoy : null;
+      const prep = !duringTrip ? prepFor(current) : null;
       if (!duringTrip && !prep) { box.hidden = true; return; }
       if (prep) {
         document.querySelector('#daily-advice-heading').textContent = `${prep.fecha} · ${prep.titulo}`;
         document.querySelector('#daily-advice-content').innerHTML = `<p>${emphasis(prep.texto)}</p><p>${emphasis(prep.novedad)}</p><p><strong>Fuente:</strong> ${esc(prep.fuente)}</p>`;
-        document.querySelector('#daily-agenda-heading').textContent = 'Plan del viaje';
-        document.querySelector('#daily-agenda-content').innerHTML = data.dias.map(d => `<p><strong>${esc(d.etiqueta)}</strong> · ${emphasis(d.plan)}</p>`).join('');
+        document.querySelector('#daily-agenda-heading').textContent = 'Agenda del día';
+        document.querySelector('#daily-agenda-content').innerHTML = prep.agenda?.length ? prep.agenda.map(item => `<p>${item.hora ? `<strong>${esc(item.hora)}</strong> · ` : ''}${emphasis(item.texto)}</p>`).join('') : '<p>No hay actividades registradas para este día.</p>';
         box.hidden = false;
         return;
       }
@@ -219,7 +220,7 @@
     document.querySelector('#days').innerHTML=visible.map(d=>`<article class="day ${d.fecha===today?'today':''}"><div class="date">${esc(d.etiqueta)} · ${d.fecha}</div><h3>${d.fecha===today?'Hoy':esc(d.etiqueta)}</h3><div class="park">${esc(d.parque)}</div><p class="plan">${esc(d.plan)}</p><div class="day-weather" data-date="${d.fecha}">Tiempo: consultando…</div></article>`).join('');
     document.querySelector('#flights').innerHTML=data.vuelos.map(v=>`<div class="flight"><div class="code">${esc(v.codigo)}</div><p>${esc(v.detalle)}</p><p class="route">Salida: ${esc(v.salida)}<br>Llegada: ${esc(v.llegada)}</p>${v.nota?`<p class="note">${esc(v.nota)}</p>`:''}</div>`).join('');
     const t=data.tiempo;
-    const url=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(t.latitud)}&longitude=${encodeURIComponent(t.longitud)}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum&timezone=${encodeURIComponent(t.zona_horaria)}&start_date=2026-09-11&end_date=2026-09-14`;
+    const url=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(t.latitud)}&longitude=${encodeURIComponent(t.longitud)}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum&timezone=${encodeURIComponent(t.zona_horaria)}&start_date=2026-09-08&end_date=2026-09-14`;
     try {
       const response=await fetch(url); if(!response.ok) throw new Error('Open-Meteo');
       const w=await response.json();
