@@ -84,17 +84,12 @@
       "fecha": "2026-09-12",
       "etiqueta": "Sáb 12",
       "parque": "grande (Disneyland)",
-      "plan": "Entrada a las 8:30 por Extra Magic Time. Empezamos por Big Thunder Mountain; Peter Pan está cerrado durante la visita. Entre 13:30 y 16:30, si las colas se van a 60–80 min, puede apetecer volver al Newport Bay a comer y descansar. Por la tarde, personajes al aire libre y espectáculos.",
+      "plan": "Entrada a las 8:30 por Extra Magic Time. Empezamos por Big Thunder Mountain; Peter Pan está cerrado durante la visita. Por la tarde, personajes al aire libre y espectáculos.",
       "agenda": [
         {
           "hora": "8:30",
           "texto": "Entrada por Extra Magic Time y prioridad a Big Thunder Mountain; Peter Pan está cerrado durante la visita.",
           "confirmar": true
-        },
-        {
-          "hora": "13:30–16:30",
-          "texto": "Si las colas se van a 60–80 min, volver al Newport Bay a comer y descansar.",
-          "confirmar": false
         },
         {
           "hora": "17:30",
@@ -126,7 +121,7 @@
         },
         {
           "hora": "horas centrales",
-          "texto": "Dejar sitio para los espectáculos cerrados.",
+          "texto": "Dejar sitio para los espectáculos centrales.",
           "confirmar": false
         },
         {
@@ -178,16 +173,6 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": false,
       "fuente": "Disneyland Paris oficial/app"
-    },
-    {
-      "parque": "Disneyland Park",
-      "zona": "Frontierland Theater",
-      "nombre": "The Lion King: Rhythms of the Pride Lands",
-      "estado": "cerrado durante este viaje",
-      "horario": "Vuelve el 1 de octubre; no entra en este viaje",
-      "descripcion": "Espectáculo musical con danza y acrobacias inspirado en El Rey León.",
-      "consejo": "Prioridad alta; llegar con margen o reservar acceso garantizado si está disponible.",
-      "aplicacion": "11–14 septiembre 2026"
     },
     {
       "parque": "Disneyland Park",
@@ -441,7 +426,7 @@
       "fecha": "2026-09-12",
       "dia": "sábado 12",
       "titulo": "Disneyland Park",
-      "texto": "Comprobar Extra Magic Time por alojaros en Newport Bay Club y usarlo según indique la app. Después, Lion King, Alice y Disney Stars on Parade; por la noche, Disney Tales of Magic si se confirma."
+      "texto": "Comprobar Extra Magic Time por alojaros en Newport Bay Club y usarlo según indique la app. Después, Alicia y Disney Stars on Parade; por la noche, Disney Tales of Magic si se confirma."
     },
     {
       "fecha": "2026-09-13",
