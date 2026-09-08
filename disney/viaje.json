@@ -10,7 +10,6 @@
     "modo": "prep",
     "titulo": "Preparar el viaje",
     "texto": "Previsión disponible para Disneyland Paris: hoy, 16,1–26,7 °C y chubascos (85%); el miércoles 9, 12,0–20,7 °C y nuboso; el jueves 10, 7,6–21,3 °C y niebla. Consultarla de nuevo antes de cerrar las maletas.",
-    "novedad": "No constan en los datos actuales tareas concretas de Cole ni una actividad de preparar las maletas para hoy. La agenda del día queda sin actividades registradas.",
     "fuente": "Open-Meteo, consultado el 8 de septiembre de 2026; datos del viaje viaje.json",
     "agenda": []
   },
@@ -248,6 +247,20 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
+      "categoria": "TOP TODOS"
+    },
+    {
+      "nombre": "The Lion King: Rhythms of the Pride Lands",
+      "parque": "Disneyland Park",
+      "zona": "Frontierland Theater",
+      "estado": "CERRADO durante este viaje · Back on 1 October",
+      "horario": "No publicado para estas fechas",
+      "descripcion": "Espectáculo de El Rey León; cerrado durante el viaje y anunciado de vuelta el 1 de octubre.",
+      "consejo": "No disponible del 11 al 14 de septiembre; consultar la app por si cambia el estado.",
+      "aplicacion": "11–14 septiembre 2026",
+      "fuente": "Disneyland Paris oficial/app",
+      "fecha_comprobacion": "8 de septiembre de 2026",
+      "top": true,
       "categoria": "TOP TODOS"
     }
   ],
