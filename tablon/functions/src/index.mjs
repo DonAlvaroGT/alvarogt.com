@@ -154,9 +154,9 @@ async function redemptionCommand(action, request) {
   });
 }
 
-export const requestRedemption = onCall({ region: 'europe-west1' }, request => redemptionCommand('request_redemption', request));
-export const rejectRedemption = onCall({ region: 'europe-west1' }, request => redemptionCommand('reject_redemption', request));
-export const validateRedemption = onCall({ region: 'europe-west1' }, request => redemptionCommand('validate_redemption', request));
+export const requestRedemption = onCall(CALLABLE_OPTIONS, request => redemptionCommand('request_redemption', request));
+export const rejectRedemption = onCall(CALLABLE_OPTIONS, request => redemptionCommand('reject_redemption', request));
+export const validateRedemption = onCall(CALLABLE_OPTIONS, request => redemptionCommand('validate_redemption', request));
 
 function catalogInput(data) {
   const collection = String(data?.collection || ''), operation = String(data?.operation || ''), id = String(data?.id || '');
@@ -165,7 +165,7 @@ function catalogInput(data) {
   return { collection, operation, id };
 }
 
-export const manageCatalog = onCall({ region: 'europe-west1' }, async request => {
+export const manageCatalog = onCall(CALLABLE_OPTIONS, async request => {
   const actor = actorFrom(request); if (actor.role !== 'adult') throw new HttpsError('permission-denied', 'Solo adultos.');
   const { collection, operation, id } = catalogInput(request.data), payload = request.data?.payload || {};
   const ref = operation === 'create' ? db.collection(collection).doc() : db.doc(`${collection}/${id}`);
