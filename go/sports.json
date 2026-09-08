@@ -1,0 +1,22 @@
+{
+  "fecha": "2026-09-08",
+  "zona_horaria": "Europe/Madrid",
+  "ventana": {"inicio": "10:00", "fin": "22:30"},
+  "eventos": [],
+  "motivo": "No hay eventos verificables dentro de la ventana.",
+  "sin_evento_en_ventana": {
+    "ncaa_football_ap_top_25": "Ningún partido AP Top 25 verificable en la ventana de hoy.",
+    "real_madrid_barcelona_atletico": "Sin partido verificable hoy.",
+    "miami_dolphins": "Sin partido verificable hoy.",
+    "formula_1": "Sin sesión verificable hoy."
+  },
+  "fuentes": [
+    "https://www.espn.com/mlb/schedule (MLB del 8/9; Brewers-Cubs figura a las 19:40 ET = 01:40 Madrid del 9/9, fuera de ventana)",
+    "https://www.formula1.com/en/racing/2026 (calendario oficial: Italia 4-6/9 y España 11-13/9; sin sesión hoy)",
+    "https://www.miamidolphins.com/news/miami-dolphins-announce-2026-schedule-presented-by-skyscanner (siguiente partido 13/9; sin partido hoy)",
+    "https://www.realmadrid.com/en-US/news/football/first-team/latest-news/el-calendario-del-real-madrid-para-la-liga-2026-27-30-06-2026",
+    "https://www.fcbarcelona.com/en/football/first-team/schedule",
+    "https://en.atleticodemadrid.com/calendario-completo-primer-equipo/",
+    "https://apnews.com/hub/ap-top-25-college-football-poll (sin partido AP Top 25 verificable hoy)"
+  ]
+}

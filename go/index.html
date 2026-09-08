@@ -57,12 +57,25 @@
   };
   function renderSportsAgenda(payload){
     const list=(payload.eventos||[]).filter(e=>{const m=agendaTime(e);if(!m)return false;const mins=Number(m[1])*60+Number(m[2]);return mins>=600&&mins<=1350}).sort((a,b)=>{const ab=/Brewers/i.test(a.evento)?-1:0,bb=/Brewers/i.test(b.evento)?-1:0;const ao=sportsOrder.indexOf(a.competicion),bo=sportsOrder.indexOf(b.competicion);return ab-bb||(ao<0?99:ao)-(bo<0?99:bo)||String(a.hora_madrid).localeCompare(String(b.hora_madrid))});
-    const empty=Object.entries(payload.sin_evento_en_ventana||{}).map(([key,text])=>`<p>${safe(text)}</p>`).join('');
     const target=document.querySelector('#sports-agenda');
-    target.innerHTML=(list.length?list.map(e=>`<div class="sports-event"><div class="sports-time">${safe(e.hora_madrid)}<br><span class="sports-meta">${safe(e.deporte)}</span></div><p><a href="${safe(e.fuente)}" rel="noopener">${safe(e.evento)}</a><br><span class="sports-meta">${safe(e.competicion)} · Interés ${safe(e.interes)}</span></p></div>`).join(''):'<p class="sports-empty">No hay eventos en la ventana.</p>')+(empty?`<div class="sports-empty">${empty}</div>`:'');
+    target.innerHTML=list.length?list.map(e=>`<div class="sports-event"><div class="sports-time">${safe(e.hora_madrid)}<br><span class="sports-meta">${safe(e.deporte)}</span></div><p><a href="${safe(e.fuente)}" rel="noopener">${safe(e.evento)}</a><br><span class="sports-meta">${safe(e.competicion)} · Interés ${safe(e.interes)}</span></p></div>`).join(''):`<p class="sports-empty">${safe(payload.motivo||'No hay eventos verificables dentro de la ventana.')}</p>`;
   }
-  const sportsData={"schema_version":1,"comprobado":"2026-09-07T10:00:00+02:00","eventos":[{"deporte":"béisbol","competicion":"MLB","evento":"Cubs @ Brewers","hora_madrid":"20:10","interes":5,"fuente":"https://www.mlb.com/schedule/2026-09-07"},{"deporte":"béisbol","competicion":"MLB","evento":"Braves @ Phillies","hora_madrid":"19:05","interes":3,"fuente":"https://www.mlb.com/schedule/2026-09-07"},{"deporte":"béisbol","competicion":"MLB","evento":"Mets @ Marlins","hora_madrid":"19:10","interes":2,"fuente":"https://www.mlb.com/schedule/2026-09-07"},{"deporte":"béisbol","competicion":"MLB","evento":"Angels @ Red Sox","hora_madrid":"19:35","interes":2,"fuente":"https://www.mlb.com/schedule/2026-09-07"},{"deporte":"béisbol","competicion":"MLB","evento":"Guardians @ Orioles","hora_madrid":"19:35","interes":2,"fuente":"https://www.mlb.com/schedule/2026-09-07"},{"deporte":"béisbol","competicion":"MLB","evento":"Diamondbacks @ Royals","hora_madrid":"20:10","interes":2,"fuente":"https://www.mlb.com/schedule/2026-09-07"},{"deporte":"béisbol","competicion":"MLB","evento":"Twins @ Tigers","hora_madrid":"21:10","interes":2,"fuente":"https://www.mlb.com/schedule/2026-09-07"}],"sin_evento_en_ventana":{"ncaa_football_ap_top_25":"Ningún partido AP Top 25 con saque 10:00–22:30 Madrid. SMU–FSU es hoy pero a las 01:30.","real_madrid_barcelona_atletico":"Sin partido hoy. Siguiente RM citado: vs Rayo 12–13 sep; derbi Atlético 20 sep. Fuentes: SI, Atlético.","miami_dolphins":"Sin partido hoy. Semana 1: Dolphins @ Raiders, domingo 13 sep 2026, 16:25 ET.","formula_1":"Sin sesión hoy. GP Italia (Monza) ya corrido el 6 sep. Siguiente: España 11–13 sep."}};
-  async function start(){const payload=await fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('data');return r.json()});if(payload.schema_version!==1||!Array.isArray(payload.days)||payload.days.length!==2)throw Error('schema');document.querySelector('#days').innerHTML=payload.days.map(card).join('');renderSportsAgenda(sportsData);document.querySelector('#updated').textContent=`Datos publicados: ${updatedFmt.format(new Date(sportsData.comprobado))}`}
+  let sportsData;
+  async function loadSports(){
+    const payload=await fetch('sports.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('sports-data');return r.json()});
+    if(payload.fecha!=='2026-09-08'||payload.zona_horaria!==zone||payload.ventana?.inicio!=='10:00'||payload.ventana?.fin!=='22:30'||!Array.isArray(payload.eventos))throw Error('sports-schema');
+    sportsData={comprobado:payload.fecha,eventos:payload.eventos,sin_evento_en_ventana:payload.sin_evento_en_ventana||{}};
+    renderSportsAgenda(sportsData);
+  }
+  async function start(){
+    const [payload]=await Promise.all([
+      fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('data');return r.json()}),
+      loadSports()
+    ]);
+    if(payload.schema_version!==1||!Array.isArray(payload.days)||payload.days.length!==2)throw Error('schema');
+    document.querySelector('#days').innerHTML=payload.days.map(card).join('');
+    document.querySelector('#updated').textContent=`Datos publicados: ${updatedFmt.format(new Date(sportsData.comprobado))}`;
+  }
   const tick=()=>document.querySelector('#clock').textContent=clockFmt.format(new Date());
   tick();setInterval(tick,1000);start().catch(()=>{document.querySelector('#days').innerHTML='<p class="error">No hay datos publicados para hoy y mañana. Vuelve a intentarlo más tarde.</p>';document.querySelector('#sports-agenda').innerHTML='<p class="error">No hay agenda deportiva publicada.</p>'});
 </script>
