@@ -150,7 +150,7 @@
     </section>
     <section class="daily-focus" id="daily-focus" hidden aria-live="polite">
       <article class="daily-card"><h2>Consejo rápido del día</h2><h3 id="daily-advice-heading">—</h3><div id="daily-advice-content"></div></article>
-      <article class="daily-card"><h2>Agenda de hoy</h2><h3 id="daily-agenda-heading">—</h3><div id="daily-agenda-content"></div></article>
+      <article class="daily-card" id="daily-agenda-card"><h2>Agenda de hoy</h2><h3 id="daily-agenda-heading">—</h3><div id="daily-agenda-content"></div></article>
     </section>
     <section class="status"><div><p class="eyebrow">Base</p><p id="hotel">—</p></div><div><p id="mode">Cargando el plan…</p><p class="weather" id="weather">Tiempo en Disneyland Paris: consultando…</p></div></section>
     <section id="plan"><p class="section-label">Plan general del viaje</p><div class="days" id="days"></div></section>
@@ -193,12 +193,16 @@
       if (prep) {
         document.querySelector('#daily-advice-heading').textContent = `${prep.fecha} · ${prep.titulo}`;
         document.querySelector('#daily-advice-content').innerHTML = `<p>${emphasis(prep.texto)}</p>${prep.novedad ? `<p>${emphasis(prep.novedad)}</p>` : ''}<p><strong>Fuente:</strong> ${esc(prep.fuente)}</p>`;
+        const dailyAgendaCard = document.querySelector('#daily-agenda-card');
+        const prepAgenda = prep.agenda || [];
+        dailyAgendaCard.hidden = !prepAgenda.length;
         document.querySelector('#daily-agenda-heading').textContent = 'Agenda del día';
-        document.querySelector('#daily-agenda-content').innerHTML = prep.agenda?.length ? prep.agenda.map(item => `<p>${item.hora ? `<strong>${esc(item.hora)}</strong> · ` : ''}${emphasis(item.texto)}</p>`).join('') : '';
+        document.querySelector('#daily-agenda-content').innerHTML = prepAgenda.map(item => `<p>${item.hora ? `<strong>${esc(item.hora)}</strong> · ` : ''}${emphasis(item.texto)}</p>`).join('');
         box.hidden = false;
         return;
       }
       const advice = adviceFor(current), agenda = agendaFor(current);
+      document.querySelector('#daily-agenda-card').hidden = false;
       document.querySelector('#daily-advice-heading').textContent = `${advice.dia} · ${advice.titulo}`;
       document.querySelector('#daily-advice-content').innerHTML = `<p><strong>Parque:</strong> ${emphasis(advice.parque || advice.titulo)}</p><p><strong>Zona:</strong> ${emphasis(advice.zona || 'Consultar el plan y la app')}</p><p>${emphasis(advice.texto)}</p>`;
       document.querySelector('#daily-agenda-heading').textContent = `${agenda.etiqueta} · ${agenda.parque}`;
@@ -224,7 +228,10 @@
     document.querySelector('#belen-recommendations').innerHTML=data.recomendaciones_belen?.length ? `<div class="recommendations"><strong>Alternativas breves según la Opinión de Belén</strong><p class="data-note">${data.recomendaciones_belen.map(r=>`${esc(r.nombre)} — ${esc(r.texto)}`).join(' · ')}</p></div>` : '';
 
 
-    const visible = inTrip ? data.dias.filter(d=>d.fecha===today) : data.dias;
+    // Antes del 11, el plan general no forma parte de la agenda diaria: solo se muestra la preparación.
+    const planSection = document.querySelector('#plan');
+    planSection.hidden = !inTrip;
+    const visible = inTrip ? data.dias.filter(d=>d.fecha===today) : [];
     document.querySelector('#days').innerHTML=visible.map(d=>`<article class="day ${d.fecha===today?'today':''}"><div class="date">${esc(d.etiqueta)} · ${d.fecha}</div><h3>${d.fecha===today?'Hoy':esc(d.etiqueta)}</h3><div class="park">${esc(d.parque)}</div><p class="plan">${esc(d.plan)}</p><div class="day-weather" data-date="${d.fecha}">Tiempo: consultando…</div></article>`).join('');
     document.querySelector('#flights').innerHTML=data.vuelos.map(v=>`<div class="flight"><div class="code">${esc(v.codigo)}</div><p>${esc(v.detalle)}</p><p class="route">Salida: ${esc(v.salida)}<br>Llegada: ${esc(v.llegada)}</p>${v.nota?`<p class="note">${esc(v.nota)}</p>`:''}</div>`).join('');
     const t=data.tiempo;
