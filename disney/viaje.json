@@ -173,6 +173,16 @@
     },
     {
       "parque": "Disneyland Park",
+      "zona": "Frontierland Theater",
+      "nombre": "The Lion King: Rhythms of the Pride Lands",
+      "estado": "abierto",
+      "horario": "Confirmar en la app",
+      "descripcion": "Espectáculo musical con danza y acrobacias inspirado en El Rey León.",
+      "consejo": "Prioridad alta; llegar con margen o reservar acceso garantizado si está disponible.",
+      "aplicacion": "11–14 septiembre 2026"
+    },
+    {
+      "parque": "Disneyland Park",
       "zona": "Recorrido de la cabalgata",
       "nombre": "Disney Stars on Parade",
       "horario": "Orientativo, no garantizado: referencia secundaria DLP Stats/calendario; no confirma 11–14 sep; confirmar en la app",
@@ -420,7 +430,7 @@
       "fecha": "2026-09-12",
       "dia": "sábado 12",
       "titulo": "Disneyland Park",
-      "texto": "Comprobar Extra Magic Time por alojaros en Newport Bay Club y usarlo según indique la app. Después, Alice y Disney Stars on Parade; por la noche, Disney Tales of Magic si se confirma."
+      "texto": "Comprobar Extra Magic Time por alojaros en Newport Bay Club y usarlo según indique la app. Después, Lion King, Alice y Disney Stars on Parade; por la noche, Disney Tales of Magic si se confirma."
     },
     {
       "fecha": "2026-09-13",
@@ -435,5 +445,6 @@
       "texto": "No cierro el parque: confirmar en la app Disneyland Park o Disney Adventure World, horarios, atracciones abiertas y Extra Magic Time de esa mañana. Todo puede cambiar por operación o meteorología."
     }
   ],
-  "nota_operativa": "Horarios, cierres, reaperturas, Extra Magic Time y espectáculos pueden cambiar. Confirmar siempre en la app oficial el mismo día. El calendario consultado no permite confirmar cierres de todo el periodo; si una atracción aparece con estado temporal o incierto, comprobar estado en la app. El consejo y la agenda destacados se muestran desde las 00:00, hora Europe/Madrid, y se limitan al día actual del viaje; fuera de las fechas, no se muestran."
+  "nota_operativa": "Horarios, cierres, reaperturas, Extra Magic Time y espectáculos pueden cambiar. Confirmar siempre en la app oficial el mismo día. El calendario consultado no permite confirmar cierres de todo el periodo; si una atracción aparece con estado temporal o incierto, comprobar estado en la app. El consejo y la agenda destacados se muestran desde las 00:00, hora Europe/Madrid, y se limitan al día actual del viaje; fuera de las fechas, no se muestran.",
+  "nota_consejos_amiga": "Consejos de la amiga (verificar en la app/oficial): disfrutad del ambiente y de los espectáculos, y ajustad el recorrido con calma a lo que esté disponible cada día."
 }
