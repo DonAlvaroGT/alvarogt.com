@@ -177,7 +177,8 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "opinion_belen": true
     },
     {
       "nombre": "Meet the Characters of Alice in Wonderland",
@@ -200,7 +201,8 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)",
-      "categoria": "TOP NIÑOS"
+      "categoria": "TOP NIÑOS",
+      "opinion_belen": true
     },
     {
       "parque": "Disneyland Park",
@@ -212,7 +214,8 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)",
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "opinion_belen": true
     },
     {
       "parque": "Disney Adventure World",
@@ -235,7 +238,8 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
-      "categoria": "TOP NIÑOS"
+      "categoria": "TOP NIÑOS",
+      "opinion_belen": true
     },
     {
       "parque": "Disney Adventure World",
@@ -247,20 +251,21 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "opinion_belen": true
     },
     {
       "nombre": "The Lion King: Rhythms of the Pride Lands",
       "parque": "Disneyland Park",
       "zona": "Frontierland Theater",
-      "horario": "No publicado para estas fechas",
-      "descripcion": "Espectáculo de El Rey León con música, danza y personajes en directo.",
-      "consejo": "Consultar la app para confirmar las sesiones del día.",
+      "horario": "Confirmar en la app",
+      "descripcion": "Espectáculo de El Rey León.",
+      "consejo": "Consultar la app para la sesión disponible.",
       "aplicacion": "11–14 septiembre 2026",
       "fuente": "Disneyland Paris oficial/app",
-      "fecha_comprobacion": "8 de septiembre de 2026",
       "top": true,
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "opinion_belen": true
     }
   ],
   "atracciones": [
@@ -270,7 +275,8 @@
       "zona": "Adventureland",
       "descripcion": "Recorrido en barco por escenas de piratas.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "opinion_belen": true
     },
     {
       "atraccion": "Indiana Jones and the Temple of Peril",
@@ -294,21 +300,26 @@
       "zona": "Discoveryland",
       "descripcion": "Recorrido interactivo ambientado en Toy Story.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "opinion_belen": true
     },
     {
       "atraccion": "Star Tours: The Adventures Continue",
       "parque": "Disneyland Park",
       "zona": "Discoveryland",
       "descripcion": "Simulador ambientado en el universo Star Wars.",
-      "altura_minima_publicada": "1,02 m"
+      "altura_minima_publicada": "1,02 m",
+      "categoria": "TOP TODOS",
+      "opinion_belen": true
     },
     {
       "atraccion": "Autopia",
       "parque": "Disneyland Park",
       "zona": "Discoveryland",
       "descripcion": "Conducción de coches pequeños por un circuito.",
-      "altura_minima_publicada": "81 cm para montar"
+      "altura_minima_publicada": "81 cm para montar",
+      "categoria": "prescindible según esta opinión",
+      "opinion_belen": true
     },
     {
       "atraccion": "Alice’s Curious Labyrinth",
@@ -316,7 +327,8 @@
       "zona": "Fantasyland",
       "descripcion": "Recorrido a pie por un laberinto inspirado en Alicia.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS"
+      "categoria": "TOP NIÑOS",
+      "opinion_belen": true
     },
     {
       "atraccion": "Dumbo the Flying Elephant",
@@ -324,7 +336,8 @@
       "zona": "Fantasyland",
       "descripcion": "Atracción aérea tematizada en Dumbo.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS"
+      "categoria": "prescindible según esta opinión",
+      "opinion_belen": true
     },
     {
       "atraccion": "it’s a small world",
@@ -332,7 +345,8 @@
       "zona": "Fantasyland",
       "descripcion": "Paseo en barco por escenas del mundo.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS"
+      "categoria": "TOP NIÑOS",
+      "opinion_belen": true
     },
     {
       "atraccion": "Big Thunder Mountain",
@@ -340,7 +354,8 @@
       "zona": "Frontierland",
       "descripcion": "Montaña rusa ambientada en el Oeste.",
       "altura_minima_publicada": "1,02 m",
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "opinion_belen": true
     },
     {
       "atraccion": "Phantom Manor",
@@ -371,7 +386,8 @@
       "zona": "Marvel Avengers Campus",
       "descripcion": "Experiencia interactiva ambientada en Spider-Man.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "opinion_belen": true
     },
     {
       "atraccion": "Frozen Ever After",
@@ -379,7 +395,8 @@
       "zona": "World of Frozen",
       "descripcion": "Paseo musical en barco por Arendelle, con Anna, Elsa y Olaf.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "opinion_belen": true
     },
     {
       "atraccion": "Ratatouille: L’Aventure Totalement Toquée de Rémy",
@@ -387,7 +404,8 @@
       "zona": "Worlds of Pixar",
       "descripcion": "Aventura inmersiva ambientada en una cocina parisina.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "opinion_belen": true
     },
     {
       "atraccion": "Cars ROAD TRIP",
@@ -410,7 +428,8 @@
       "zona": "Worlds of Pixar · Toy Story Playland",
       "descripcion": "Recorrido tematizado en Slinky Dog.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS"
+      "categoria": "TOP NIÑOS",
+      "opinion_belen": true
     },
     {
       "atraccion": "Toy Soldiers Parachute Drop",
@@ -428,7 +447,8 @@
       "zona": "Fantasyland",
       "descripcion": "Paseo tematizado en la historia de Pinocho.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS"
+      "categoria": "prescindible según esta opinión",
+      "opinion_belen": true
     },
     {
       "atraccion": "Le Pays des Contes de Fées",
@@ -436,7 +456,16 @@
       "zona": "Fantasyland",
       "descripcion": "Paseo en barco por cuentos de hadas.",
       "altura_minima_publicada": "Cualquier altura",
-      "categoria": "TOP NIÑOS"
+      "categoria": "prescindible según esta opinión",
+      "opinion_belen": true
+    },
+    {
+      "atraccion": "Crush’s Coaster",
+      "parque": "Disney Adventure World",
+      "zona": "Worlds of Pixar",
+      "descripcion": "Atracción tematizada en Buscando a Nemo.",
+      "categoria": "TOP TODOS",
+      "opinion_belen": true
     }
   ],
   "alturas_niños": {
@@ -471,5 +500,28 @@
     }
   ],
   "nota_operativa": "Horarios, cierres, reaperturas, Extra Magic Time y espectáculos pueden cambiar. Confirmar siempre en la app oficial el mismo día. El calendario consultado no permite confirmar cierres de todo el periodo; si una atracción aparece con estado temporal o incierto, comprobar estado en la app. El consejo y la agenda destacados se muestran desde las 00:00, hora Europe/Madrid, y se limitan al día actual del viaje; fuera de las fechas, no se muestran.",
-  "nota_consejos_amiga": "Consejos de la amiga (verificar en la app/oficial): disfrutad del ambiente y de los espectáculos, y ajustad el recorrido con calma a lo que esté disponible cada día."
+  "nota_consejos_amiga": "Consejos de la amiga (verificar en la app/oficial): disfrutad del ambiente y de los espectáculos, y ajustad el recorrido con calma a lo que esté disponible cada día.",
+  "nota_opinion_belen": "Opinión de Belén: recomendación personal y no valoración oficial de Disney.",
+  "recomendaciones_belen": [
+    {
+      "nombre": "Robinson",
+      "texto": "Alternativa breve a las tazas.",
+      "opinion_belen": true
+    },
+    {
+      "nombre": "Nautilus",
+      "texto": "Alternativa breve a las tazas.",
+      "opinion_belen": true
+    },
+    {
+      "nombre": "Cars",
+      "texto": "Alternativa breve a las tazas.",
+      "opinion_belen": true
+    },
+    {
+      "nombre": "Single Rider",
+      "texto": "Solo como opción para un adulto que quiera repetir.",
+      "opinion_belen": true
+    }
+  ]
 }
