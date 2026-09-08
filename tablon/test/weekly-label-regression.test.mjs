@@ -25,7 +25,7 @@ assert.equal(context.weeklyStatus(due, tuesdayMadrid), null, 'la semanal de hoy 
 assert.match(context.weeklyStatus(notDue, tuesdayMadrid), /no corresponde a hoy/, 'la semanal fuera de día muestra aviso');
 for (const status of ['waiting', 'done', 'pending', 'child_done', 'validated']) assert.equal(context.weeklyStatus({ frequency: 'weekly', days: [1], status }, tuesdayMadrid), null, `estado ${status} conserva estado real`);
 
-const renderLine = html.match(/let outOfDay=weeklyStatus\(t\);let body=.*?;const people=/)?.[0] || '';
+const renderLine = html.match(/(?:let )?outOfDay=weeklyStatus\(t\).*?const people=/)?.[0] || '';
 assert.match(renderLine, /outOfDay\|\|/);
 assert.match(renderLine, /data-action=.*mark/);
 assert.match(html, /if\(action==='mark'&&item&&item\.status==='open'\)/, 'la acción normal sigue siendo marcar hecha');
