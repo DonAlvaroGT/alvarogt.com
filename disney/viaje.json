@@ -105,7 +105,7 @@
       "fecha": "2026-09-12",
       "etiqueta": "Sáb 12",
       "parque": "grande (Disneyland)",
-      "plan": "Entrada a las 8:30 por Extra Magic Time. Empezamos por Big Thunder y seguimos por Alice’s Curious Labyrinth; las atracciones prescindibles según la opinión de Belén quedan para el final si sobra tiempo. Por la tarde, personajes y espectáculos.",
+      "plan": "Entrada a las 8:30 por Extra Magic Time. Empezamos por Big Thunder y seguimos por Alice’s Curious Labyrinth. Por la tarde, personajes y espectáculos.",
       "agenda": [
         {
           "hora": "8:30",
@@ -114,7 +114,7 @@
         },
         {
           "hora": "después",
-          "texto": "Seguir por Alice’s Curious Labyrinth; dejar las prescindibles para el final si sobra tiempo.",
+          "texto": "Seguir por Alice’s Curious Labyrinth.",
           "confirmar": false
         },
         {
@@ -204,7 +204,7 @@
       "parque": "Disneyland Park",
       "zona": "Recorrido de la cabalgata",
       "nombre": "Disney Stars on Parade",
-      "horario": "Orientativo, no garantizado: referencia secundaria DLP Stats/calendario; no confirma 11–14 sep; confirmar en la app",
+      "horario": "Confirmar en la app",
       "descripcion": "Desfile de personajes Disney en carrozas, con música y vestuario colorido.",
       "consejo": "Consejo de Belén: buscar sitio con antelación para verla sin prisas.",
       "aplicacion": "11–14 septiembre 2026",
@@ -216,7 +216,7 @@
       "parque": "Disneyland Park",
       "zona": "Castillo de la Bella Durmiente y Main Street U.S.A.",
       "nombre": "Disney Tales of Magic",
-      "horario": "Orientativo, no garantizado: referencia secundaria DLP Stats/calendario; no confirma 11–14 sep; confirmar en la app",
+      "horario": "Confirmar en la app",
       "descripcion": "Espectáculo nocturno de proyecciones, efectos y fuegos sobre el castillo.",
       "consejo": "Consejo de Belén: colocarse sin bloquear una salida si queréis marcharos al terminar.",
       "aplicacion": "11–14 septiembre 2026",
@@ -480,13 +480,13 @@
       "fecha": "2026-09-11",
       "dia": "viernes 11",
       "titulo": "Disneyland Park por la tarde",
-      "texto": "Para la primera tarde, priorizar Star Tours y Buzz si gustan Star Wars y jugar; después encajar Pirates o it’s a small world según las colas. La app decide horarios y estados."
+      "texto": "Para la primera tarde, priorizar Star Tours y Buzz si gustan Star Wars y jugar; después encajar Pirates o it’s a small world según las colas. Disney Stars on Parade encaja bien con la entrada de tarde. Disney Tales of Magic es un buen cierre del viernes si encaja con el regreso. La app decide horarios y estados."
     },
     {
       "fecha": "2026-09-12",
       "dia": "sábado 12",
       "titulo": "Disneyland Park",
-      "texto": "Con la entrada temprana, priorizar Big Thunder y después Alice’s Curious Labyrinth; dejar Dumbo, Autopia, Pinocchio y Le Pays des Contes de Fées para el final solo si sobra tiempo. Ajustar por edades e intereses en la app."
+      "texto": "Con la entrada temprana, priorizar Big Thunder y después Alice’s Curious Labyrinth. Dumbo, Autopia, Pinocchio y Le Pays des Contes de Fées quedan como opciones secundarias. Ajustar por edades e intereses en la app."
     },
     {
       "fecha": "2026-09-13",
