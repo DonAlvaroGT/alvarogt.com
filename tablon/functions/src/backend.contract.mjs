@@ -49,5 +49,6 @@ export function awardPoints(instance, task, beneficiary) {
 
 export function frequencyPeriods(task, dates) {
   if (!task || task.status !== 'active') return [];
-  return dates.filter((period) => task.frequency === 'daily' || (task.frequency === 'weekly' && task.days.includes(period.getUTCDay())));
+  const days = Array.isArray(task.days) ? task.days.map(Number) : [];
+  return dates.filter((period) => task.frequency === 'daily' || (task.frequency === 'weekly' && days.includes(period.getUTCDay())));
 }
