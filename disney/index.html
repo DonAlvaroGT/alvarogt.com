@@ -98,6 +98,9 @@
     .top-badge.todos { background: #155c9c; }
     .top-badge.mayores { background: #a64b17; }
     .top-badge.opinion { background: #6b4a8e; }
+    .opinion-badge { background: #6b4a8e; }
+    .opinion-context { display: block; margin-top: 7px; color: var(--ink-soft); font-size: .78rem; }
+    .recommendations { margin-top: 18px; padding: 16px 18px; background: var(--sky); border-left: 3px solid #6b4a8e; }
 
     footer { color: var(--ink-soft); font-size: .72rem; border-top: 1px solid var(--line); padding-top: 18px; margin-top: 58px; }
     @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .map-card, .map-card img { transition: none; } }
@@ -212,12 +215,13 @@
     const showRows = data.espectaculos.map(s=>`<tr><td><strong>${esc(s.nombre)}</strong>${badge(liveShowCategory(s))}</td><td>${esc(s.parque)}</td><td>${esc(s.zona)}</td><td>${esc(schedule(s))}<br><small>${esc(source(s))}</small></td><td>${esc(s.descripcion)}</td><td>${esc(s.consejo)}</td></tr>`).join('');
     document.querySelector('#shows-table').innerHTML=showRows;
 
-    document.querySelector('#opinion-belen-note').innerHTML=`<strong>Opinión de Belén</strong>: recomendación personal; no es una valoración oficial de Disney.`;
+    document.querySelector('#opinion-belen-note').innerHTML=`<strong>Opinión de Belén</strong>: ${esc(data.nota_opinion_belen || 'experiencia personal de otra familia; no es una valoración oficial de Disney.')}`;
     document.querySelector('#height-note').textContent=`Alturas de referencia: Molletito ${data.alturas_niños.Molletito}, Nacho ${data.alturas_niños.Nacho}, Alex ${data.alturas_niños.Alex}.`;
     const orderedAttractions = [...data.atracciones].filter(a=>a.incluida !== false);
-    const opinionBadge = a => a.opinion_belen ? `<span class="top-badge opinion">Opinión de Belén</span>` : '';
-    document.querySelector('#attractions-table').innerHTML=orderedAttractions.map(a=>`<tr><td><strong>${esc(a.atraccion)}</strong>${badge(a.categoria)}${opinionBadge(a)}</td><td>${esc(a.parque || '')}</td><td>${esc(a.zona || '')}</td><td>${esc(a.descripcion || '')}</td><td>${esc(a.altura_minima_publicada || '')}</td></tr>`).join('');
-    document.querySelector('#belen-recommendations').innerHTML=data.recomendaciones_belen?.length ? `<p class="data-note"><strong>Alternativas según la Opinión de Belén:</strong> ${data.recomendaciones_belen.map(r=>`${esc(r.nombre)} — ${esc(r.texto)}`).join(' · ')}</p>` : '';
+    const opinionBadge = a => a.opinion_etiqueta ? `<span class="top-badge opinion-badge">${esc(a.opinion_etiqueta)}</span>` : '';
+    const opinionContext = a => a.opinion_contexto ? `<span class="opinion-context">${esc(a.opinion_contexto)}</span>` : '';
+    document.querySelector('#attractions-table').innerHTML=orderedAttractions.map(a=>`<tr><td><strong>${esc(a.atraccion)}</strong>${badge(a.categoria)}${opinionBadge(a)}</td><td>${esc(a.parque || '')}</td><td>${esc(a.zona || '')}</td><td>${esc(a.descripcion || '')}${opinionContext(a)}</td><td>${esc(a.altura_minima_publicada || '')}</td></tr>`).join('');
+    document.querySelector('#belen-recommendations').innerHTML=data.recomendaciones_belen?.length ? `<div class="recommendations"><strong>Alternativas breves según la Opinión de Belén</strong><p class="data-note">${data.recomendaciones_belen.map(r=>`${esc(r.nombre)} — ${esc(r.texto)}`).join(' · ')}</p></div>` : '';
 
 
     const visible = inTrip ? data.dias.filter(d=>d.fecha===today) : data.dias;

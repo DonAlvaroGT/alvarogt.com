@@ -77,11 +77,16 @@
       "fecha": "2026-09-11",
       "etiqueta": "Vie 11",
       "parque": "grande (Disneyland)",
-      "plan": "Llegamos al parque grande a las 15:00. Main Street, Piratas, Phantom y Star Tours dejan una primera tarde con sabor a parque. Disney Stars on Parade pasa a las 17:30 (anuncio de Pixie Dust para el 7–25 de septiembre; confirmar en la app). Al cierre, Disney Tales of Magic, previsto sobre las 21:00 según Thrill Data.",
+      "plan": "Llegamos al parque grande a las 15:00. Empezamos por Star Tours y Buzz si gustan Star Wars y jugar; después Pirates o it’s a small world según las colas. Disney Stars on Parade y Disney Tales of Magic se confirman en la app.",
       "agenda": [
         {
           "hora": "15:00",
-          "texto": "Llegada al **parque grande (Disneyland)**; Main Street, Piratas, Phantom y Star Tours.",
+          "texto": "Llegada al parque grande (Disneyland); priorizar Star Tours y Buzz si encajan con los intereses de los niños.",
+          "confirmar": false
+        },
+        {
+          "hora": "después",
+          "texto": "Elegir Pirates o it’s a small world según las colas.",
           "confirmar": false
         },
         {
@@ -100,12 +105,17 @@
       "fecha": "2026-09-12",
       "etiqueta": "Sáb 12",
       "parque": "grande (Disneyland)",
-      "plan": "Entrada a las 8:30 por Extra Magic Time. Empezamos por Big Thunder Mountain; Peter Pan está cerrado durante la visita. Por la tarde, personajes al aire libre y espectáculos.",
+      "plan": "Entrada a las 8:30 por Extra Magic Time. Empezamos por Big Thunder y seguimos por Alice’s Curious Labyrinth; las atracciones prescindibles según la opinión de Belén quedan para el final si sobra tiempo. Por la tarde, personajes y espectáculos.",
       "agenda": [
         {
           "hora": "8:30",
-          "texto": "Entrada por Extra Magic Time y prioridad a Big Thunder Mountain; Peter Pan está cerrado durante la visita.",
+          "texto": "Entrada por Extra Magic Time y prioridad a Big Thunder Mountain.",
           "confirmar": true
+        },
+        {
+          "hora": "después",
+          "texto": "Seguir por Alice’s Curious Labyrinth; dejar las prescindibles para el final si sobra tiempo.",
+          "confirmar": false
         },
         {
           "hora": "17:30",
@@ -123,11 +133,11 @@
       "fecha": "2026-09-13",
       "etiqueta": "Dom 13",
       "parque": "pequeño (Adventure World)",
-      "plan": "Día completo en el parque pequeño, con Ratatouille como referencia y espacio para los espectáculos centrales. A partir de las 16:00–17:00 suele bajar el público del fin de semana. A las 10:00 toca la cola virtual de Hero Training.",
+      "plan": "Día completo en el parque pequeño: Ratatouille y Spider-Man como referencias; añadir Crush’s Coaster o Slinky Dog si apetecen montañas rusas. Frozen Ever After queda como alternativa tranquila. A las 10:00 toca la cola virtual de Hero Training.",
       "agenda": [
         {
           "hora": "8:30",
-          "texto": "Entrada por Extra Magic Time; prioridad a Ratatouille.",
+          "texto": "Entrada por Extra Magic Time; prioridad a Ratatouille y Spider-Man.",
           "confirmar": true
         },
         {
@@ -136,8 +146,8 @@
           "confirmar": true
         },
         {
-          "hora": "horas centrales",
-          "texto": "Dejar sitio para los espectáculos centrales.",
+          "hora": "después",
+          "texto": "Elegir Crush’s Coaster o Slinky Dog si apetecen montañas rusas; Frozen Ever After como alternativa tranquila.",
           "confirmar": false
         },
         {
@@ -177,8 +187,7 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
-      "categoria": "TOP TODOS",
-      "opinion_belen": true
+      "categoria": "TOP TODOS"
     },
     {
       "nombre": "Meet the Characters of Alice in Wonderland",
@@ -201,8 +210,7 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)",
-      "categoria": "TOP NIÑOS",
-      "opinion_belen": true
+      "categoria": "TOP NIÑOS"
     },
     {
       "parque": "Disneyland Park",
@@ -214,8 +222,7 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)",
-      "categoria": "TOP TODOS",
-      "opinion_belen": true
+      "categoria": "TOP TODOS"
     },
     {
       "parque": "Disney Adventure World",
@@ -238,8 +245,7 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
-      "categoria": "TOP NIÑOS",
-      "opinion_belen": true
+      "categoria": "TOP NIÑOS"
     },
     {
       "parque": "Disney Adventure World",
@@ -251,8 +257,7 @@
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app",
-      "categoria": "TOP TODOS",
-      "opinion_belen": true
+      "categoria": "TOP TODOS"
     },
     {
       "nombre": "The Lion King: Rhythms of the Pride Lands",
@@ -264,8 +269,7 @@
       "aplicacion": "11–14 septiembre 2026",
       "fuente": "Disneyland Paris oficial/app",
       "top": true,
-      "categoria": "TOP TODOS",
-      "opinion_belen": true
+      "categoria": "TOP TODOS"
     }
   ],
   "atracciones": [
@@ -276,7 +280,7 @@
       "descripcion": "Recorrido en barco por escenas de piratas.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP TODOS",
-      "opinion_belen": true
+      "opinion_contexto": "Paseo en barco que funciona bien como plan familiar y de ritmo tranquilo."
     },
     {
       "atraccion": "Indiana Jones and the Temple of Peril",
@@ -301,7 +305,8 @@
       "descripcion": "Recorrido interactivo ambientado en Toy Story.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP TODOS",
-      "opinion_belen": true
+      "opinion_etiqueta": "TOP Belén",
+      "opinion_contexto": "La experiencia interactiva permite que los niños participen durante todo el recorrido."
     },
     {
       "atraccion": "Star Tours: The Adventures Continue",
@@ -310,7 +315,8 @@
       "descripcion": "Simulador ambientado en el universo Star Wars.",
       "altura_minima_publicada": "1,02 m",
       "categoria": "TOP TODOS",
-      "opinion_belen": true
+      "opinion_etiqueta": "TOP Belén",
+      "opinion_contexto": "El simulador funciona especialmente bien si en la familia gustan Star Wars y las experiencias con movimiento."
     },
     {
       "atraccion": "Autopia",
@@ -319,7 +325,7 @@
       "descripcion": "Conducción de coches pequeños por un circuito.",
       "altura_minima_publicada": "81 cm para montar",
       "categoria": "prescindible según esta opinión",
-      "opinion_belen": true
+      "opinion_etiqueta": "Prescindible según la opinión de Belén"
     },
     {
       "atraccion": "Alice’s Curious Labyrinth",
@@ -328,7 +334,7 @@
       "descripcion": "Recorrido a pie por un laberinto inspirado en Alicia.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP NIÑOS",
-      "opinion_belen": true
+      "opinion_contexto": "Recorrido a pie flexible para niños que prefieren explorar a su ritmo."
     },
     {
       "atraccion": "Dumbo the Flying Elephant",
@@ -337,7 +343,7 @@
       "descripcion": "Atracción aérea tematizada en Dumbo.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "prescindible según esta opinión",
-      "opinion_belen": true
+      "opinion_etiqueta": "Prescindible según la opinión de Belén"
     },
     {
       "atraccion": "it’s a small world",
@@ -346,7 +352,8 @@
       "descripcion": "Paseo en barco por escenas del mundo.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP NIÑOS",
-      "opinion_belen": true
+      "opinion_etiqueta": "TOP Belén",
+      "opinion_contexto": "Paseo tranquilo en barco, fácil de encajar con niños pequeños."
     },
     {
       "atraccion": "Big Thunder Mountain",
@@ -355,7 +362,7 @@
       "descripcion": "Montaña rusa ambientada en el Oeste.",
       "altura_minima_publicada": "1,02 m",
       "categoria": "TOP TODOS",
-      "opinion_belen": true
+      "opinion_contexto": "Montaña rusa familiar para quien cumpla la altura mínima publicada y quiera algo más intenso."
     },
     {
       "atraccion": "Phantom Manor",
@@ -387,7 +394,8 @@
       "descripcion": "Experiencia interactiva ambientada en Spider-Man.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP TODOS",
-      "opinion_belen": true
+      "opinion_etiqueta": "TOP Belén",
+      "opinion_contexto": "La interacción con las manos la hace una opción familiar si apetece jugar en equipo."
     },
     {
       "atraccion": "Frozen Ever After",
@@ -396,7 +404,7 @@
       "descripcion": "Paseo musical en barco por Arendelle, con Anna, Elsa y Olaf.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP TODOS",
-      "opinion_belen": true
+      "opinion_contexto": "Paseo musical en barco especialmente fácil de compartir con niños pequeños."
     },
     {
       "atraccion": "Ratatouille: L’Aventure Totalement Toquée de Rémy",
@@ -405,7 +413,8 @@
       "descripcion": "Aventura inmersiva ambientada en una cocina parisina.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP TODOS",
-      "opinion_belen": true
+      "opinion_etiqueta": "TOP Belén",
+      "opinion_contexto": "Experiencia familiar inmersiva, sin altura mínima publicada."
     },
     {
       "atraccion": "Cars ROAD TRIP",
@@ -429,7 +438,8 @@
       "descripcion": "Recorrido tematizado en Slinky Dog.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "TOP NIÑOS",
-      "opinion_belen": true
+      "opinion_etiqueta": "TOP Belén",
+      "opinion_contexto": "Atracción sencilla para compartir con niños, sin altura mínima publicada."
     },
     {
       "atraccion": "Toy Soldiers Parachute Drop",
@@ -448,7 +458,7 @@
       "descripcion": "Paseo tematizado en la historia de Pinocho.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "prescindible según esta opinión",
-      "opinion_belen": true
+      "opinion_etiqueta": "Prescindible según la opinión de Belén"
     },
     {
       "atraccion": "Le Pays des Contes de Fées",
@@ -457,7 +467,7 @@
       "descripcion": "Paseo en barco por cuentos de hadas.",
       "altura_minima_publicada": "Cualquier altura",
       "categoria": "prescindible según esta opinión",
-      "opinion_belen": true
+      "opinion_etiqueta": "Prescindible según la opinión de Belén"
     },
     {
       "atraccion": "Crush’s Coaster",
@@ -465,7 +475,8 @@
       "zona": "Worlds of Pixar",
       "descripcion": "Atracción tematizada en Buscando a Nemo.",
       "categoria": "TOP TODOS",
-      "opinion_belen": true
+      "opinion_etiqueta": "TOP Belén",
+      "opinion_contexto": "Montaña rusa familiar; conviene reservarla para quien disfrute de giros y movimiento."
     }
   ],
   "alturas_niños": {
@@ -478,50 +489,46 @@
       "fecha": "2026-09-11",
       "dia": "viernes 11",
       "titulo": "Disneyland Park por la tarde",
-      "texto": "Abrir la app y comprobar colas, cierres y horarios. Dar preferencia a Big Thunder Mountain, Buzz, Pirates y Fantasyland según colas. Buscar Meet the Characters of Alice in Wonderland."
+      "texto": "Para la primera tarde, priorizar Star Tours y Buzz si gustan Star Wars y jugar; después encajar Pirates o it’s a small world según las colas. La app decide horarios y estados."
     },
     {
       "fecha": "2026-09-12",
       "dia": "sábado 12",
       "titulo": "Disneyland Park",
-      "texto": "Comprobar Extra Magic Time por alojaros en Newport Bay Club y usarlo según indique la app. Después, Alicia y Disney Stars on Parade; por la noche, Disney Tales of Magic si se confirma."
+      "texto": "Con la entrada temprana, priorizar Big Thunder y después Alice’s Curious Labyrinth; dejar Dumbo, Autopia, Pinocchio y Le Pays des Contes de Fées para el final solo si sobra tiempo. Ajustar por edades e intereses en la app."
     },
     {
       "fecha": "2026-09-13",
       "dia": "domingo 13",
       "titulo": "Disney Adventure World",
-      "texto": "Con Extra Magic Time confirmado en la app, dar preferencia a World of Frozen y Frozen Ever After. Después, A Celebration in Arendelle, Ratatouille y Spider-Man. Mirar la Virtual Queue de Anna y Elsa. Por la noche, Disney Cascade of Lights."
+      "texto": "En el parque pequeño, priorizar Ratatouille y Spider-Man; si gustan las montañas rusas, añadir Crush’s Coaster y Slinky Dog. Frozen Ever After queda como opción familiar tranquila. Consultar colas y estados en la app."
     },
     {
       "fecha": "2026-09-14",
       "dia": "lunes 14",
       "titulo": "Parque por confirmar",
-      "texto": "No cierro el parque: confirmar en la app Disneyland Park o Disney Adventure World, horarios, atracciones abiertas y Extra Magic Time de esa mañana. Todo puede cambiar por operación o meteorología."
+      "texto": "Al ser una mañana corta, escoger solo una zona y una o dos experiencias favoritas; no perseguir las prescindibles. Confirmar parque, horarios y estados en la app antes de salir."
     }
   ],
   "nota_operativa": "Horarios, cierres, reaperturas, Extra Magic Time y espectáculos pueden cambiar. Confirmar siempre en la app oficial el mismo día. El calendario consultado no permite confirmar cierres de todo el periodo; si una atracción aparece con estado temporal o incierto, comprobar estado en la app. El consejo y la agenda destacados se muestran desde las 00:00, hora Europe/Madrid, y se limitan al día actual del viaje; fuera de las fechas, no se muestran.",
   "nota_consejos_amiga": "Consejos de la amiga (verificar en la app/oficial): disfrutad del ambiente y de los espectáculos, y ajustad el recorrido con calma a lo que esté disponible cada día.",
-  "nota_opinion_belen": "Opinión de Belén: recomendación personal y no valoración oficial de Disney.",
+  "nota_opinion_belen": "Opinión de Belén: experiencia personal de otra familia; no es una valoración oficial de Disney.",
   "recomendaciones_belen": [
     {
       "nombre": "Robinson",
-      "texto": "Alternativa breve a las tazas.",
-      "opinion_belen": true
+      "texto": "Alternativa breve a las tazas, para quien quiera explorar."
     },
     {
       "nombre": "Nautilus",
-      "texto": "Alternativa breve a las tazas.",
-      "opinion_belen": true
+      "texto": "Alternativa breve a las tazas, para una parada tranquila."
     },
     {
       "nombre": "Cars",
-      "texto": "Alternativa breve a las tazas.",
-      "opinion_belen": true
+      "texto": "Alternativa breve a las tazas, si a los niños les apetece Cars."
     },
     {
       "nombre": "Single Rider",
-      "texto": "Solo como opción para un adulto que quiera repetir.",
-      "opinion_belen": true
+      "texto": "Solo como opción para un adulto que quiera repetir."
     }
   ]
 }
