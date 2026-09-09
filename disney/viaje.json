@@ -4,7 +4,7 @@
   "descripcion": "Cuatro días para entrar en el ambiente sin correr: una base junto al lago, parques distintos y los momentos que merece la pena guardar.",
   "zona_horaria": "Europe/Madrid",
   "activacion_consejo_agenda": "2026-09-11T00:00:00+02:00",
-  "actualizado": "2026-09-08",
+  "actualizado": "2026-09-09",
   "hoy": {
     "fecha": "2026-09-08",
     "modo": "prep",
@@ -98,6 +98,19 @@
           "hora": "21:00",
           "texto": "Disney Tales of Magic, al cierre.",
           "confirmar": true
+        },
+        {
+          "hora": "13:30 / 16:05 / 17:05",
+          "texto": "The Lion King: Rhythms of the Pride Lands (Disneyland Park).",
+          "confirmar": true
+        },
+        {
+          "hora": "Espectáculos",
+          "texto": "Mickey 14:05/15:10/17:25/18:30 (Adventure World) · Lion King 13:30/16:05/17:05 (Disneyland) · Stars on Parade 17:30 (Disneyland) · Tales of Magic 21:00 (Disneyland) · Cascade of Lights 20:50 (Adventure World)."
+        },
+        {
+          "hora": "Nota horarios",
+          "texto": "Horarios de la app — aportados por Álvaro; pueden cambiar; confirmar en la app."
         }
       ]
     },
@@ -126,6 +139,19 @@
           "hora": "22:00",
           "texto": "Disney Tales of Magic, al cierre.",
           "confirmar": true
+        },
+        {
+          "hora": "12:30 / 13:30 / 16:05 / 17:05",
+          "texto": "The Lion King: Rhythms of the Pride Lands (Disneyland Park).",
+          "confirmar": true
+        },
+        {
+          "hora": "Espectáculos",
+          "texto": "Mickey 13:00/14:05/15:10/17:25/18:30 (Adventure World) · Lion King 12:30/13:30/16:05/17:05 (Disneyland) · Stars on Parade 17:30 (Disneyland) · Tales of Magic 22:00 (Disneyland) · Cascade of Lights 21:50 (Adventure World)."
+        },
+        {
+          "hora": "Nota horarios",
+          "texto": "Horarios de la app — aportados por Álvaro; pueden cambiar; confirmar en la app."
         }
       ]
     },
@@ -151,9 +177,22 @@
           "confirmar": false
         },
         {
-          "hora": "22:00",
+          "hora": "21:50",
           "texto": "Disney Cascade of Lights, al cierre.",
           "confirmar": true
+        },
+        {
+          "hora": "13:00 / 14:05 / 15:10 / 17:25 / 18:30",
+          "texto": "Mickey and the Magician (Disney Adventure World).",
+          "confirmar": true
+        },
+        {
+          "hora": "Espectáculos",
+          "texto": "Mickey 13:00/14:05/15:10/17:25/18:30 (Adventure World) · Lion King 12:30/13:30/16:05/17:05 (Disneyland) · Stars on Parade 17:30 (Disneyland) · Tales of Magic 22:00 (Disneyland) · Cascade of Lights 21:50 (Adventure World)."
+        },
+        {
+          "hora": "Nota horarios",
+          "texto": "Horarios de la app — aportados por Álvaro; pueden cambiar; confirmar en la app."
         }
       ]
     },
@@ -172,6 +211,19 @@
           "hora": "13:45",
           "texto": "Recoger las maletas y salir hacia el vuelo de vuelta.",
           "confirmar": false
+        },
+        {
+          "hora": "12:30",
+          "texto": "The Lion King: Rhythms of the Pride Lands (Disneyland Park).",
+          "confirmar": true
+        },
+        {
+          "hora": "Espectáculos",
+          "texto": "The Lion King: Rhythms of the Pride Lands 12:30 (Disneyland Park)."
+        },
+        {
+          "hora": "Nota horarios",
+          "texto": "Horarios de la app — aportados por Álvaro; pueden cambiar; confirmar en la app."
         }
       ]
     }
@@ -181,7 +233,7 @@
       "parque": "Disney Adventure World",
       "zona": "World Premiere Plaza · Animagique Theater",
       "nombre": "Mickey and the Magician",
-      "horario": "Confirmar en la app",
+      "horario": "Vie 11: 14:05, 15:10, 17:25, 18:30 · Sáb 12: 13:00, 14:05, 15:10, 17:25, 18:30 · Dom 13: 13:00, 14:05, 15:10, 17:25, 18:30 · Horarios de la app — aportados por Álvaro; pueden cambiar; confirmar en la app.",
       "descripcion": "Espectáculo interior de Mickey con magia, música y personajes Disney.",
       "consejo": "Consejo de Belén: entrar pronto para intentar asegurar sitio en un espectáculo interior.",
       "aplicacion": "11–14 septiembre 2026",
@@ -204,7 +256,7 @@
       "parque": "Disneyland Park",
       "zona": "Recorrido de la cabalgata",
       "nombre": "Disney Stars on Parade",
-      "horario": "Confirmar en la app",
+      "horario": "Vie 11, Sáb 12 y Dom 13: 17:30 · Horarios de la app — aportados por Álvaro; pueden cambiar; confirmar en la app.",
       "descripcion": "Desfile de personajes Disney en carrozas, con música y vestuario colorido.",
       "consejo": "Consejo de Belén: buscar sitio con antelación para verla sin prisas.",
       "aplicacion": "11–14 septiembre 2026",
@@ -216,7 +268,7 @@
       "parque": "Disneyland Park",
       "zona": "Castillo de la Bella Durmiente y Main Street U.S.A.",
       "nombre": "Disney Tales of Magic",
-      "horario": "Confirmar en la app",
+      "horario": "Vie 11: 21:00 · Sáb 12: 22:00 · Dom 13: 22:00 · Horarios de la app — aportados por Álvaro; pueden cambiar; confirmar en la app.",
       "descripcion": "Espectáculo nocturno de proyecciones, efectos y fuegos sobre el castillo.",
       "consejo": "Consejo de Belén: colocarse sin bloquear una salida si queréis marcharos al terminar.",
       "aplicacion": "11–14 septiembre 2026",
@@ -251,7 +303,7 @@
       "parque": "Disney Adventure World",
       "zona": "Adventure Way · lago central",
       "nombre": "Disney Cascade of Lights",
-      "horario": "Confirmar en la app",
+      "horario": "Vie 11: 20:50 · Sáb 12: 21:50 · Dom 13: 21:50 · Horarios de la app — aportados por Álvaro; pueden cambiar; confirmar en la app.",
       "descripcion": "Espectáculo nocturno con fuegos, pantallas de agua, drones, proyecciones y efectos visuales.",
       "consejo": "Se celebra a la vez que Disney Tales of Magic; elegir parque y comprobar la hora en la app.",
       "aplicacion": "11–14 septiembre 2026",
@@ -263,7 +315,7 @@
       "nombre": "The Lion King: Rhythms of the Pride Lands",
       "parque": "Disneyland Park",
       "zona": "Frontierland Theater",
-      "horario": "Confirmar en la app",
+      "horario": "Vie 11: 13:30, 16:05, 17:05 · Sáb 12: 12:30, 13:30, 16:05, 17:05 · Dom 13: 12:30, 13:30, 16:05, 17:05 · Lun 14: 12:30 · Horarios de la app — aportados por Álvaro; pueden cambiar; confirmar en la app.",
       "descripcion": "Espectáculo de El Rey León.",
       "consejo": "Consultar la app para la sesión disponible.",
       "aplicacion": "11–14 septiembre 2026",
