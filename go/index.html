@@ -56,15 +56,15 @@
     formula_1:'Fórmula 1: sin sesión hoy.'
   };
   function renderSportsAgenda(payload){
-    const list=(payload.eventos||[]).filter(e=>{const m=agendaTime(e);if(!m)return false;const mins=Number(m[1])*60+Number(m[2]);return mins>=600&&mins<=1350}).sort((a,b)=>{const ab=/Brewers/i.test(a.evento)?-1:0,bb=/Brewers/i.test(b.evento)?-1:0;const ao=sportsOrder.indexOf(a.competicion),bo=sportsOrder.indexOf(b.competicion);return ab-bb||(ao<0?99:ao)-(bo<0?99:bo)||String(a.hora_madrid).localeCompare(String(b.hora_madrid))});
+    const list=(payload.events||[]).filter(e=>{const m=agendaTime(e);if(!m)return false;const mins=Number(m[1])*60+Number(m[2]);return mins>=600&&mins<=1350}).sort((a,b)=>{const ab=/Brewers/i.test(a.evento)?-1:0,bb=/Brewers/i.test(b.evento)?-1:0;const ao=sportsOrder.indexOf(a.competicion),bo=sportsOrder.indexOf(b.competicion);return ab-bb||(ao<0?99:ao)-(bo<0?99:bo)||String(a.hora_madrid).localeCompare(String(b.hora_madrid))});
     const target=document.querySelector('#sports-agenda');
     target.innerHTML=list.length?list.map(e=>`<div class="sports-event"><div class="sports-time">${safe(e.hora_madrid)}<br><span class="sports-meta">${safe(e.deporte)}</span></div><p><a href="${safe(e.fuente)}" rel="noopener">${safe(e.evento)}</a><br><span class="sports-meta">${safe(e.competicion)} · Interés ${safe(e.interes)}</span></p></div>`).join(''):`<p class="sports-empty">${safe(payload.motivo||'No hay eventos verificables dentro de la ventana.')}</p>`;
   }
   let sportsData;
   async function loadSports(){
     const payload=await fetch('sports.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('sports-data');return r.json()});
-    if(payload.fecha!=='2026-09-08'||payload.zona_horaria!==zone||payload.ventana?.inicio!=='10:00'||payload.ventana?.fin!=='22:30'||!Array.isArray(payload.eventos))throw Error('sports-schema');
-    sportsData={comprobado:payload.fecha,eventos:payload.eventos,sin_evento_en_ventana:payload.sin_evento_en_ventana||{}};
+    if(payload.date!=='2026-09-09'||payload.timezone!==zone||payload.window?.start!=='10:00'||payload.window?.end!=='22:30'||!Array.isArray(payload.events))throw Error('sports-schema');
+    sportsData={comprobado:payload.date,eventos:payload.events,sin_evento_en_ventana:{}};
     renderSportsAgenda(sportsData);
   }
   async function start(){
