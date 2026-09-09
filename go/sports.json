@@ -1,22 +1,14 @@
 {
-  "fecha": "2026-09-08",
-  "zona_horaria": "Europe/Madrid",
-  "ventana": {"inicio": "10:00", "fin": "22:30"},
-  "eventos": [],
-  "motivo": "No hay eventos verificables dentro de la ventana.",
-  "sin_evento_en_ventana": {
-    "ncaa_football_ap_top_25": "Ningún partido AP Top 25 verificable en la ventana de hoy.",
-    "real_madrid_barcelona_atletico": "Sin partido verificable hoy.",
-    "miami_dolphins": "Sin partido verificable hoy.",
-    "formula_1": "Sin sesión verificable hoy."
-  },
-  "fuentes": [
-    "https://www.espn.com/mlb/schedule (MLB del 8/9; Brewers-Cubs figura a las 19:40 ET = 01:40 Madrid del 9/9, fuera de ventana)",
-    "https://www.formula1.com/en/racing/2026 (calendario oficial: Italia 4-6/9 y España 11-13/9; sin sesión hoy)",
-    "https://www.miamidolphins.com/news/miami-dolphins-announce-2026-schedule-presented-by-skyscanner (siguiente partido 13/9; sin partido hoy)",
-    "https://www.realmadrid.com/en-US/news/football/first-team/latest-news/el-calendario-del-real-madrid-para-la-liga-2026-27-30-06-2026",
-    "https://www.fcbarcelona.com/en/football/first-team/schedule",
-    "https://en.atleticodemadrid.com/calendario-completo-primer-equipo/",
-    "https://apnews.com/hub/ap-top-25-college-football-poll (sin partido AP Top 25 verificable hoy)"
+  "date": "2026-09-09",
+  "timezone": "Europe/Madrid",
+  "window": {"start": "10:00", "end": "22:30"},
+  "events": [],
+  "sources": [
+    {"name":"MLB.com — Milwaukee Brewers schedule","url":"https://www.mlb.com/brewers/schedule","note":"El partido del 9 de septiembre figura a las 18:40 CDT (01:40 Madrid del 10/09), fuera de la ventana."},
+    {"name":"Miami Dolphins — official 2026 schedule","url":"https://www.miamidolphins.com/schedule/","note":"No hay partido el 9 de septiembre."},
+    {"name":"Formula 1 — official 2026 calendar","url":"https://www.formula1.com/en/racing/2026","note":"No hay sesión de F1 el 9 de septiembre."},
+    {"name":"AP Top 25 college football poll","url":"https://apnews.com/hub/ap-top-25-college-football-poll","note":"No se ha verificado un partido AP Top 25 dentro de la ventana del 9 de septiembre."},
+    {"name":"Atlético de Madrid — official calendar","url":"https://en.atleticodemadrid.com/calendario-completo-primer-equipo/","note":"No se ha verificado un evento del Atlético dentro de la ventana."},
+    {"name":"FC Barcelona — official first-team schedule","url":"https://www.fcbarcelona.com/en/football/first-team/schedule","note":"No se ha verificado un evento del Barcelona dentro de la ventana."}
   ]
 }
