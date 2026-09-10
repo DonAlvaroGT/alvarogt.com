@@ -117,6 +117,11 @@
         <h2>Resumen de viajes</h2>
         <div id="trip-list">Cargando…</div>
       </section>
+      <section class="trips" id="past-wrap" hidden>
+        <p class="eyebrow">Hechos</p>
+        <h2>Viajes terminados</h2>
+        <div id="past-list"></div>
+      </section>
       <footer>Fuente de datos: viajes.json · Tiempo: Open-Meteo · Mapa: OpenStreetMap · Vuelos: Flightradar24 (enlace).<br>Creado por Álvaro GT y sus minions</footer>
     </main>
   </div>
@@ -334,12 +339,14 @@ async function renderDays() {
 
 async function renderTrips() {
   const today = todayKey();
-  const cards = await Promise.all(data.viajes.map(async v => {
+  const abiertos = data.viajes.filter(v => today <= v.fin);
+  const hechos = data.viajes.filter(v => today > v.fin);
+  const card = async (v, past) => {
     const cd = countdown(v, today);
     const place = covers(v.inicio, v.fin, today)
       ? (placeOn(v, today) || v.lugar_principal)
       : v.lugar_principal;
-    const w = place ? await forecast(place.latitud, place.longitud, place.timezone) : null;
+    const w = (!past && place) ? await forecast(place.latitud, place.longitud, place.timezone) : null;
     const cities = v.ciudades || place?.label || v.lugar_principal?.label || '';
     const dates = new Intl.DateTimeFormat('es-ES', {day:'numeric', month:'short', timeZone: casa}).format(new Date(v.inicio + 'T12:00:00Z'))
       + ' – ' +
@@ -354,11 +361,22 @@ async function renderTrips() {
       </div>
       <div>
         <p class="${cd.cls}">${esc(cd.text)}</p>
-        <p class="meta">${wxText(w)} · ahora</p>
+        ${past ? '' : `<p class="meta">${wxText(w)} · ahora</p>`}
       </div>
     </article>`;
-  }));
-  document.querySelector('#trip-list').innerHTML = cards.join('');
+  };
+  document.querySelector('#trip-list').innerHTML = abiertos.length
+    ? (await Promise.all(abiertos.map(v => card(v, false)))).join('')
+    : '<p class="meta">No hay viajes pendientes.</p>';
+  const pastWrap = document.querySelector('#past-wrap');
+  const pastList = document.querySelector('#past-list');
+  if (!hechos.length) {
+    pastWrap.hidden = true;
+    pastList.innerHTML = '';
+    return;
+  }
+  pastWrap.hidden = false;
+  pastList.innerHTML = (await Promise.all(hechos.map(v => card(v, true)))).join('');
 }
 
 async function startApp() {
