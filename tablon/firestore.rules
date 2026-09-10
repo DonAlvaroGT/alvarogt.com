@@ -93,10 +93,13 @@ service cloud.firestore {
     match /history/{id} { allow read: if adult(); allow write: if false; }
 
     // GO (go_data, go_sports y el resto): solo las dos de casa.
-    // Viajes (casa_json/viajes): esas dos más . Solo lectura.
+    // Viajes (casa_json/viajes): esas dos más las cuatro de lectura. Solo lectura.
     function viajesReader() {
       return signedIn()
         && request.auth.token.email in [
+          '',
+          '',
+          '',
           '',
           '',
           ''
