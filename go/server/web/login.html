@@ -50,9 +50,11 @@
           credentials: 'same-origin',
           body: JSON.stringify({idToken}),
         });
-        if (res.status === 403) { show('Esta cuenta no entra en GO.'); return; }
+        if (res.status === 403) { show('Esta cuenta no entra.'); return; }
         if (!res.ok) { show('No se ha podido entrar. Prueba otra vez.'); return; }
-        location.href = '/';
+        const raw = new URLSearchParams(location.search).get('next') || '/go/';
+        const next = (raw.startsWith('/go') || raw.startsWith('/viajes')) ? raw : '/go/';
+        location.href = next;
       } catch (e) {
         show('No se ha podido abrir Google. Prueba otra vez.');
       }

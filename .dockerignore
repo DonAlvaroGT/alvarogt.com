@@ -1,0 +1,13 @@
+.git
+.gitignore
+**/node_modules
+tablon
+disney
+*.md
+.DS_Store
+go/data.json
+go/sports.json
+viajes/viajes.json
+go/.env
+.env
+go/server/go-server

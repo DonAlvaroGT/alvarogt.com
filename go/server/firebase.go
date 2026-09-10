@@ -15,15 +15,8 @@ type firebaseVerifier struct {
 }
 
 func NewFirebaseVerifier(ctx context.Context, credentialsFile, projectID string) (TokenVerifier, error) {
-	app, err := firebase.NewApp(ctx, &firebase.Config{ProjectID: projectID}, option.WithCredentialsFile(credentialsFile))
-	if err != nil {
-		return nil, fmt.Errorf("firebase app: %w", err)
-	}
-	client, err := app.Auth(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("firebase auth: %w", err)
-	}
-	return firebaseVerifier{client: client}, nil
+	_, verifier, err := newFirebase(ctx, credentialsFile, projectID)
+	return verifier, err
 }
 
 func (v firebaseVerifier) VerifyIDToken(ctx context.Context, idToken string) (string, error) {
@@ -37,4 +30,17 @@ func (v firebaseVerifier) VerifyIDToken(ctx context.Context, idToken string) (st
 		return "", errInvalidToken
 	}
 	return email, nil
+}
+
+// kept for tests that construct apps without going through run().
+func firebaseApp(ctx context.Context, credentialsFile, projectID string) (*firebase.App, error) {
+	var opts []option.ClientOption
+	if strings.TrimSpace(credentialsFile) != "" {
+		opts = append(opts, option.WithCredentialsFile(credentialsFile))
+	}
+	app, err := firebase.NewApp(ctx, &firebase.Config{ProjectID: projectID}, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("firebase app: %w", err)
+	}
+	return app, nil
 }
