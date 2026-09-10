@@ -91,5 +91,15 @@ service cloud.firestore {
     match /awards/{id} { allow read: if adult(); allow write: if false; }
     match /events/{id} { allow read: if adult(); allow write: if false; }
     match /history/{id} { allow read: if adult(); allow write: if false; }
+
+    // GO y Viajes: el JSON vive aquí. El cliente solo lee si la cuenta está en la allowlist.
+    match /casa_json/{id} {
+      allow read: if signedIn()
+        && request.auth.token.email in [
+          'agarciatimon@gmail.com',
+          'luzolivas@gmail.com'
+        ];
+      allow write: if false;
+    }
   }
 }

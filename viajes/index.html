@@ -101,9 +101,10 @@
 
   <section id="gate" class="wrap" hidden>
     <div>
+      <p class="eyebrow">Casa · Viajes</p>
       <h2>Entra con Google</h2>
       <p>Horas locales. Sin localizadores ni precios.</p>
-      <button id="gate-sign-in" class="demo" type="button">Entrar</button>
+      <button id="gate-sign-in" class="demo" type="button">Continuar con Google</button>
     </div>
   </section>
 
@@ -127,11 +128,6 @@
   </div>
 
 <script type="module">
-const CASA_ORIGIN = 'https://alvarogt-casa-639440141487.europe-west1.run.app';
-if (['alvarogt.com', 'www.alvarogt.com'].includes(location.hostname) && CASA_ORIGIN) {
-  location.replace(CASA_ORIGIN + '/viajes/' + location.search + location.hash);
-  throw new Error('redirect');
-}
 const allowed = [
   'agarciatimon@gmail.com',
   'luzolivas@gmail.com'
@@ -380,10 +376,18 @@ async function renderTrips() {
   pastList.innerHTML = (await Promise.all(hechos.map(v => card(v, true)))).join('');
 }
 
+let fsApi = null, db = null;
+async function casaDoc(id) {
+  const snap = await fsApi.getDoc(fsApi.doc(db, 'casa_json', id));
+  if (!snap.exists()) throw new Error('missing');
+  const body = snap.data().body;
+  if (typeof body !== 'string') throw new Error('body');
+  return JSON.parse(body);
+}
 async function startApp() {
   if (started) return;
   started = true;
-  const payload = await fetch('viajes.json', {cache: 'no-store', credentials: 'same-origin'}).then(r => { if (!r.ok) throw new Error('json'); return r.json(); });
+  const payload = await casaDoc('viajes');
   if (payload.schema_version !== 1 || !Array.isArray(payload.viajes)) throw new Error('schema');
   data = payload;
   document.querySelector('#app').hidden = false;
@@ -395,60 +399,82 @@ async function startApp() {
   await Promise.all([renderDays(), renderTrips()]);
 }
 
-function showLocal() {
-  document.querySelector('#gate').hidden = true;
-  startApp().catch(() => {
-    document.querySelector('#trip-list').innerHTML = '<p class="error">No se ha podido cargar viajes.json.</p>';
-    document.querySelector('#app').hidden = false;
-  });
-}
-
 const status = document.querySelector('#google-status');
 const signIn = document.querySelector('#google-sign-in');
 const signOut = document.querySelector('#google-sign-out');
 const setStatus = text => { status.textContent = text; };
-const goLogin = () => { location.href = '/login?next=/viajes/'; };
-signIn.addEventListener('click', goLogin);
-document.querySelector('#gate-sign-in').addEventListener('click', goLogin);
-signOut.addEventListener('click', async () => {
-  await fetch('/logout', {method: 'POST', credentials: 'same-origin'});
-  setStatus('Sin sesión');
-  signIn.hidden = false;
-  signOut.hidden = true;
+const showGate = () => {
   document.querySelector('#gate').hidden = false;
   document.querySelector('#app').hidden = true;
   started = false;
-});
-
-async function checkSession() {
-  const r = await fetch('viajes.json', {cache: 'no-store', credentials: 'same-origin'});
-  if (r.status === 401 || r.status === 403) {
-    setStatus(r.status === 403 ? 'Cuenta no autorizada' : 'Sin sesión');
-    document.querySelector('#gate').hidden = false;
-    document.querySelector('#app').hidden = true;
-    signIn.hidden = false;
-    signOut.hidden = true;
+  signIn.hidden = false;
+  signOut.hidden = true;
+};
+const failLoad = () => {
+  started = false;
+  document.querySelector('#app').hidden = false;
+  document.querySelector('#trip-list').innerHTML = '<p class="error">No se ha podido cargar los viajes.</p>';
+};
+async function setupGoogle() {
+  if (!['localhost', '127.0.0.1', 'alvarogt.com', 'www.alvarogt.com', 'tablongo.web.app', 'tablongo.firebaseapp.com'].includes(location.hostname)) {
+    setStatus('Acceso · dominio no autorizado');
+    showGate();
     return;
   }
-  if (!r.ok) throw new Error('json');
-  setStatus('Casa');
-  signIn.hidden = true;
-  signOut.hidden = false;
-  document.querySelector('#gate').hidden = true;
-  await startApp();
+  try {
+    const config = await fetch('/tablon/firebase.public.json', {cache: 'no-store'}).then(r => { if (!r.ok) throw new Error('cfg'); return r.json(); });
+    const [{initializeApp}, auth, firestore] = await Promise.all([
+      import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js'),
+      import('https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js'),
+      import('https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js')
+    ]);
+    const app = initializeApp(config);
+    const service = auth.getAuth(app);
+    await auth.setPersistence(service, auth.browserLocalPersistence);
+    fsApi = firestore;
+    db = firestore.getFirestore(app);
+    const provider = new auth.GoogleAuthProvider();
+    provider.setCustomParameters({prompt: 'select_account'});
+    const enter = user => {
+      const email = (user.email || '').toLowerCase();
+      if (!allowed.includes(email)) {
+        auth.signOut(service);
+        setStatus('Cuenta no autorizada');
+        showGate();
+        return;
+      }
+      setStatus(user.displayName || user.email);
+      signIn.hidden = true;
+      signOut.hidden = false;
+      document.querySelector('#gate').hidden = true;
+      startApp().catch(failLoad);
+    };
+    auth.onAuthStateChanged(service, user => {
+      if (!user) {
+        setStatus('Sin sesión');
+        showGate();
+        return;
+      }
+      enter(user);
+    });
+    const login = async () => {
+      try {
+        setStatus('Google · entrando…');
+        await auth.signInWithPopup(service, provider);
+      } catch (e) {
+        setStatus('Google · ' + (e.code || 'error'));
+      }
+    };
+    signIn.addEventListener('click', login);
+    document.querySelector('#gate-sign-in').addEventListener('click', login);
+    signOut.addEventListener('click', () => auth.signOut(service));
+  } catch (e) {
+    setStatus('Acceso · configuración no disponible');
+    showGate();
+  }
 }
-
-const localPage = !prod && (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:');
-if (localPage) {
-  checkSession().catch(showLocal);
-} else {
-  document.querySelector('#gate').hidden = false;
-  checkSession().catch(() => {
-    setStatus('Sin sesión');
-    document.querySelector('#gate').hidden = false;
-  });
-}
-void allowed;
+document.querySelector('#gate').hidden = false;
+setupGoogle();
 document.querySelector('#jump-form').addEventListener('submit', e => {
   e.preventDefault();
   goToDay(document.querySelector('#jump-day').value);

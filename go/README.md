@@ -1,4 +1,4 @@
-# /go/ — flujo 2
+# /go/ — agenda de casa
 
 Skinner investiga y publica `data.json`; Frink solo presenta ese fichero. La página no llama a Open-Meteo ni calcula extraescolares y no usa Telegram como API.
 
@@ -15,17 +15,16 @@ python3 go/skinner_go.py --output go/data.json
 /Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name viajes/viajes.json --file viajes/viajes.json
 ```
 
-Los JSON viven en Firestore `casa_json` (solo Admin SDK). El servicio Cloud Run los sirve tras sesión. No van a git ni a GitHub Pages.
+Los JSON viven en Firestore `casa_json` (`go_data`, `go_sports`, `viajes`). No van a git ni a GitHub Pages. La página en `alvarogt.com/go/` los lee en el cliente tras el login.
 
-## Login (servidor)
+## Login (cliente)
 
-Proyecto Firebase `tablongo`. Google Sign-In en `/login`, cookie HttpOnly `go_session`. Allowlist exacta: `agarciatimon@gmail.com` y `luzolivas@gmail.com`. Otras cuentas 403; sin token 401. `data.json`, `sports.json` y `viajes.json` no se sirven sin sesión.
+Proyecto Firebase `tablongo`. Google Sign-In en la propia página. Allowlist exacta: `agarciatimon@gmail.com` y `luzolivas@gmail.com`. Otras cuentas: `signOut` y «Cuenta no autorizada». Firestore deniega la lectura sin esas cuentas.
 
-Secretos solo en `~/.hermes/gabinete/secrets/` (`go.env`, `tablongo-firebase-adminsdk.json`). Nunca a git.
+Secretos solo en `~/.hermes/gabinete/secrets/` (`tablongo-firebase-adminsdk.json`). Nunca a git.
 
 ## Probar
 
 ```sh
 python3 -m unittest go/test_go_flow.py
-cd go/server && go test -count=1 -v
 ```

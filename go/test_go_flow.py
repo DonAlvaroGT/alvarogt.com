@@ -41,27 +41,34 @@ class GoClientAuthHtmlTests(unittest.TestCase):
     def test_gate_and_app_shell(self):
         self.assertIn('id="gate"', self.html)
         self.assertIn('id="app"', self.html)
+        self.assertIn("Casa · GO", self.html)
         self.assertIn("Entra con Google", self.html)
+        self.assertIn("Continuar con Google", self.html)
         self.assertIn("Agenda deportiva", self.html)
         self.assertIn("/tablon/", self.html)
         self.assertIn("/viajes/", self.html)
 
-    def test_server_session_not_client_firebase(self):
-        self.assertIn("/login?next=/go/", self.html)
-        self.assertIn("credentials:'same-origin'", self.html)
-        self.assertIn("/logout", self.html)
+    def test_client_firebase_not_cloud_run(self):
+        self.assertNotIn("run.app", self.html)
+        self.assertNotIn("CASA_ORIGIN", self.html)
+        self.assertNotIn("/login?next=/go/", self.html)
+        self.assertNotIn("/logout", self.html)
+        self.assertIn("browserLocalPersistence", self.html)
+        self.assertIn("firebase.public.json", self.html)
+        self.assertIn("firebase-auth.js", self.html)
+        self.assertIn("firebase-firestore.js", self.html)
+        self.assertIn("select_account", self.html)
         self.assertIn("'agarciatimon@gmail.com'", self.html)
         self.assertIn("'luzolivas@gmail.com'", self.html)
         self.assertNotIn("agustingarciatimon@gmail.com", self.html)
-        self.assertNotIn("browserLocalPersistence", self.html)
-        self.assertNotIn("firebase.public.json", self.html)
 
-    def test_data_fetched_only_from_start_app(self):
+    def test_data_from_firestore_after_start_app(self):
         self.assertIn("async function startApp()", self.html)
-        self.assertIn("fetch('data.json'", self.html)
-        self.assertIn("fetch('sports.json'", self.html)
-        start_at = self.html.index("async function startApp()")
-        self.assertGreater(self.html.index("fetch('data.json'", start_at), start_at)
+        self.assertIn("casaDoc('go_data')", self.html)
+        self.assertIn("casaDoc('go_sports')", self.html)
+        self.assertIn("casa_json", self.html)
+        self.assertNotIn("fetch('data.json'", self.html)
+        self.assertNotIn("fetch('sports.json'", self.html)
         self.assertIn("No hay datos publicados", self.html)
         self.assertIn("No hay agenda deportiva publicada", self.html)
 

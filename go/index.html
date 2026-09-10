@@ -39,9 +39,10 @@
   </header>
   <section id="gate" class="wrap">
     <div>
+      <div class="kicker">Casa · GO</div>
       <h2>Entra con Google</h2>
       <p>Agenda de casa. Solo Álvaro y Lucita.</p>
-      <button id="gate-sign-in" class="demo" type="button">Entrar</button>
+      <button id="gate-sign-in" class="demo" type="button">Continuar con Google</button>
     </div>
   </section>
   <div id="app" hidden>
@@ -57,42 +58,32 @@
     </main>
   </div>
 <script type="module">
-  const CASA_ORIGIN='https://alvarogt-casa-639440141487.europe-west1.run.app';
-  if(['alvarogt.com','www.alvarogt.com'].includes(location.hostname) && CASA_ORIGIN){
-    location.replace(CASA_ORIGIN+'/go/'+location.search+location.hash);
-    throw new Error('redirect');
-  }
   const allowed=['agarciatimon@gmail.com','luzolivas@gmail.com'];
-  const prod=['alvarogt.com','www.alvarogt.com'].includes(location.hostname);
   const zone='Europe/Madrid';
-  const dateFmt=new Intl.DateTimeFormat('en-CA',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'});
   const dayFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,weekday:'long',day:'numeric',month:'long'});
   const clockFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
   const updatedFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,dateStyle:'long',timeStyle:'short'});
-  const today=()=>dateFmt.format(new Date());
-  const addDay=(key,n)=>{const d=new Date(key+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
   const pretty=d=>dayFmt.format(new Date(d+'T12:00:00Z'));
-  const safe=s=>String(s).replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
-  const weekday=d=>new Intl.DateTimeFormat('es-ES',{timeZone:zone,weekday:'long'}).format(new Date(d+'T12:00:00Z'));
+  const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function card(day,i){const label=i===0?'Hoy':'Mañana';const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C · ${safe(day.clothes)}${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');return `<article><div class="date">${label} · ${safe(pretty(day.date))}</div><h2 class="day-name">${label}</h2><p class="copy">${weather}</p><div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
 
   const sportsOrder=['MLB','NCAA Football AP Top 25','Real Madrid / Barcelona / Atlético','Miami Dolphins','Fórmula 1'];
   const agendaTime=e=>String(e.hora_madrid||'').match(/^(\d{1,2}):(\d{2})$/);
-  const noEventMessages={
-    ncaa_football_ap_top_25:'NCAA Football AP Top 25: ningún partido en la ventana.',
-    real_madrid_barcelona_atletico:'Real Madrid / Barcelona / Atlético: sin partido hoy.',
-    miami_dolphins:'Miami Dolphins: sin partido hoy.',
-    formula_1:'Fórmula 1: sin sesión hoy.'
-  };
   function renderSportsAgenda(payload){
     const list=(payload.events||[]).filter(e=>{const m=agendaTime(e);if(!m)return false;const mins=Number(m[1])*60+Number(m[2]);return mins>=600&&mins<=1350}).sort((a,b)=>{const ab=/Brewers/i.test(a.evento)?-1:0,bb=/Brewers/i.test(b.evento)?-1:0;const ao=sportsOrder.indexOf(a.competicion),bo=sportsOrder.indexOf(b.competicion);return ab-bb||(ao<0?99:ao)-(bo<0?99:bo)||String(a.hora_madrid).localeCompare(String(b.hora_madrid))});
     const target=document.querySelector('#sports-agenda');
     target.innerHTML=list.length?list.map(e=>`<div class="sports-event"><div class="sports-time">${safe(e.hora_madrid)}<br><span class="sports-meta">${safe(e.deporte)}</span></div><p><a href="${safe(e.fuente)}" rel="noopener">${safe(e.evento)}</a><br><span class="sports-meta">${safe(e.competicion)} · Interés ${safe(e.interes)}</span></p></div>`).join(''):`<p class="sports-empty">${safe(payload.motivo||'No hay eventos verificables dentro de la ventana.')}</p>`;
   }
-  let sportsData;
-  let started=false;
+  let fsApi=null, db=null, sportsData, started=false;
+  async function casaDoc(id){
+    const snap=await fsApi.getDoc(fsApi.doc(db,'casa_json',id));
+    if(!snap.exists())throw Error('missing');
+    const body=snap.data().body;
+    if(typeof body!=='string')throw Error('body');
+    return JSON.parse(body);
+  }
   async function loadSports(){
-    const payload=await fetch('sports.json',{cache:'no-store',credentials:'same-origin'}).then(r=>{if(!r.ok)throw Error('sports-data');return r.json()});
+    const payload=await casaDoc('go_sports');
     if(payload.timezone!==zone||payload.window?.start!=='10:00'||payload.window?.end!=='22:30'||!Array.isArray(payload.events))throw Error('sports-schema');
     sportsData={comprobado:payload.date,eventos:payload.events,sin_evento_en_ventana:{}};
     renderSportsAgenda(sportsData);
@@ -103,7 +94,7 @@
     document.querySelector('#app').hidden=false;
     document.querySelector('#gate').hidden=true;
     try{
-      const payload=await fetch('data.json',{cache:'no-store',credentials:'same-origin'}).then(r=>{if(!r.ok)throw Error('data');return r.json()});
+      const payload=await casaDoc('go_data');
       if(payload.schema_version!==1||!Array.isArray(payload.days)||payload.days.length!==2)throw Error('schema');
       document.querySelector('#days').innerHTML=payload.days.map(card).join('');
     }catch{
@@ -130,34 +121,70 @@
     signIn.hidden=false;
     signOut.hidden=true;
   };
-  const goLogin=()=>{location.href='/login?next=/go/'};
-  signIn.addEventListener('click',goLogin);
-  document.querySelector('#gate-sign-in').addEventListener('click',goLogin);
-  signOut.addEventListener('click',async()=>{
-    await fetch('/logout',{method:'POST',credentials:'same-origin'});
-    setStatus('Sin sesión');
-    showGate();
-  });
-  async function checkSession(){
-    const r=await fetch('data.json',{cache:'no-store',credentials:'same-origin'});
-    if(r.status===401||r.status===403){
-      setStatus(r.status===403?'Cuenta no autorizada':'Sin sesión');
+  async function loadFirebaseConfig(){
+    const cfg=await fetch('./firebase.public.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('cfg');return r.json()});
+    if(typeof cfg.apiKey==='string'&&cfg.apiKey.startsWith('AIza'))return cfg;
+    return fetch('/tablon/firebase.public.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('cfg');return r.json()});
+  }
+  async function setupGoogle(){
+    if(!['localhost','127.0.0.1','alvarogt.com','www.alvarogt.com','tablongo.web.app','tablongo.firebaseapp.com'].includes(location.hostname)){
+      setStatus('Acceso · dominio no autorizado');
       showGate();
       return;
     }
-    if(!r.ok){
-      setStatus('Sin sesión');
+    try{
+      const config=await loadFirebaseConfig();
+      const [{initializeApp},auth,firestore]=await Promise.all([
+        import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js'),
+        import('https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js'),
+        import('https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js')
+      ]);
+      const app=initializeApp(config);
+      const service=auth.getAuth(app);
+      await auth.setPersistence(service,auth.browserLocalPersistence);
+      fsApi=firestore;
+      db=firestore.getFirestore(app);
+      const provider=new auth.GoogleAuthProvider();
+      provider.setCustomParameters({prompt:'select_account'});
+      const enter=user=>{
+        const email=(user.email||'').toLowerCase();
+        if(!allowed.includes(email)){
+          auth.signOut(service);
+          setStatus('Cuenta no autorizada');
+          showGate();
+          return;
+        }
+        setStatus(user.displayName||user.email);
+        signIn.hidden=true;
+        signOut.hidden=false;
+        startApp();
+      };
+      auth.onAuthStateChanged(service,user=>{
+        if(!user){
+          setStatus('Sin sesión');
+          showGate();
+          return;
+        }
+        enter(user);
+      });
+      const login=async()=>{
+        try{
+          setStatus('Google · entrando…');
+          await auth.signInWithPopup(service,provider);
+        }catch(e){
+          setStatus('Google · '+(e.code||'error'));
+        }
+      };
+      signIn.addEventListener('click',login);
+      document.querySelector('#gate-sign-in').addEventListener('click',login);
+      signOut.addEventListener('click',()=>auth.signOut(service));
+    }catch(e){
+      setStatus('Acceso · configuración no disponible');
       showGate();
-      return;
     }
-    setStatus('Casa');
-    signIn.hidden=true;
-    signOut.hidden=false;
-    startApp();
   }
   showGate();
-  checkSession();
-  void allowed;void prod;
+  setupGoogle();
 </script>
 </body>
 </html>

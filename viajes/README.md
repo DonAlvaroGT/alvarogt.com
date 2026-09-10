@@ -1,8 +1,8 @@
 # Viajes · alvarogt.com/viajes
 
-Frink actualiza `viajes.json` en disco y lo sube con `go/casa_put_json.py --name viajes/viajes.json`. El HTML calcula relojes, cuenta atrás, tiempo, mapa y enlaces. El JSON no va a git.
+Frink actualiza `viajes.json` en disco y lo sube con `go/casa_put_json.py --name viajes/viajes.json`. El HTML calcula relojes, cuenta atrás, tiempo, mapa y enlaces. El JSON no va a git: vive en Firestore `casa_json/viajes`.
 
-Login de servidor (mismas dos cuentas que GO). Esta página no abre el tablón. En local (localhost) se puede ver sin login si el JSON está al lado.
+Login en la propia página (mismas dos cuentas que GO). La puerta dice «Casa · Viajes». Esta página no abre el tablón.
 
 Sin movilidad, sin localizadores, sin precios, sin «sin nombre en el PDF». Si falta el hotel, se omite. Horas locales.
 
