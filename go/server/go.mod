@@ -3,6 +3,7 @@ module gabinete/go-server
 go 1.24
 
 require (
+	cloud.google.com/go/firestore v1.18.0
 	firebase.google.com/go/v4 v4.18.0
 	google.golang.org/api v0.231.0
 )
@@ -13,7 +14,6 @@ require (
 	cloud.google.com/go/auth v0.16.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
-	cloud.google.com/go/firestore v1.18.0 // indirect
 	cloud.google.com/go/iam v1.5.2 // indirect
 	cloud.google.com/go/longrunning v0.6.7 // indirect
 	cloud.google.com/go/monitoring v1.24.2 // indirect

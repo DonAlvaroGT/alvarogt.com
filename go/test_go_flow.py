@@ -46,20 +46,15 @@ class GoClientAuthHtmlTests(unittest.TestCase):
         self.assertIn("/tablon/", self.html)
         self.assertIn("/viajes/", self.html)
 
-    def test_client_firebase_allowlist(self):
-        self.assertIn("https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js", self.html)
-        self.assertIn("https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js", self.html)
-        self.assertIn("./firebase.public.json", self.html)
-        self.assertIn("browserLocalPersistence", self.html)
-        self.assertIn("select_account", self.html)
-        self.assertIn("onAuthStateChanged", self.html)
-        self.assertIn("Cuenta no autorizada", self.html)
-        self.assertIn("signOut", self.html)
+    def test_server_session_not_client_firebase(self):
+        self.assertIn("/login?next=/go/", self.html)
+        self.assertIn("credentials:'same-origin'", self.html)
+        self.assertIn("/logout", self.html)
         self.assertIn("'agarciatimon@gmail.com'", self.html)
         self.assertIn("'luzolivas@gmail.com'", self.html)
         self.assertNotIn("agustingarciatimon@gmail.com", self.html)
-        self.assertNotIn("go/server", self.html)
-        self.assertNotIn("Cloud Run", self.html)
+        self.assertNotIn("browserLocalPersistence", self.html)
+        self.assertNotIn("firebase.public.json", self.html)
 
     def test_data_fetched_only_from_start_app(self):
         self.assertIn("async function startApp()", self.html)
@@ -71,4 +66,5 @@ class GoClientAuthHtmlTests(unittest.TestCase):
         self.assertIn("No hay agenda deportiva publicada", self.html)
 
 
-if __name__ == "__main__": unittest.main()
+if __name__ == "__main__":
+    unittest.main()
