@@ -260,7 +260,7 @@ function renderClocks() {
   const tomorrow = addDay(today, 1);
   const extra = thirdPlace(data.viajes, today, tomorrow);
   const boxes = [
-    ...data.clocks.map(c => ({...c, when: 'Casa'})),
+    ...data.clocks.map(c => ({...c, when: c.apartado || 'Casa'})),
     extra ? {
       id: 'viaje',
       label: extra.place.label,

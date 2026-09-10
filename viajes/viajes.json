@@ -6,6 +6,7 @@
   "clocks": [
     {
       "id": "madrid",
+      "apartado": "Casa",
       "label": "Madrid",
       "timezone": "Europe/Madrid",
       "latitud": 40.4168,
@@ -14,7 +15,8 @@
     },
     {
       "id": "belfast",
-      "label": "Gugus House",
+      "apartado": "Gugus House",
+      "label": "Belfast",
       "timezone": "Europe/London",
       "latitud": 54.59682,
       "longitud": -5.92541,
