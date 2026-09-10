@@ -34,4 +34,41 @@ class GoFlowTests(unittest.TestCase):
         self.assertNotIn("fútbol", json.dumps(payload, ensure_ascii=False).lower())
 
 
+class GoClientAuthHtmlTests(unittest.TestCase):
+    def setUp(self):
+        self.html = (Path(__file__).parent / "index.html").read_text(encoding="utf-8")
+
+    def test_gate_and_app_shell(self):
+        self.assertIn('id="gate"', self.html)
+        self.assertIn('id="app"', self.html)
+        self.assertIn("Entra con Google", self.html)
+        self.assertIn("Agenda deportiva", self.html)
+        self.assertIn("/tablon/", self.html)
+        self.assertIn("/viajes/", self.html)
+
+    def test_client_firebase_allowlist(self):
+        self.assertIn("https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js", self.html)
+        self.assertIn("https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js", self.html)
+        self.assertIn("./firebase.public.json", self.html)
+        self.assertIn("browserLocalPersistence", self.html)
+        self.assertIn("select_account", self.html)
+        self.assertIn("onAuthStateChanged", self.html)
+        self.assertIn("Cuenta no autorizada", self.html)
+        self.assertIn("signOut", self.html)
+        self.assertIn("'agarciatimon@gmail.com'", self.html)
+        self.assertIn("'luzolivas@gmail.com'", self.html)
+        self.assertNotIn("agustingarciatimon@gmail.com", self.html)
+        self.assertNotIn("go/server", self.html)
+        self.assertNotIn("Cloud Run", self.html)
+
+    def test_data_fetched_only_from_start_app(self):
+        self.assertIn("async function startApp()", self.html)
+        self.assertIn("fetch('data.json'", self.html)
+        self.assertIn("fetch('sports.json'", self.html)
+        start_at = self.html.index("async function startApp()")
+        self.assertGreater(self.html.index("fetch('data.json'", start_at), start_at)
+        self.assertIn("No hay datos publicados", self.html)
+        self.assertIn("No hay agenda deportiva publicada", self.html)
+
+
 if __name__ == "__main__": unittest.main()
