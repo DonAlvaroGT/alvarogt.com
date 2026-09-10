@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Viajes · Álvaro GT</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #18263a;
+      --ink-soft: #526174;
+      --navy: #223c5c;
+      --blue: #3a6b9e;
+      --sky: #edf4fa;
+      --cream: #fbfaf7;
+      --paper: #ffffff;
+      --line: #dbe3eb;
+      --gold: #ad7b27;
+      --shadow: 0 18px 50px rgba(31, 54, 78, .08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--cream); color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    a { color: inherit; }
+    .wrap { width: min(1160px, calc(100% - 44px)); margin: auto; }
+    header { padding: 22px 0 36px; background: linear-gradient(180deg, #edf5fb 0%, #f8fbfd 70%, var(--cream) 100%); }
+    nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 48px; font-size: .72rem; letter-spacing: .13em; text-transform: uppercase; }
+    nav a { text-decoration: none; color: var(--ink-soft); }
+    .brand { color: var(--navy); font-weight: 700; letter-spacing: .08em; }
+    .access { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; text-transform: none; letter-spacing: 0; }
+    .access-row { display: flex; gap: 10px; align-items: center; }
+    .access-status { color: var(--ink-soft); font-size: .76rem; }
+    .jump { display: flex; gap: 8px; align-items: center; }
+    .jump label { display: flex; gap: 8px; align-items: center; color: var(--ink-soft); font-size: .76rem; }
+    .jump input { border: 1px solid var(--line); background: var(--paper); color: var(--navy); padding: 6px 8px; font: inherit; }
+    button.demo { background: var(--paper); border: 1px solid var(--line); color: var(--navy); border-radius: 999px; padding: 8px 14px; font-size: .76rem; cursor: pointer; }
+    button.demo[hidden] { display: none; }
+    h1 { color: var(--navy); font: 400 clamp(3.2rem, 9vw, 7.2rem)/.86 Georgia, "Times New Roman", serif; letter-spacing: -.065em; margin: 0; }
+    .eyebrow { color: var(--gold); font-size: .7rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; margin: 0 0 16px; }
+    #gate[hidden], #app[hidden], .banner[hidden] { display: none; }
+    #gate { min-height: 48vh; display: grid; place-items: center; text-align: center; padding: 48px 16px; }
+    #gate h2 { color: var(--navy); font: 400 2.6rem/1 Georgia, serif; margin: 0 0 12px; }
+    #gate p { color: var(--ink-soft); max-width: 420px; margin: 0 auto 22px; line-height: 1.55; }
+    .banner { margin: 0 0 22px; padding: 12px 14px; border: 1px solid #e4d2a8; background: #fff8e8; color: #7a5b16; font-size: .82rem; }
+    .clocks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 8px 0 36px; }
+    .clock-box { background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow); padding: 20px 18px; min-height: 148px; }
+    .clock-box .when { color: var(--gold); font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .clock-box h2 { color: var(--navy); font: 400 1.55rem/1 Georgia, serif; margin: 10px 0 8px; }
+    .clock-box .time { color: var(--navy); font-variant-numeric: tabular-nums; font-size: 1.7rem; letter-spacing: -.03em; }
+    .clock-box .wx { color: var(--ink-soft); font-size: .84rem; margin-top: 10px; line-height: 1.4; }
+    .days { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 0 0 48px; }
+    article.day { background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow); padding: 24px; }
+    .date { color: var(--gold); font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    article.day h3 { color: var(--navy); font: 400 2rem/1 Georgia, serif; margin: 16px 0 12px; }
+    .copy, .meta { color: var(--ink-soft); line-height: 1.55; margin: 0 0 8px; font-size: .9rem; }
+    .copy strong { color: var(--navy); font-weight: 600; }
+    .items { margin: 14px 0 0; padding: 0; list-style: none; }
+    .items li { padding: 8px 0; border-top: 1px solid var(--line); line-height: 1.45; color: var(--ink-soft); font-size: .88rem; }
+    .items strong { color: var(--navy); }
+    .confirm, .flight a { color: var(--gold); }
+    .map-wrap { margin: 16px 0 8px; border: 1px solid var(--line); overflow: hidden; background: #e6edf2; }
+    .map-wrap iframe { display: block; width: 100%; height: 180px; border: 0; }
+    .map-wrap a { display: block; padding: 8px 12px; font-size: .75rem; color: var(--navy); text-decoration: none; }
+    .trips h2 { color: var(--navy); font: 400 clamp(2rem, 5vw, 3.4rem)/.95 Georgia, serif; margin: 0 0 18px; }
+    .trip { background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow); padding: 20px 22px; margin: 0 0 12px; display: grid; grid-template-columns: 1.5fr .8fr; gap: 12px; }
+    .trip h3 { color: var(--navy); font: 400 1.7rem/1.1 Georgia, serif; margin: 6px 0 8px; }
+    .count { color: var(--gold); font-variant-numeric: tabular-nums; font-weight: 700; }
+    .live { color: #197a45; font-weight: 700; }
+    .done { color: var(--ink-soft); }
+    footer { color: var(--ink-soft); font-size: .72rem; border-top: 1px solid var(--line); padding: 18px 0 48px; margin-top: 28px; line-height: 1.5; }
+    .error { padding: 20px; border: 1px solid #e3c4c4; color: #8a3030; background: #fff6f6; }
+    @media (max-width: 800px) {
+      .wrap { width: min(100% - 30px, 1160px); }
+      nav { padding-bottom: 28px; }
+      .clocks, .days, .trip { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <a class="brand" href="../">Álvaro GT</a>
+        <div class="access">
+          <div class="access-row">
+            <span id="google-status" class="access-status">Acceso · comprobando</span>
+            <button id="google-sign-in" class="demo" type="button">Entrar</button>
+            <button id="google-sign-out" class="demo" type="button" hidden>Salir</button>
+          </div>
+          <form class="jump" id="jump-form">
+            <label>Ir a día <input id="jump-day" type="date" required></label>
+            <button id="jump-today" class="demo" type="button">Hoy</button>
+          </form>
+        </div>
+      </nav>
+      <p class="eyebrow">Casa · familia</p>
+      <h1>Viajes</h1>
+    </div>
+  </header>
+
+  <section id="gate" class="wrap" hidden>
+    <div>
+      <h2>Entra con Google</h2>
+      <p>Horas locales. Sin localizadores ni precios.</p>
+      <button id="gate-sign-in" class="demo" type="button">Entrar</button>
+    </div>
+  </section>
+
+  <div id="app" hidden>
+    <main class="wrap">
+      <div id="local-banner" class="banner" hidden></div>
+      <section class="clocks" id="clocks" aria-label="Hora y tiempo"></section>
+      <section class="days" id="days" aria-live="polite"></section>
+      <section class="trips">
+        <p class="eyebrow">Próximos</p>
+        <h2>Resumen de viajes</h2>
+        <div id="trip-list">Cargando…</div>
+      </section>
+      <footer>Fuente de datos: viajes.json · Tiempo: Open-Meteo · Mapa: OpenStreetMap · Vuelos: Flightradar24 (enlace).<br>Creado por Álvaro GT y sus minions</footer>
+    </main>
+  </div>
+
+<script type="module">
+const allowed = ['agarciatimon@gmail.com', 'luzolivas@gmail.com'];
+const prod = ['alvarogt.com', 'www.alvarogt.com'].includes(location.hostname);
+const casa = 'Europe/Madrid';
+const weatherName = code => ({0:'despejado',1:'casi despejado',2:'parcialmente nuboso',3:'nuboso',45:'niebla',48:'niebla',51:'llovizna',53:'llovizna',55:'llovizna',61:'lluvia',63:'lluvia',65:'lluvia',71:'nieve',73:'nieve',75:'nieve',80:'chubascos',81:'chubascos',82:'chubascos',95:'tormenta',96:'tormenta',99:'tormenta'}[code] || 'tiempo variable');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ymd = (tz, date = new Date()) => new Intl.DateTimeFormat('en-CA', {timeZone: tz, year:'numeric', month:'2-digit', day:'2-digit'}).format(date);
+const addDay = (key, n) => { const d = new Date(key + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const pretty = (key, tz) => new Intl.DateTimeFormat('es-ES', {timeZone: tz || casa, weekday:'long', day:'numeric', month:'long'}).format(new Date(key + 'T12:00:00Z'));
+const clockFmt = tz => new Intl.DateTimeFormat('es-ES', {timeZone: tz, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+const covers = (start, end, day) => day >= start && day <= end;
+const inRange = (est, day) => covers(est.desde, est.hasta, day);
+let chosenDate = null;
+const fechaParam = () => {
+  const q = new URLSearchParams(location.search).get('fecha');
+  return /^\d{4}-\d{2}-\d{2}$/.test(q || '') ? q : null;
+};
+const todayKey = () => chosenDate || fechaParam() || ymd(casa);
+function isSimulated() {
+  return todayKey() !== ymd(casa);
+}
+function syncJump() {
+  const input = document.querySelector('#jump-day');
+  if (input) input.value = todayKey();
+  const box = document.querySelector('#local-banner');
+  if (!box) return;
+  if (isSimulated()) {
+    box.hidden = false;
+    box.textContent = `Día visto · ${pretty(todayKey(), casa)}`;
+  } else if (!prod) {
+    box.hidden = false;
+    box.textContent = 'Modo local · sin login de producción.';
+  } else {
+    box.hidden = true;
+    box.textContent = '';
+  }
+}
+async function goToDay(date) {
+  const real = ymd(casa);
+  chosenDate = (date && /^\d{4}-\d{2}-\d{2}$/.test(date) && date !== real) ? date : null;
+  const url = new URL(location.href);
+  if (chosenDate) url.searchParams.set('fecha', chosenDate);
+  else url.searchParams.delete('fecha');
+  history.replaceState({}, '', url);
+  syncJump();
+  if (!data) return;
+  renderClocks();
+  await Promise.all([renderDays(), renderTrips()]);
+}
+
+function placeOn(viaje, day) {
+  const dia = (viaje.dias || []).find(d => d.fecha === day);
+  if (dia?.donde) return {
+    label: dia.donde, timezone: dia.timezone, latitud: dia.latitud, longitud: dia.longitud,
+    hotel: dia.hotel, plan: dia.plan, items: dia.items || [], vuelos: dia.vuelos || [],
+    etiqueta: dia.etiqueta, detalle: viaje.detalle, titulo: viaje.titulo, quien: viaje.quien,
+    fuente: dia.fuente, estado: dia.estado
+  };
+  const est = (viaje.estancias || []).find(e => inRange(e, day));
+  if (!est) return null;
+  return {
+    label: est.donde, timezone: est.timezone, latitud: est.latitud, longitud: est.longitud,
+    hotel: est.hotel || viaje.hotel, plan: est.plan || '', items: [], vuelos: [],
+    etiqueta: pretty(day, est.timezone), detalle: viaje.detalle, titulo: viaje.titulo, quien: viaje.quien,
+    fuente: diaFuente(viaje), estado: 'estancia'
+  };
+}
+function diaFuente(viaje) {
+  return (viaje.notas && viaje.notas[0]) || '';
+}
+function tripOn(viajes, day) {
+  return viajes.find(v => covers(v.inicio, v.fin, day) && placeOn(v, day)) || viajes.find(v => covers(v.inicio, v.fin, day));
+}
+function daysBetween(from, to) {
+  const [fy, fm, fd] = from.split('-').map(Number);
+  const [ty, tm, td] = to.split('-').map(Number);
+  return Math.round((Date.UTC(ty, tm - 1, td) - Date.UTC(fy, fm - 1, fd)) / 86400000);
+}
+function countdown(viaje, today) {
+  if (today < viaje.inicio) {
+    const n = daysBetween(today, viaje.inicio);
+    return {cls:'count', text: n === 1 ? 'Mañana' : `${n} días`};
+  }
+  if (today <= viaje.fin) return {cls:'live', text:'En curso'};
+  return {cls:'done', text:'Terminado'};
+}
+
+const wxCache = new Map();
+async function forecast(lat, lon, tz) {
+  if (lat == null || lon == null) return null;
+  const key = `${lat},${lon},${tz}`;
+  if (wxCache.has(key)) return wxCache.get(key);
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=${encodeURIComponent(tz || 'auto')}`;
+  const pending = fetch(url).then(r => { if (!r.ok) throw new Error('Open-Meteo'); return r.json(); }).catch(() => null);
+  wxCache.set(key, pending);
+  return pending;
+}
+function wxText(w) {
+  if (!w?.current) return 'Previsión no disponible';
+  const rain = w.daily?.precipitation_probability_max?.[0];
+  const rainBit = rain == null ? '' : ` · lluvia ${rain}%`;
+  return `${w.current.temperature_2m} °C · ${weatherName(w.current.weather_code)}${rainBit}`;
+}
+function osmEmbed(lat, lon) {
+  const d = 0.08;
+  const bbox = [lon - d, lat - d, lon + d, lat + d].join(',');
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${encodeURIComponent(lat + ',' + lon)}`;
+}
+function osmLink(lat, lon) {
+  return `https://www.openstreetmap.org/?mlat=${encodeURIComponent(lat)}&mlon=${encodeURIComponent(lon)}#map=11/${encodeURIComponent(lat)}/${encodeURIComponent(lon)}`;
+}
+function fr24(code) {
+  return `https://www.flightradar24.com/${encodeURIComponent(String(code).replace(/\s+/g, ''))}`;
+}
+
+let data = null;
+let started = false;
+function thirdPlace(viajes, today, tomorrow) {
+  const nowTrip = tripOn(viajes, today);
+  const nowPlace = nowTrip ? placeOn(nowTrip, today) : null;
+  if (nowPlace) return {when: 'Hoy', trip: nowTrip, place: nowPlace};
+  const nextTrip = tripOn(viajes, tomorrow);
+  const nextPlace = nextTrip ? placeOn(nextTrip, tomorrow) : null;
+  if (nextPlace) return {when: 'Mañana', trip: nextTrip, place: nextPlace};
+  return null;
+}
+
+function renderClocks() {
+  const today = todayKey();
+  const tomorrow = addDay(today, 1);
+  const extra = thirdPlace(data.viajes, today, tomorrow);
+  const boxes = [
+    ...data.clocks.map(c => ({...c, when: 'Casa'})),
+    extra ? {
+      id: 'viaje',
+      label: extra.place.label,
+      timezone: extra.place.timezone,
+      latitud: extra.place.latitud,
+      longitud: extra.place.longitud,
+      when: extra.when
+    } : {id: 'viaje', label: 'Sin viaje', timezone: null, when: 'Hoy', empty: true}
+  ];
+  document.querySelector('#clocks').innerHTML = boxes.map(c => `
+    <article class="clock-box" data-clock="${esc(c.id)}">
+      <div class="when">${esc(c.when)}</div>
+      <h2>${esc(c.label)}</h2>
+      <div class="time" data-tz="${esc(c.timezone || '')}">—</div>
+      <div class="wx" data-wx="${esc(c.id)}">${c.empty ? 'No hay lugar de viaje listado hoy.' : 'Consultando…'}</div>
+    </article>`).join('');
+  boxes.filter(c => !c.empty && c.timezone).forEach(async c => {
+    const w = await forecast(c.latitud, c.longitud, c.timezone);
+    const el = document.querySelector(`[data-wx="${CSS.escape(c.id)}"]`);
+    if (el) el.textContent = wxText(w) + ' · Open-Meteo';
+  });
+}
+
+function tick() {
+  document.querySelectorAll('[data-tz]').forEach(el => {
+    const tz = el.dataset.tz;
+    if (!tz) return;
+    el.textContent = clockFmt(tz).format(new Date());
+  });
+}
+
+function dayCard(label, dayKey, viajes) {
+  const trip = tripOn(viajes, dayKey);
+  const place = trip ? placeOn(trip, dayKey) : null;
+  if (!place) {
+    return `<article class="day"><div class="date">${esc(label)} · ${esc(pretty(dayKey, casa))}</div><h3>${esc(label)}</h3><p class="copy">Sin viaje este día.</p></article>`;
+  }
+  const flightCodes = (place.vuelos || []).map(v => v.codigo).filter(Boolean);
+  const items = (place.items || []).filter(it => !flightCodes.some(c => String(it.texto).includes(c))).map(it => `<li><strong>${esc(it.hora || '')}</strong> ${esc(it.texto)}${it.confirmar ? ' <span class="confirm">· Confirmar en la app</span>' : ''}</li>`).join('');
+  const flights = (place.vuelos || []).map(v => `<li class="flight"><strong>${esc(v.codigo)}</strong> ${esc(v.ruta)}${v.nota ? ` · ${esc(v.nota)}` : ''} · <a href="${esc(fr24(v.codigo))}" target="_blank" rel="noopener">Flightradar24</a></li>`).join('');
+  const link = place.detalle ? `<p class="meta"><a href="${esc(place.detalle)}">Detalle del viaje →</a></p>` : '';
+  const hotel = place.hotel ? `<p class="copy"><strong>Hotel:</strong> ${esc(place.hotel)}</p>` : '';
+  const map = (place.latitud != null && place.longitud != null) ? `<div class="map-wrap"><iframe title="Mapa ${esc(place.label)}" src="${esc(osmEmbed(place.latitud, place.longitud))}" loading="lazy"></iframe><a href="${esc(osmLink(place.latitud, place.longitud))}" target="_blank" rel="noopener">OpenStreetMap · ${esc(place.label)}</a></div>` : '';
+  return `<article class="day">
+    <div class="date">${esc(label)} · ${esc(pretty(dayKey, place.timezone || casa))}</div>
+    <h3>${esc(place.titulo)}</h3>
+    <p class="copy"><strong>Dónde:</strong> ${esc(place.label)}</p>
+    <p class="copy"><strong>Quién:</strong> ${esc(place.quien)}</p>
+    ${hotel}
+    ${place.plan ? `<p class="copy">${esc(place.plan)}</p>` : ''}
+    <p class="wx-day copy" data-day-wx="${esc(dayKey)}">Tiempo: consultando…</p>
+    ${map}
+    <ul class="items">${flights}${items}</ul>
+    ${link}
+  </article>`;
+}
+
+async function renderDays() {
+  const today = todayKey();
+  const tomorrow = addDay(today, 1);
+  document.querySelector('#days').innerHTML = dayCard('Hoy', today, data.viajes) + dayCard('Mañana', tomorrow, data.viajes);
+  for (const key of [today, tomorrow]) {
+    const trip = tripOn(data.viajes, key);
+    const place = trip ? placeOn(trip, key) : null;
+    const el = document.querySelector(`[data-day-wx="${CSS.escape(key)}"]`);
+    if (!el || !place) continue;
+    const w = await forecast(place.latitud, place.longitud, place.timezone);
+    el.textContent = `Tiempo: ${wxText(w)} · Open-Meteo`;
+  }
+}
+
+async function renderTrips() {
+  const today = todayKey();
+  const cards = await Promise.all(data.viajes.map(async v => {
+    const cd = countdown(v, today);
+    const place = covers(v.inicio, v.fin, today)
+      ? (placeOn(v, today) || v.lugar_principal)
+      : v.lugar_principal;
+    const w = place ? await forecast(place.latitud, place.longitud, place.timezone) : null;
+    const cities = v.ciudades || place?.label || v.lugar_principal?.label || '';
+    const dates = new Intl.DateTimeFormat('es-ES', {day:'numeric', month:'short', timeZone: casa}).format(new Date(v.inicio + 'T12:00:00Z'))
+      + ' – ' +
+      new Intl.DateTimeFormat('es-ES', {day:'numeric', month:'short', timeZone: casa}).format(new Date(v.fin + 'T12:00:00Z'));
+    return `<article class="trip">
+      <div>
+        <div class="eyebrow">${esc(dates)}</div>
+        <h3>${esc(v.titulo)}</h3>
+        <p class="meta">${esc(v.quien)}</p>
+        <p class="meta">${esc(cities)}</p>
+        ${v.detalle ? `<p class="meta"><a href="${esc(v.detalle)}">Abrir detalle →</a></p>` : ''}
+      </div>
+      <div>
+        <p class="${cd.cls}">${esc(cd.text)}</p>
+        <p class="meta">${wxText(w)} · ahora</p>
+      </div>
+    </article>`;
+  }));
+  document.querySelector('#trip-list').innerHTML = cards.join('');
+}
+
+async function startApp() {
+  if (started) return;
+  started = true;
+  const payload = await fetch('viajes.json', {cache: 'no-store'}).then(r => { if (!r.ok) throw new Error('json'); return r.json(); });
+  if (payload.schema_version !== 1 || !Array.isArray(payload.viajes)) throw new Error('schema');
+  data = payload;
+  document.querySelector('#app').hidden = false;
+  chosenDate = fechaParam();
+  syncJump();
+  renderClocks();
+  tick();
+  setInterval(tick, 1000);
+  await Promise.all([renderDays(), renderTrips()]);
+}
+
+function showLocal() {
+  document.querySelector('#gate').hidden = true;
+  startApp().catch(() => {
+    document.querySelector('#trip-list').innerHTML = '<p class="error">No se ha podido cargar viajes.json.</p>';
+    document.querySelector('#app').hidden = false;
+  });
+}
+
+const status = document.querySelector('#google-status');
+const signIn = document.querySelector('#google-sign-in');
+const signOut = document.querySelector('#google-sign-out');
+const setStatus = text => { status.textContent = text; };
+
+async function setupGoogle() {
+  if (!['localhost', '127.0.0.1', 'alvarogt.com', 'www.alvarogt.com', 'tablongo.web.app', 'tablongo.firebaseapp.com'].includes(location.hostname)) {
+    setStatus('Acceso · dominio no autorizado');
+    return;
+  }
+  try {
+    const config = await fetch('/tablon/firebase.public.json').then(r => r.json());
+    const [{initializeApp}, auth] = await Promise.all([
+      import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js'),
+      import('https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js')
+    ]);
+    const app = initializeApp(config);
+    const service = auth.getAuth(app);
+    await auth.setPersistence(service, auth.browserLocalPersistence);
+    const provider = new auth.GoogleAuthProvider();
+    provider.setCustomParameters({prompt: 'select_account'});
+    const enter = user => {
+      const email = (user.email || '').toLowerCase();
+      if (!allowed.includes(email)) {
+        auth.signOut(service);
+        setStatus('Cuenta no autorizada');
+        document.querySelector('#gate').hidden = false;
+        document.querySelector('#app').hidden = true;
+        return;
+      }
+      setStatus(user.displayName || user.email);
+      signIn.hidden = true;
+      signOut.hidden = false;
+      document.querySelector('#gate').hidden = true;
+      startApp().catch(() => {
+        document.querySelector('#app').hidden = false;
+        document.querySelector('#trip-list').innerHTML = '<p class="error">No se ha podido cargar viajes.json.</p>';
+      });
+    };
+    auth.onAuthStateChanged(service, user => {
+      if (!user) {
+        setStatus('Sin sesión');
+        signIn.hidden = false;
+        signOut.hidden = true;
+        if (prod) {
+          document.querySelector('#gate').hidden = false;
+          document.querySelector('#app').hidden = true;
+        } else showLocal();
+        return;
+      }
+      enter(user);
+    });
+    const login = async () => {
+      try {
+        setStatus('Google · entrando…');
+        await auth.signInWithPopup(service, provider);
+      } catch (e) {
+        setStatus('Google · ' + (e.code || 'error'));
+      }
+    };
+    signIn.addEventListener('click', login);
+    document.querySelector('#gate-sign-in').addEventListener('click', login);
+    signOut.addEventListener('click', () => auth.signOut(service));
+  } catch (e) {
+    setStatus('Acceso · configuración no disponible');
+    if (!prod) showLocal();
+    else document.querySelector('#gate').hidden = false;
+  }
+}
+
+if (!prod && (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:')) {
+  setupGoogle();
+} else if (prod) {
+  document.querySelector('#gate').hidden = false;
+  setupGoogle();
+} else {
+  setStatus('Acceso · dominio no autorizado');
+}
+document.querySelector('#jump-form').addEventListener('submit', e => {
+  e.preventDefault();
+  goToDay(document.querySelector('#jump-day').value);
+});
+document.querySelector('#jump-day').addEventListener('change', e => goToDay(e.target.value));
+document.querySelector('#jump-today').addEventListener('click', () => goToDay(null));
+</script>
+</body>
+</html>
