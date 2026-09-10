@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Entrar · García Olivas</title>
+  <style>
+    :root{color-scheme:dark;--bg:#11120f;--paper:#f0eee7;--muted:#aaa99f;--line:#30332d;--green:#ffb86b}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%}body{background:radial-gradient(circle at 85% 0,#2d3320 0,#11120f 40%),var(--bg);color:var(--paper);font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;display:flex;min-height:100vh;align-items:center}
+    .wrap{width:min(420px,calc(100% - 36px));margin:auto}
+    .kicker{font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;color:var(--green)}
+    h1{font:400 2.6rem/1 Georgia,serif;letter-spacing:-.04em;margin:18px 0 12px}
+    p{color:var(--muted);line-height:1.5}
+    button{margin-top:18px;padding:12px 16px;border:1px solid var(--green);border-radius:999px;background:transparent;color:var(--paper);font-size:1rem;cursor:pointer}
+    button:hover,button:focus{background:var(--green);color:var(--bg)}
+    .err{margin-top:16px;color:#f2c5b9}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="kicker">Casa · GO</div>
+    <h1>Entra con Google</h1>
+    <p>Solo las cuentas de casa. El resto se queda fuera.</p>
+    <button type="button" id="entrar">Continuar con Google</button>
+    <p class="err" id="err" hidden></p>
+  </div>
+  <script type="module">
+    const err = document.querySelector('#err');
+    const show = (m) => { err.hidden = false; err.textContent = m; };
+    const cfg = await fetch('/auth/config', {cache:'no-store'}).then(r => {
+      if (!r.ok) throw new Error('config');
+      return r.json();
+    }).catch(() => { show('No hay configuración de Firebase en este servidor.'); return null; });
+    if (!cfg) throw new Error('config');
+    const [{ initializeApp }, { getAuth, GoogleAuthProvider, signInWithPopup }] = await Promise.all([
+      import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js'),
+      import('https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js'),
+    ]);
+    const app = initializeApp(cfg);
+    const auth = getAuth(app);
+    document.querySelector('#entrar').addEventListener('click', async () => {
+      err.hidden = true;
+      try {
+        const cred = await signInWithPopup(auth, new GoogleAuthProvider());
+        const idToken = await cred.user.getIdToken();
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          credentials: 'same-origin',
+          body: JSON.stringify({idToken}),
+        });
+        if (res.status === 403) { show('Esta cuenta no entra en GO.'); return; }
+        if (!res.ok) { show('No se ha podido entrar. Prueba otra vez.'); return; }
+        location.href = '/';
+      } catch (e) {
+        show('No se ha podido abrir Google. Prueba otra vez.');
+      }
+    });
+  </script>
+</body>
+</html>

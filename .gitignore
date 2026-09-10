@@ -2,3 +2,6 @@ ACTUALIZAR.md
 .DS_Store
 firebase.local.json
 tablon/firebase.local.json
+.env
+go/.env
+go/server/go-server
