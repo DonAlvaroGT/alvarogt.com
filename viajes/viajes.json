@@ -195,8 +195,7 @@
       "quien": "Maribel y Agustín",
       "notas": [
         "Nautalia Atenas + crucero",
-        "Horarios Iberia publicados; el PDF llevaba 10:40 y 15:55",
-        "Puertos del crucero sin día asignado en la fuente"
+        "Crucero Celestyal Olympia · cabina exterior · embarque Lavrio"
       ],
       "lugar_principal": {
         "label": "Atenas",
@@ -212,8 +211,7 @@
           "donde": "Atenas",
           "timezone": "Europe/Athens",
           "latitud": 37.98376,
-          "longitud": 23.72784,
-          "plan": "Acrópolis, Epidauro, Nauplia · 24 libre"
+          "longitud": 23.72784
         },
         {
           "desde": "2026-09-25",
@@ -222,8 +220,7 @@
           "timezone": "Europe/Athens",
           "latitud": 37.71445,
           "longitud": 24.05647,
-          "hotel": "Celestyal Olympia",
-          "plan": "Puertos listados sin día: Mykonos, Creta/Knossos, Santorini, Kusadasi/Éfeso, Patmos"
+          "plan": "Crucero Celestyal Olympia · cabina exterior · embarque Lavrio"
         }
       ],
       "dias": [
@@ -234,12 +231,16 @@
           "timezone": "Europe/Athens",
           "latitud": 37.98376,
           "longitud": 23.72784,
-          "plan": "Llegada a Atenas.",
+          "estado": "plan",
+          "fuente": "Álvaro, 10 sep 2026",
+          "fecha_comprobacion": "2026-09-10",
+          "prioridad": 2,
+          "plan": "Llegada, descanso, cena y hotel.",
           "vuelos": [
             {
               "codigo": "IB833",
               "ruta": "MAD 10:30 → ATH 15:15",
-              "nota": "Horas locales. Iberia publicados. El PDF llevaba 10:40."
+              "nota": "Horas locales. Confirmar en la app."
             }
           ],
           "items": [
@@ -248,11 +249,33 @@
               "texto": "IB833 MAD → ATH 15:15",
               "confirmar": true
             }
-          ],
+          ]
+        },
+        {
+          "fecha": "2026-09-22",
+          "etiqueta": "Mar 22",
+          "donde": "Atenas",
+          "timezone": "Europe/Athens",
+          "latitud": 37.98376,
+          "longitud": 23.72784,
           "estado": "plan",
-          "fuente": "Álvaro, 10 sep 2026 · horarios Iberia publicados",
+          "fuente": "Álvaro, 10 sep 2026",
           "fecha_comprobacion": "2026-09-10",
-          "prioridad": 2
+          "prioridad": 2,
+          "plan": "Atenas panorámica + Acrópolis."
+        },
+        {
+          "fecha": "2026-09-23",
+          "etiqueta": "Mié 23",
+          "donde": "Atenas",
+          "timezone": "Europe/Athens",
+          "latitud": 37.98376,
+          "longitud": 23.72784,
+          "estado": "plan",
+          "fuente": "Álvaro, 10 sep 2026",
+          "fecha_comprobacion": "2026-09-10",
+          "prioridad": 2,
+          "plan": "Canal de Corinto, Epidauro, Nauplia, vuelta a Atenas."
         },
         {
           "fecha": "2026-09-24",
@@ -261,38 +284,118 @@
           "timezone": "Europe/Athens",
           "latitud": 37.98376,
           "longitud": 23.72784,
-          "plan": "Día libre en Atenas.",
+          "estado": "opcional",
+          "fuente": "Álvaro, 10 sep 2026",
+          "fecha_comprobacion": "2026-09-10",
+          "prioridad": 2,
+          "plan": "Día libre en Atenas. Opcional Delfos."
+        },
+        {
+          "fecha": "2026-09-25",
+          "etiqueta": "Vie 25",
+          "donde": "Mykonos",
+          "timezone": "Europe/Athens",
+          "latitud": 37.44529,
+          "longitud": 25.32872,
           "estado": "plan",
           "fuente": "Álvaro, 10 sep 2026",
           "fecha_comprobacion": "2026-09-10",
-          "prioridad": 2
+          "prioridad": 2,
+          "plan": "Bus a Lavrio. Embarque y zarpa 13:00. Mykonos 18:00–23:00.",
+          "items": [
+            {
+              "hora": "13:00",
+              "texto": "Zarpa desde Lavrio",
+              "confirmar": false
+            },
+            {
+              "hora": "18:00–23:00",
+              "texto": "Mykonos",
+              "confirmar": false
+            }
+          ]
+        },
+        {
+          "fecha": "2026-09-26",
+          "etiqueta": "Sáb 26",
+          "donde": "Heraclión",
+          "timezone": "Europe/Athens",
+          "latitud": 35.32787,
+          "longitud": 25.14341,
+          "estado": "plan",
+          "fuente": "Álvaro, 10 sep 2026",
+          "fecha_comprobacion": "2026-09-10",
+          "prioridad": 2,
+          "plan": "Heraclión/Knossos 07:00–12:00 y Santorini 16:30–21:30.",
+          "items": [
+            {
+              "hora": "07:00–12:00",
+              "texto": "Heraclión / Knossos",
+              "confirmar": false
+            },
+            {
+              "hora": "16:30–21:30",
+              "texto": "Santorini",
+              "confirmar": false
+            }
+          ]
+        },
+        {
+          "fecha": "2026-09-27",
+          "etiqueta": "Dom 27",
+          "donde": "Kusadasi",
+          "timezone": "Europe/Istanbul",
+          "latitud": 37.86014,
+          "longitud": 27.25713,
+          "estado": "plan",
+          "fuente": "Álvaro, 10 sep 2026",
+          "fecha_comprobacion": "2026-09-10",
+          "prioridad": 2,
+          "plan": "Kusadasi/Éfeso 07:00–13:00 y Patmos 16:30–21:30.",
+          "items": [
+            {
+              "hora": "07:00–13:00",
+              "texto": "Kusadasi / Éfeso",
+              "confirmar": false
+            },
+            {
+              "hora": "16:30–21:30",
+              "texto": "Patmos",
+              "confirmar": false
+            }
+          ]
         },
         {
           "fecha": "2026-09-28",
           "etiqueta": "Lun 28",
-          "donde": "Atenas",
+          "donde": "Lavrio",
           "timezone": "Europe/Athens",
-          "latitud": 37.98376,
-          "longitud": 23.72784,
-          "plan": "Vuelta a Madrid.",
+          "latitud": 37.71445,
+          "longitud": 24.05647,
+          "estado": "plan",
+          "fuente": "Álvaro, 10 sep 2026",
+          "fecha_comprobacion": "2026-09-10",
+          "prioridad": 2,
+          "plan": "Lavrio 06:00. Transfer a ATH.",
           "vuelos": [
             {
               "codigo": "IB834",
               "ruta": "ATH 16:00 → MAD 18:55",
-              "nota": "Horas locales. Iberia publicados. El PDF llevaba 15:55."
+              "nota": "Horas locales. Confirmar en la app."
             }
           ],
           "items": [
+            {
+              "hora": "06:00",
+              "texto": "Lavrio",
+              "confirmar": false
+            },
             {
               "hora": "16:00",
               "texto": "IB834 ATH → MAD 18:55",
               "confirmar": true
             }
-          ],
-          "estado": "plan",
-          "fuente": "Álvaro, 10 sep 2026 · horarios Iberia publicados",
-          "fecha_comprobacion": "2026-09-10",
-          "prioridad": 2
+          ]
         }
       ],
       "ciudades": "Atenas · Egeo"
@@ -416,7 +519,7 @@
       "fin": "2026-11-22",
       "quien": "Agus (Gusito), Pauli, Patri",
       "notas": [
-        "Fuente Notion, con discrepancias marcadas frente a horarios publicados",
+        "Horarios publicados para los tramos internos; Notion solo se conserva como discrepancia cuando procede",
         "Tras el 14, Agus sigue norte (Chiang Mai / Chiang Rai) hasta el 20–22"
       ],
       "lugar_principal": {
@@ -550,19 +653,19 @@
           "vuelos": [
             {
               "codigo": "FD3229",
-              "ruta": "DMK → Krabi 09:45–11:10",
-              "nota": "Horario publicado. Notion aún 10:45–12:10."
+              "ruta": "todos · DMK T2 → KBV 09:45–11:10",
+              "nota": "Horas locales. Todos. Confirmar en la app. Notion: 10:45–12:10."
             }
           ],
           "items": [
             {
               "hora": "09:45–11:10",
-              "texto": "FD3229 DMK → Krabi (publicado)",
+              "texto": "FD3229 DMK T2 → KBV",
               "confirmar": true
             }
           ],
           "estado": "plan",
-          "fuente": "Álvaro, 10 sep 2026 · horario publicado (Notion distinto)",
+          "fuente": "Álvaro, 10 sep 2026 · horario publicado (Notion discrepante)",
           "fecha_comprobacion": "2026-09-10",
           "prioridad": 4
         },
@@ -577,29 +680,29 @@
           "vuelos": [
             {
               "codigo": "FD3077",
-              "ruta": "Agus · KBV 15:25 → CNX 17:25",
-              "nota": "Notion pone FD3229, mal."
+              "ruta": "solo Agus · KBV 15:25 → CNX T2 17:25",
+              "nota": "Horas locales. Solo Agus. Confirmar en la app. Notion pone FD3229, mal."
             },
             {
               "codigo": "FD3226",
-              "ruta": "Pauli/Patri · KBV 16:45 → DMK 18:15",
-              "nota": "Horas locales."
+              "ruta": "Pauli y Patri · KBV 16:45 → DMK T2 18:15",
+              "nota": "Horas locales. Pauli y Patri. Confirmar en la app."
             }
           ],
           "items": [
             {
               "hora": "15:25",
-              "texto": "Agus FD3077 KBV → CNX 17:25",
+              "texto": "Agus · FD3077 KBV → CNX T2 17:25",
               "confirmar": true
             },
             {
               "hora": "16:45",
-              "texto": "Pauli/Patri FD3226 KBV → DMK 18:15",
+              "texto": "Pauli y Patri · FD3226 KBV → DMK T2 18:15",
               "confirmar": true
             }
           ],
           "estado": "plan",
-          "fuente": "Álvaro, 10 sep 2026 · Notion corregido en FD3077",
+          "fuente": "Álvaro, 10 sep 2026 · horarios publicados (Notion discrepante en FD3077)",
           "fecha_comprobacion": "2026-09-10",
           "prioridad": 4
         },
@@ -668,19 +771,19 @@
           "vuelos": [
             {
               "codigo": "FD3202",
-              "ruta": "Agus · CEI 14:00 → DMK 15:20",
-              "nota": "Horas locales."
+              "ruta": "solo Agus · CEI 14:00 → DMK T2 15:20",
+              "nota": "Horas locales. Solo Agus. Confirmar en la app."
             }
           ],
           "items": [
             {
               "hora": "14:00",
-              "texto": "FD3202 CEI → DMK 15:20",
+              "texto": "Agus · FD3202 CEI → DMK T2 15:20",
               "confirmar": true
             }
           ],
           "estado": "plan",
-          "fuente": "Álvaro, 10 sep 2026 · Notion",
+          "fuente": "Álvaro, 10 sep 2026 · horario publicado",
           "fecha_comprobacion": "2026-09-10",
           "prioridad": 4
         },
