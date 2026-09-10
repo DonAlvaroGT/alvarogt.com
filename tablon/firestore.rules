@@ -93,13 +93,16 @@ service cloud.firestore {
     match /history/{id} { allow read: if adult(); allow write: if false; }
 
     // GO (go_data, go_sports y el resto): solo las dos de casa.
-    // Viajes (casa_json/viajes): esas dos más isabelgarciatimon@gmail.com. Solo lectura.
+    // Viajes (casa_json/viajes): esas dos más las cuatro de lectura. Solo lectura.
     function viajesReader() {
       return signedIn()
         && request.auth.token.email in [
           'agarciatimon@gmail.com',
           'luzolivas@gmail.com',
-          'isabelgarciatimon@gmail.com'
+          'isabelgarciatimon@gmail.com',
+          'garciatimon@gmail.com',
+          'agustingarciayperez@gmail.com',
+          'agustingarciatimon@gmail.com'
         ];
     }
     match /casa_json/{id} {
