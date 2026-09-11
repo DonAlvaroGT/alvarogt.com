@@ -4,14 +4,44 @@
   "descripcion": "",
   "zona_horaria": "Europe/Madrid",
   "activacion_consejo_agenda": "2026-09-11T00:00:00+02:00",
-  "actualizado": "2026-09-09",
+  "actualizado": "2026-09-11",
   "hoy": {
-    "fecha": "2026-09-08",
-    "modo": "prep",
-    "titulo": "Preparar el viaje",
-    "texto": "Previsión disponible para Disneyland Paris: hoy, 16,1–26,7 °C y chubascos (85%); el miércoles 9, 12,0–20,7 °C y nuboso; el jueves 10, 7,6–21,3 °C y niebla. Consultarla de nuevo antes de cerrar las maletas.",
-    "fuente": "Open-Meteo, consultado el 8 de septiembre de 2026; datos del viaje viaje.json",
-    "agenda": []
+    "fecha": "2026-09-11",
+    "modo": "dawn",
+    "titulo": "Disneyland Park por la tarde",
+    "texto": "Hoy toca el parque grande. Llegamos a las 15:00. Empezamos por Star Tours y Buzz si gustan Star Wars y jugar; después Pirates o it’s a small world según las colas. Disney Stars on Parade y Disney Tales of Magic se confirman en la app.",
+    "fuente": "Plan del viaje, viaje.json",
+    "agenda": [
+      {
+        "hora": "15:00",
+        "texto": "Llegada al parque grande (Disneyland); priorizar Star Tours y Buzz si encajan con los intereses de los niños.",
+        "confirmar": false
+      },
+      {
+        "hora": "después",
+        "texto": "Elegir Pirates o it’s a small world según las colas.",
+        "confirmar": false
+      },
+      {
+        "hora": "17:30",
+        "texto": "Disney Stars on Parade.",
+        "confirmar": true
+      },
+      {
+        "hora": "21:00",
+        "texto": "Disney Tales of Magic, al cierre.",
+        "confirmar": true
+      },
+      {
+        "hora": "13:30 / 16:05 / 17:05",
+        "texto": "The Lion King: Rhythms of the Pride Lands (Disneyland Park).",
+        "confirmar": true
+      },
+      {
+        "hora": "Espectáculos",
+        "texto": "Mickey 14:05/15:10/17:25/18:30 (Adventure World) · Lion King 13:30/16:05/17:05 (Disneyland) · Stars on Parade 17:30 (Disneyland) · Tales of Magic 21:00 (Disneyland) · Cascade of Lights 20:50 (Adventure World)."
+      }
+    ]
   },
   "preparacion": [
     {
