@@ -7,10 +7,10 @@
   "actualizado": "2026-09-11",
   "hoy": {
     "fecha": "2026-09-11",
-    "modo": "dawn",
+    "modo": "after",
     "titulo": "Disneyland Park por la tarde",
-    "texto": "Hoy toca el parque grande. Llegamos a las 15:00. Empezamos por Star Tours y Buzz si gustan Star Wars y jugar; después Pirates o it’s a small world según las colas. Disney Stars on Parade y Disney Tales of Magic se confirman en la app.",
-    "fuente": "Plan del viaje, viaje.json",
+    "texto": "Hoy toca el parque grande (Disneyland, el del castillo), tarde hasta el cierre a las 21:00. Llegamos a las 15:00. Empezamos por Star Tours y Buzz si gustan Star Wars y jugar; después Pirates o it’s a small world según las colas. Disney Stars on Parade ~17:30 por Main Street / Central Plaza. Disney Tales of Magic ~21:00 al cierre: entrar al parque antes. The Lion King en Frontierland Theater, ~16:05 y ~17:05 (el de las 17:05 se pisa con el desfile). Horas de shows orientativas; confirmar en la app.",
+    "fuente": "Plan del viaje; calendario DLP, DLP Stats y página oficial Disney, 11-sep-2026",
     "agenda": [
       {
         "hora": "15:00",
@@ -23,23 +23,19 @@
         "confirmar": false
       },
       {
+        "hora": "16:05 / 17:05",
+        "texto": "The Lion King: Rhythms of the Pride Lands, Frontierland Theater (grande). El de las 17:05 se pisa con el desfile.",
+        "confirmar": true
+      },
+      {
         "hora": "17:30",
-        "texto": "Disney Stars on Parade.",
+        "texto": "Disney Stars on Parade — Main Street / Central Plaza. Recorre desde «it's a small world» al castillo y baja Main Street. TOP TODOS.",
         "confirmar": true
       },
       {
         "hora": "21:00",
-        "texto": "Disney Tales of Magic, al cierre.",
+        "texto": "Disney Tales of Magic — Castillo y fachadas de Main Street, al cierre. Entrar al parque antes del cierre. TOP TODOS.",
         "confirmar": true
-      },
-      {
-        "hora": "13:30 / 16:05 / 17:05",
-        "texto": "The Lion King: Rhythms of the Pride Lands (Disneyland Park).",
-        "confirmar": true
-      },
-      {
-        "hora": "Espectáculos",
-        "texto": "Mickey 14:05/15:10/17:25/18:30 (Adventure World) · Lion King 13:30/16:05/17:05 (Disneyland) · Stars on Parade 17:30 (Disneyland) · Tales of Magic 21:00 (Disneyland) · Cascade of Lights 20:50 (Adventure World)."
       }
     ]
   },
@@ -84,10 +80,10 @@
   "vuelos": [
     {
       "codigo": "AF1001",
-      "detalle": "11-sep · MAD 10:05 → CDG 12:10",
-      "salida": "MAD, terminal T2 (check-in Air France)",
+      "detalle": "11-sep · MAD 10:05 → CDG prevista 12:20",
+      "salida": "MAD, terminal T2 · puerta DE",
       "llegada": "CDG, terminal 2F",
-      "nota": "Confirmar el día en la app de Air France."
+      "nota": "Sigue en hora. Fuente: FlightAware, 11-sep-2026 08:00. Confirmar en la app de Air France."
     },
     {
       "codigo": "AF1100",
@@ -107,7 +103,7 @@
       "fecha": "2026-09-11",
       "etiqueta": "Vie 11",
       "parque": "grande (Disneyland)",
-      "plan": "Llegamos al parque grande a las 15:00. Empezamos por Star Tours y Buzz si gustan Star Wars y jugar; después Pirates o it’s a small world según las colas. Disney Stars on Parade y Disney Tales of Magic se confirman en la app.",
+      "plan": "Hoy toca el parque grande (Disneyland, el del castillo), tarde hasta el cierre a las 21:00. Llegamos a las 15:00. Empezamos por Star Tours y Buzz si gustan Star Wars y jugar; después Pirates o it’s a small world según las colas. Disney Stars on Parade ~17:30 por Main Street / Central Plaza. Disney Tales of Magic ~21:00 al cierre: entrar al parque antes. The Lion King en Frontierland Theater, ~16:05 y ~17:05 (el de las 17:05 se pisa con el desfile). Horas de shows orientativas; confirmar en la app.",
       "agenda": [
         {
           "hora": "15:00",
@@ -120,23 +116,19 @@
           "confirmar": false
         },
         {
+          "hora": "16:05 / 17:05",
+          "texto": "The Lion King: Rhythms of the Pride Lands, Frontierland Theater (grande). El de las 17:05 se pisa con el desfile.",
+          "confirmar": true
+        },
+        {
           "hora": "17:30",
-          "texto": "Disney Stars on Parade.",
+          "texto": "Disney Stars on Parade — Main Street / Central Plaza. Recorre desde «it's a small world» al castillo y baja Main Street. TOP TODOS.",
           "confirmar": true
         },
         {
           "hora": "21:00",
-          "texto": "Disney Tales of Magic, al cierre.",
+          "texto": "Disney Tales of Magic — Castillo y fachadas de Main Street, al cierre. Entrar al parque antes del cierre. TOP TODOS.",
           "confirmar": true
-        },
-        {
-          "hora": "13:30 / 16:05 / 17:05",
-          "texto": "The Lion King: Rhythms of the Pride Lands (Disneyland Park).",
-          "confirmar": true
-        },
-        {
-          "hora": "Espectáculos",
-          "texto": "Mickey 14:05/15:10/17:25/18:30 (Adventure World) · Lion King 13:30/16:05/17:05 (Disneyland) · Stars on Parade 17:30 (Disneyland) · Tales of Magic 21:00 (Disneyland) · Cascade of Lights 20:50 (Adventure World)."
         }
       ]
     },
@@ -144,11 +136,11 @@
       "fecha": "2026-09-12",
       "etiqueta": "Sáb 12",
       "parque": "grande (Disneyland)",
-      "plan": "Entrada a las 8:30 por Extra Magic Time. Empezamos por Big Thunder y seguimos por Alice’s Curious Labyrinth. Por la tarde, personajes y espectáculos.",
+      "plan": "Entrada a las 8:30. Empezamos por Big Thunder y seguimos por Alice’s Curious Labyrinth. Por la tarde, personajes y espectáculos.",
       "agenda": [
         {
           "hora": "8:30",
-          "texto": "Entrada por Extra Magic Time y prioridad a Big Thunder Mountain.",
+          "texto": "Entrada a las 8:30 y prioridad a Big Thunder Mountain.",
           "confirmar": true
         },
         {
@@ -185,7 +177,7 @@
       "agenda": [
         {
           "hora": "8:30",
-          "texto": "Entrada por Extra Magic Time; prioridad a Ratatouille y Spider-Man.",
+          "texto": "Entrada a las 8:30; prioridad a Ratatouille y Spider-Man.",
           "confirmar": true
         },
         {
@@ -268,23 +260,23 @@
     },
     {
       "parque": "Disneyland Park",
-      "zona": "Recorrido de la cabalgata",
+      "zona": "Main Street / Central Plaza",
       "nombre": "Disney Stars on Parade",
-      "horario": "Vie 11, Sáb 12 y Dom 13: 17:30",
-      "descripcion": "Desfile de personajes Disney en carrozas, con música y vestuario colorido.",
+      "horario": "Vie 11 y Sáb 12: ~17:30 (orientativo)",
+      "descripcion": "Desfile de personajes Disney en carrozas, con música y vestuario colorido. Recorre desde «it's a small world» al castillo y baja Main Street.",
       "consejo": "Consejo de Belén: buscar sitio con antelación para verla sin prisas.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
-      "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)",
-      "categoria": "TOP NIÑOS"
+      "fuente": "Disneyland Paris oficial (recorrido) + DLP Stats (hora, 11-sep-2026); confirmar en la app",
+      "categoria": "TOP TODOS"
     },
     {
       "parque": "Disneyland Park",
       "zona": "Castillo de la Bella Durmiente y Main Street U.S.A.",
       "nombre": "Disney Tales of Magic",
-      "horario": "Vie 11: 21:00 · Sáb 12: 22:00 · Dom 13: 22:00",
+      "horario": "Vie 11: ~21:00 (al cierre) · Sáb 12: 22:00 · Dom 13: 22:00",
       "descripcion": "Espectáculo nocturno de proyecciones, efectos y fuegos sobre el castillo.",
-      "consejo": "Consejo de Belén: colocarse sin bloquear una salida si queréis marcharos al terminar.",
+      "consejo": "Entrar al parque antes del cierre; las puertas pueden cerrar antes del nocturno. Consejo de Belén: colocarse sin bloquear una salida si queréis marcharos al terminar.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
       "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)",
@@ -329,7 +321,7 @@
       "nombre": "The Lion King: Rhythms of the Pride Lands",
       "parque": "Disneyland Park",
       "zona": "Frontierland Theater",
-      "horario": "Vie 11: 13:30, 16:05, 17:05 · Sáb 12: 12:30, 13:30, 16:05, 17:05 · Dom 13: 12:30, 13:30, 16:05, 17:05 · Lun 14: 12:30",
+      "horario": "Vie 11: ~16:05, ~17:05 · Sáb 12: 12:30, 13:30, 16:05, 17:05 · Dom 13: 12:30, 13:30, 16:05, 17:05 · Lun 14: 12:30",
       "descripcion": "Espectáculo de El Rey León.",
       "consejo": "Consultar la app para la sesión disponible.",
       "aplicacion": "11–14 septiembre 2026",
@@ -546,7 +538,7 @@
       "fecha": "2026-09-11",
       "dia": "viernes 11",
       "titulo": "Disneyland Park por la tarde",
-      "texto": "Para la primera tarde, priorizar Star Tours y Buzz si gustan Star Wars y jugar; después encajar Pirates o it’s a small world según las colas. Disney Stars on Parade encaja bien con la entrada de tarde. Disney Tales of Magic es un buen cierre del viernes si encaja con el regreso. La app decide horarios y estados."
+      "texto": "Parque grande hasta las 21:00. Priorizar Star Tours y Buzz; después Pirates o it’s a small world según las colas. Disney Stars on Parade ~17:30 por Main Street / Central Plaza (TOP TODOS). Disney Tales of Magic ~21:00 al cierre: entrar al parque antes. Lion King en el grande, Frontierland Theater, ~16:05 y ~17:05; el de las 17:05 se pisa con el desfile. Horas orientativas; confirmar en la app."
     },
     {
       "fecha": "2026-09-12",
@@ -567,7 +559,7 @@
       "texto": "Al ser una mañana corta, escoger solo una zona y una o dos experiencias favoritas; no perseguir las prescindibles. Confirmar parque, horarios y estados en la app antes de salir."
     }
   ],
-  "nota_operativa": "Horarios, cierres, reaperturas, Extra Magic Time y espectáculos pueden cambiar. Confirmar siempre en la app oficial el mismo día. El calendario consultado no permite confirmar cierres de todo el periodo; si una atracción aparece con estado temporal o incierto, comprobar estado en la app. El consejo y la agenda destacados se muestran desde las 00:00, hora Europe/Madrid, y se limitan al día actual del viaje; fuera de las fechas, no se muestran.",
+  "nota_operativa": "Horarios, cierres, reaperturas y espectáculos pueden cambiar. Confirmar siempre en la app oficial el mismo día. El calendario consultado no permite confirmar cierres de todo el periodo; si una atracción aparece con estado temporal o incierto, comprobar estado en la app. El consejo y la agenda destacados se muestran desde las 00:00, hora Europe/Madrid, y se limitan al día actual del viaje; fuera de las fechas, no se muestran.",
   "nota_consejos_amiga": "Consejos de la amiga (verificar en la app/oficial): disfrutad del ambiente y de los espectáculos, y ajustad el recorrido con calma a lo que esté disponible cada día.",
   "nota_opinion_belen": "experiencia personal de otra familia; no es una valoración oficial de Disney.",
   "recomendaciones_belen": [
