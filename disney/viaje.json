@@ -155,17 +155,13 @@
         },
         {
           "hora": "22:00",
-          "texto": "Disney Tales of Magic, al cierre.",
+          "texto": "Disney Tales of Magic, al cierre (~22:00 orientativo, Thrill Data). Confirmar en la app.",
           "confirmar": true
         },
         {
           "hora": "12:30 / 13:30 / 16:05 / 17:05",
           "texto": "The Lion King: Rhythms of the Pride Lands (Disneyland Park).",
           "confirmar": true
-        },
-        {
-          "hora": "Espectáculos",
-          "texto": "Mickey 13:00/14:05/15:10/17:25/18:30 (Adventure World) · Lion King 12:30/13:30/16:05/17:05 (Disneyland) · Stars on Parade 17:30 (Disneyland) · Tales of Magic 22:00 (Disneyland) · Cascade of Lights 21:50 (Adventure World)."
         }
       ]
     },
@@ -201,8 +197,9 @@
           "confirmar": true
         },
         {
-          "hora": "Espectáculos",
-          "texto": "Mickey 13:00/14:05/15:10/17:25/18:30 (Adventure World) · Lion King 12:30/13:30/16:05/17:05 (Disneyland) · Stars on Parade 17:30 (Disneyland) · Tales of Magic 22:00 (Disneyland) · Cascade of Lights 21:50 (Adventure World)."
+          "hora": "Confirmar",
+          "texto": "A Celebration in Arendelle (pequeño, World of Frozen). Sin hora oficial; confirmar en la app.",
+          "confirmar": true
         }
       ]
     },
@@ -274,12 +271,12 @@
       "parque": "Disneyland Park",
       "zona": "Castillo de la Bella Durmiente y Main Street U.S.A.",
       "nombre": "Disney Tales of Magic",
-      "horario": "Vie 11: ~21:00 (al cierre) · Sáb 12: 22:00 · Dom 13: 22:00",
+      "horario": "Vie 11: ~21:00 (al cierre) · Sáb 12 y Dom 13: ~22:00 (orientativo, Thrill Data; confirmar en la app)",
       "descripcion": "Espectáculo nocturno de proyecciones, efectos y fuegos sobre el castillo.",
       "consejo": "Entrar al parque antes del cierre; las puertas pueden cerrar antes del nocturno. Consejo de Belén: colocarse sin bloquear una salida si queréis marcharos al terminar.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
-      "fuente": "Disneyland Paris oficial/app + DLP Stats (secundaria)",
+      "fuente": "Disneyland Paris oficial/app + calendario DLP (vie 11) · Thrill Data (cierre sáb 12 y dom 13, no oficial clic a clic)",
       "categoria": "TOP TODOS"
     },
     {
@@ -325,7 +322,7 @@
       "descripcion": "Espectáculo de El Rey León.",
       "consejo": "Consultar la app para la sesión disponible.",
       "aplicacion": "11–14 septiembre 2026",
-      "fuente": "Disneyland Paris oficial/app",
+      "fuente": "Ubicación: página oficial DLP, 11-sep-2026. Horas vie 11: DLP Stats (orientativo); confirmar en la app",
       "top": true,
       "categoria": "TOP TODOS"
     }
