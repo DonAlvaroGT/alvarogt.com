@@ -9,8 +9,8 @@
     "fecha": "2026-09-12",
     "modo": "after",
     "titulo": "Disneyland Park",
-    "texto": "Hoy toca el parque grande (Disneyland, el del castillo), 09:30–22:00. Empezamos por Big Thunder Mountain y seguimos por Alice’s Curious Labyrinth. Por la tarde, personajes. Disney Stars on Parade ~17:30 por Main Street (orientativo, no garantizado). Disney Tales of Magic (castillo / Main Street) y The Lion King (Frontierland Theater): hora confirmar en la app. Disney dice que hay que estar dentro del parque antes del cierre, que puede ser antes del nocturno. Piratas abierto; confirmar en la app.",
-    "fuente": "Plan del viaje; Otto 12-sep-2026 16:10 (calendario DLP 09:30–22:00; desfile DLP Stats, orientativo). Piratas: Queue-Times/Thrill Data 16:10. Confirmar en la app.",
+    "texto": "Hoy toca el parque grande (Disneyland, el del castillo), 09:30–22:00. Empezamos por Big Thunder Mountain y seguimos por Alice’s Curious Labyrinth. Por la tarde, personajes. Disney Stars on Parade ~17:30 por Main Street (orientativo, no garantizado). Disney Tales of Magic ~22:00 en el castillo / Main Street (orientativo, no garantizado). The Lion King (Frontierland Theater): hora confirmar en la app. Hay que estar dentro antes del cierre (22:00). Piratas e Indiana Jones abiertos; confirmar en la app.",
+    "fuente": "Plan del viaje; Otto 12-sep-2026 20:00 (Tales of Magic ~22:00, DLP Stats, orientativo). Indiana Jones y Piratas: DLP Stats y Queue-Times, 12-sep 20:00. Confirmar en la app.",
     "agenda": [
       {
         "hora": "09:30–22:00",
@@ -33,8 +33,8 @@
         "confirmar": true
       },
       {
-        "hora": "Confirmar en la app",
-        "texto": "Disney Tales of Magic — nocturno, castillo / Main Street (proyecciones y pirotecnia, sin drones; sin fuentes por obras del puente). Estar dentro del parque antes del cierre, que puede ser antes del show. TOP TODOS si sale.",
+        "hora": "~22:00",
+        "texto": "Disney Tales of Magic — nocturno, castillo / Main Street (proyecciones y pirotecnia, sin drones; sin fuentes por obras del puente). Estar dentro del parque antes del cierre (22:00). TOP TODOS. Hora orientativa, no garantizada.",
         "confirmar": true
       },
       {
@@ -141,7 +141,7 @@
       "fecha": "2026-09-12",
       "etiqueta": "Sáb 12",
       "parque": "grande (Disneyland)",
-      "plan": "Hoy toca el parque grande (Disneyland, el del castillo), 09:30–22:00. Empezamos por Big Thunder Mountain y seguimos por Alice’s Curious Labyrinth. Por la tarde, personajes. Disney Stars on Parade ~17:30 por Main Street (orientativo, no garantizado). Disney Tales of Magic (castillo / Main Street) y The Lion King (Frontierland Theater): hora confirmar en la app. Disney dice que hay que estar dentro del parque antes del cierre, que puede ser antes del nocturno. Piratas abierto; confirmar en la app.",
+      "plan": "Hoy toca el parque grande (Disneyland, el del castillo), 09:30–22:00. Empezamos por Big Thunder Mountain y seguimos por Alice’s Curious Labyrinth. Por la tarde, personajes. Disney Stars on Parade ~17:30 por Main Street (orientativo, no garantizado). Disney Tales of Magic ~22:00 en el castillo / Main Street (orientativo, no garantizado). The Lion King (Frontierland Theater): hora confirmar en la app. Hay que estar dentro antes del cierre (22:00). Piratas e Indiana Jones abiertos; confirmar en la app.",
       "agenda": [
         {
           "hora": "09:30–22:00",
@@ -164,8 +164,8 @@
           "confirmar": true
         },
         {
-          "hora": "Confirmar en la app",
-          "texto": "Disney Tales of Magic — nocturno, castillo / Main Street (proyecciones y pirotecnia, sin drones; sin fuentes por obras del puente). Estar dentro del parque antes del cierre, que puede ser antes del show. TOP TODOS si sale.",
+          "hora": "~22:00",
+          "texto": "Disney Tales of Magic — nocturno, castillo / Main Street (proyecciones y pirotecnia, sin drones; sin fuentes por obras del puente). Estar dentro del parque antes del cierre (22:00). TOP TODOS. Hora orientativa, no garantizada.",
           "confirmar": true
         },
         {
@@ -282,14 +282,14 @@
       "parque": "Disneyland Park",
       "zona": "Castillo de la Bella Durmiente y Main Street U.S.A.",
       "nombre": "Disney Tales of Magic",
-      "horario": "Vie 11: ~21:00 (al cierre) · Sáb 12: confirmar en la app · Dom 13: ~22:00 (orientativo, Thrill Data; confirmar en la app)",
+      "horario": "Vie 11: ~21:00 (al cierre) · Sáb 12: ~22:00 (orientativo, DLP Stats; confirmar en la app) · Dom 13: ~22:00 (orientativo, Thrill Data; confirmar en la app)",
       "descripcion": "Espectáculo nocturno de proyecciones, efectos y fuegos sobre el castillo (sin drones; sin fuentes por obras del puente).",
       "consejo": "Entrar al parque antes del cierre; las puertas pueden cerrar antes del nocturno. Consejo de Belén: colocarse sin bloquear una salida si queréis marcharos al terminar.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
-      "fuente": "Disneyland Paris oficial/app. Hora sáb 12: no publicada en calendario DLP, 12-09-2026 06:30 CEST; confirmar en la app",
+      "fuente": "Disneyland Paris oficial/app. Hora sáb 12: DLP Stats, 12-sep-2026 20:00, orientativo, no garantizado; confirmar en la app",
       "categoria": "TOP TODOS",
-      "fecha_comprobacion": "12-09-2026 06:30 CEST"
+      "fecha_comprobacion": "12-09-2026 20:00 CEST"
     },
     {
       "parque": "Disney Adventure World",
@@ -554,7 +554,7 @@
       "fecha": "2026-09-12",
       "dia": "sábado 12",
       "titulo": "Disneyland Park",
-      "texto": "Parque grande 09:30–22:00. Priorizar Big Thunder y después Alice’s Curious Labyrinth. Por la tarde, personajes. Disney Stars on Parade ~17:30 por Main Street (orientativo). Tales of Magic y Lion King: hora confirmar en la app. Estar dentro del parque antes del cierre si queréis el nocturno. Piratas abierto; confirmar en la app. Dumbo, Autopia, Pinocchio y Le Pays des Contes de Fées quedan como opciones secundarias. Ajustar por edades e intereses en la app.",
+      "texto": "Parque grande 09:30–22:00. Priorizar Big Thunder y después Alice’s Curious Labyrinth. Por la tarde, personajes. Disney Stars on Parade ~17:30 por Main Street (orientativo). Disney Tales of Magic ~22:00 en el castillo / Main Street (orientativo). Lion King: hora confirmar en la app. Estar dentro del parque antes del cierre (22:00). Piratas e Indiana Jones abiertos; confirmar en la app. Dumbo, Autopia, Pinocchio y Le Pays des Contes de Fées quedan como opciones secundarias. Ajustar por edades e intereses en la app.",
       "parque": "grande (Disneyland, el del castillo)",
       "zona": "Big Thunder y Alice’s Curious Labyrinth; Main Street para desfile y nocturno"
     },
