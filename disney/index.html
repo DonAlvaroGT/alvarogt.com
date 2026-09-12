@@ -184,7 +184,7 @@
     const adviceFor = date => data.consejos_practicos.find(t=>t.fecha===date) || data.consejos_practicos[0];
     const prepFor = date => date === data.hoy?.fecha ? data.hoy : (data.preparacion || []).find(t=>t.fecha===date);
     const agendaFor = date => data.dias.find(d=>d.fecha===date) || data.dias[0];
-    const emphasis = text => esc(text).replace(/(confirmar en la app|volver al hotel|reservas?\/colas?|TOP|\b(?:Disneyland|Disney Adventure World|Disneyland Park)\b|\b(?:8:30|10:00|13:30|13:45|15:00|17:30|21:00|22:00)\b)/gi, '<strong>$1</strong>');
+    const emphasis = text => esc(text).replace(/(confirmar en la app|volver al hotel|reservas?\/colas?|TOP|\b(?:Disneyland|Disney Adventure World|Disneyland Park)\b|\b(?:8:30|09:30|10:00|13:30|13:45|15:00|17:30|21:00|22:00)\b)/gi, '<strong>$1</strong>');
     const renderDailyFocus = () => {
       const current = dateKey(), duringTrip = new Date() >= new Date(activationDate) && current <= last;
       const box = document.querySelector('#daily-focus');

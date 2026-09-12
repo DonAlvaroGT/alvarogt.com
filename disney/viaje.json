@@ -9,12 +9,12 @@
     "fecha": "2026-09-12",
     "modo": "after",
     "titulo": "Disneyland Park",
-    "texto": "Hoy toca el parque grande (Disneyland, el del castillo). Horario no publicado ahora en el calendario oficial; confirmar en la app. Empezamos por Big Thunder Mountain y seguimos por Alice’s Curious Labyrinth. Por la tarde, personajes. Disney Stars on Parade (Main Street), Disney Tales of Magic (castillo / Main Street) y The Lion King (Frontierland Theater): hora confirmar en la app. Disney dice que hay que estar dentro del parque antes del cierre, que puede ser antes del nocturno.",
-    "fuente": "Plan del viaje; calendario DLP, 12-09-2026 06:30 CEST",
+    "texto": "Hoy toca el parque grande (Disneyland, el del castillo), 09:30–22:00. Empezamos por Big Thunder Mountain y seguimos por Alice’s Curious Labyrinth. Por la tarde, personajes. Disney Stars on Parade ~17:30 por Main Street (orientativo, no garantizado). Disney Tales of Magic (castillo / Main Street) y The Lion King (Frontierland Theater): hora confirmar en la app. Disney dice que hay que estar dentro del parque antes del cierre, que puede ser antes del nocturno. Piratas abierto; confirmar en la app.",
+    "fuente": "Plan del viaje; Otto 12-sep-2026 16:10 (calendario DLP 09:30–22:00; desfile DLP Stats, orientativo). Piratas: Queue-Times/Thrill Data 16:10. Confirmar en la app.",
     "agenda": [
       {
-        "hora": "Confirmar",
-        "texto": "Horario no publicado ahora en el calendario oficial; confirmar en la app.",
+        "hora": "09:30–22:00",
+        "texto": "Parque grande abierto 09:30–22:00.",
         "confirmar": true
       },
       {
@@ -28,8 +28,8 @@
         "confirmar": false
       },
       {
-        "hora": "Confirmar en la app",
-        "texto": "Disney Stars on Parade — desfile, Main Street. TOP TODOS si sale.",
+        "hora": "~17:30",
+        "texto": "Disney Stars on Parade — desfile, Main Street / Central Plaza. TOP TODOS. Hora orientativa, no garantizada.",
         "confirmar": true
       },
       {
@@ -141,11 +141,11 @@
       "fecha": "2026-09-12",
       "etiqueta": "Sáb 12",
       "parque": "grande (Disneyland)",
-      "plan": "Hoy toca el parque grande (Disneyland, el del castillo). Horario no publicado ahora en el calendario oficial; confirmar en la app. Empezamos por Big Thunder Mountain y seguimos por Alice’s Curious Labyrinth. Por la tarde, personajes. Disney Stars on Parade (Main Street), Disney Tales of Magic (castillo / Main Street) y The Lion King (Frontierland Theater): hora confirmar en la app. Disney dice que hay que estar dentro del parque antes del cierre, que puede ser antes del nocturno.",
+      "plan": "Hoy toca el parque grande (Disneyland, el del castillo), 09:30–22:00. Empezamos por Big Thunder Mountain y seguimos por Alice’s Curious Labyrinth. Por la tarde, personajes. Disney Stars on Parade ~17:30 por Main Street (orientativo, no garantizado). Disney Tales of Magic (castillo / Main Street) y The Lion King (Frontierland Theater): hora confirmar en la app. Disney dice que hay que estar dentro del parque antes del cierre, que puede ser antes del nocturno. Piratas abierto; confirmar en la app.",
       "agenda": [
         {
-          "hora": "Confirmar",
-          "texto": "Horario no publicado ahora en el calendario oficial; confirmar en la app.",
+          "hora": "09:30–22:00",
+          "texto": "Parque grande abierto 09:30–22:00.",
           "confirmar": true
         },
         {
@@ -159,8 +159,8 @@
           "confirmar": false
         },
         {
-          "hora": "Confirmar en la app",
-          "texto": "Disney Stars on Parade — desfile, Main Street. TOP TODOS si sale.",
+          "hora": "~17:30",
+          "texto": "Disney Stars on Parade — desfile, Main Street / Central Plaza. TOP TODOS. Hora orientativa, no garantizada.",
           "confirmar": true
         },
         {
@@ -269,14 +269,14 @@
       "parque": "Disneyland Park",
       "zona": "Main Street / Central Plaza",
       "nombre": "Disney Stars on Parade",
-      "horario": "Vie 11: ~17:30 (orientativo) · Sáb 12: confirmar en la app",
+      "horario": "Vie 11: ~17:30 (orientativo) · Sáb 12: ~17:30 (orientativo, DLP Stats; confirmar en la app)",
       "descripcion": "Desfile de personajes Disney en carrozas, con música y vestuario colorido. Recorre desde «it's a small world» al castillo y baja Main Street.",
       "consejo": "Consejo de Belén: buscar sitio con antelación para verla sin prisas.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
-      "fuente": "Disneyland Paris oficial (recorrido). Hora sáb 12: no publicada en calendario DLP, 12-09-2026 06:30 CEST; confirmar en la app",
+      "fuente": "Disneyland Paris oficial (recorrido). Hora sáb 12: DLP Stats, 12-sep-2026 16:10, orientativo, no garantizado; confirmar en la app",
       "categoria": "TOP TODOS",
-      "fecha_comprobacion": "12-09-2026 06:30 CEST"
+      "fecha_comprobacion": "12-09-2026 16:10 CEST"
     },
     {
       "parque": "Disneyland Park",
@@ -554,7 +554,7 @@
       "fecha": "2026-09-12",
       "dia": "sábado 12",
       "titulo": "Disneyland Park",
-      "texto": "Horario no publicado ahora en el calendario oficial; confirmar en la app. Priorizar Big Thunder y después Alice’s Curious Labyrinth. Dumbo, Autopia, Pinocchio y Le Pays des Contes de Fées quedan como opciones secundarias. Stars on Parade, Tales of Magic y Lion King: hora confirmar en la app. Estar dentro del parque antes del cierre si queréis el nocturno. Ajustar por edades e intereses en la app.",
+      "texto": "Parque grande 09:30–22:00. Priorizar Big Thunder y después Alice’s Curious Labyrinth. Por la tarde, personajes. Disney Stars on Parade ~17:30 por Main Street (orientativo). Tales of Magic y Lion King: hora confirmar en la app. Estar dentro del parque antes del cierre si queréis el nocturno. Piratas abierto; confirmar en la app. Dumbo, Autopia, Pinocchio y Le Pays des Contes de Fées quedan como opciones secundarias. Ajustar por edades e intereses en la app.",
       "parque": "grande (Disneyland, el del castillo)",
       "zona": "Big Thunder y Alice’s Curious Labyrinth; Main Street para desfile y nocturno"
     },
