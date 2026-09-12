@@ -4,37 +4,42 @@
   "descripcion": "",
   "zona_horaria": "Europe/Madrid",
   "activacion_consejo_agenda": "2026-09-11T00:00:00+02:00",
-  "actualizado": "2026-09-11",
+  "actualizado": "2026-09-12",
   "hoy": {
-    "fecha": "2026-09-11",
-    "modo": "after",
-    "titulo": "Disneyland Park por la tarde",
-    "texto": "Hoy toca el parque grande (Disneyland, el del castillo), tarde hasta el cierre a las 21:00. Llegamos a las 15:00. Empezamos por Star Tours y Buzz si gustan Star Wars y jugar; después Pirates o it’s a small world según las colas. Disney Stars on Parade ~17:30 por Main Street / Central Plaza. Disney Tales of Magic ~21:00 al cierre: entrar al parque antes. The Lion King en Frontierland Theater, ~16:05 y ~17:05 (el de las 17:05 se pisa con el desfile). Horas de shows orientativas; confirmar en la app.",
-    "fuente": "Plan del viaje; calendario DLP, DLP Stats y página oficial Disney, 11-sep-2026",
+    "fecha": "2026-09-12",
+    "modo": "dawn",
+    "titulo": "Disneyland Park",
+    "texto": "Hoy toca el parque grande (Disneyland, el del castillo). Horario no publicado ahora en el calendario oficial; confirmar en la app. Empezamos por Big Thunder Mountain y seguimos por Alice’s Curious Labyrinth. Por la tarde, personajes. Disney Stars on Parade (Main Street), Disney Tales of Magic (castillo / Main Street) y The Lion King (Frontierland Theater): hora confirmar en la app. Disney dice que hay que estar dentro del parque antes del cierre, que puede ser antes del nocturno.",
+    "fuente": "Plan del viaje; calendario DLP, 12-09-2026 06:30 CEST",
     "agenda": [
       {
-        "hora": "15:00",
-        "texto": "Llegada al parque grande (Disneyland); priorizar Star Tours y Buzz si encajan con los intereses de los niños.",
+        "hora": "Confirmar",
+        "texto": "Horario no publicado ahora en el calendario oficial; confirmar en la app.",
+        "confirmar": true
+      },
+      {
+        "hora": "mañana",
+        "texto": "Prioridad a Big Thunder Mountain.",
         "confirmar": false
       },
       {
         "hora": "después",
-        "texto": "Elegir Pirates o it’s a small world según las colas.",
+        "texto": "Seguir por Alice’s Curious Labyrinth.",
         "confirmar": false
       },
       {
-        "hora": "16:05 / 17:05",
-        "texto": "The Lion King: Rhythms of the Pride Lands, Frontierland Theater (grande). El de las 17:05 se pisa con el desfile.",
+        "hora": "Confirmar en la app",
+        "texto": "Disney Stars on Parade — desfile, Main Street. TOP TODOS si sale.",
         "confirmar": true
       },
       {
-        "hora": "17:30",
-        "texto": "Disney Stars on Parade — Main Street / Central Plaza. Recorre desde «it's a small world» al castillo y baja Main Street. TOP TODOS.",
+        "hora": "Confirmar en la app",
+        "texto": "Disney Tales of Magic — nocturno, castillo / Main Street (proyecciones y pirotecnia, sin drones; sin fuentes por obras del puente). Estar dentro del parque antes del cierre, que puede ser antes del show. TOP TODOS si sale.",
         "confirmar": true
       },
       {
-        "hora": "21:00",
-        "texto": "Disney Tales of Magic — Castillo y fachadas de Main Street, al cierre. Entrar al parque antes del cierre. TOP TODOS.",
+        "hora": "Confirmar en la app",
+        "texto": "The Lion King: Rhythms of the Pride Lands — Frontierland Theater, ~30 min, interior. TOP MAYORES si hay pases. LSF los fines de semana (oficial).",
         "confirmar": true
       }
     ]
@@ -136,12 +141,17 @@
       "fecha": "2026-09-12",
       "etiqueta": "Sáb 12",
       "parque": "grande (Disneyland)",
-      "plan": "Entrada a las 8:30. Empezamos por Big Thunder y seguimos por Alice’s Curious Labyrinth. Por la tarde, personajes y espectáculos.",
+      "plan": "Hoy toca el parque grande (Disneyland, el del castillo). Horario no publicado ahora en el calendario oficial; confirmar en la app. Empezamos por Big Thunder Mountain y seguimos por Alice’s Curious Labyrinth. Por la tarde, personajes. Disney Stars on Parade (Main Street), Disney Tales of Magic (castillo / Main Street) y The Lion King (Frontierland Theater): hora confirmar en la app. Disney dice que hay que estar dentro del parque antes del cierre, que puede ser antes del nocturno.",
       "agenda": [
         {
-          "hora": "8:30",
-          "texto": "Entrada a las 8:30 y prioridad a Big Thunder Mountain.",
+          "hora": "Confirmar",
+          "texto": "Horario no publicado ahora en el calendario oficial; confirmar en la app.",
           "confirmar": true
+        },
+        {
+          "hora": "mañana",
+          "texto": "Prioridad a Big Thunder Mountain.",
+          "confirmar": false
         },
         {
           "hora": "después",
@@ -149,18 +159,18 @@
           "confirmar": false
         },
         {
-          "hora": "17:30",
-          "texto": "Disney Stars on Parade.",
+          "hora": "Confirmar en la app",
+          "texto": "Disney Stars on Parade — desfile, Main Street. TOP TODOS si sale.",
           "confirmar": true
         },
         {
-          "hora": "22:00",
-          "texto": "Disney Tales of Magic, al cierre (~22:00 orientativo, Thrill Data). Confirmar en la app.",
+          "hora": "Confirmar en la app",
+          "texto": "Disney Tales of Magic — nocturno, castillo / Main Street (proyecciones y pirotecnia, sin drones; sin fuentes por obras del puente). Estar dentro del parque antes del cierre, que puede ser antes del show. TOP TODOS si sale.",
           "confirmar": true
         },
         {
-          "hora": "12:30 / 13:30 / 16:05 / 17:05",
-          "texto": "The Lion King: Rhythms of the Pride Lands (Disneyland Park).",
+          "hora": "Confirmar en la app",
+          "texto": "The Lion King: Rhythms of the Pride Lands — Frontierland Theater, ~30 min, interior. TOP MAYORES si hay pases. LSF los fines de semana (oficial).",
           "confirmar": true
         }
       ]
@@ -259,25 +269,27 @@
       "parque": "Disneyland Park",
       "zona": "Main Street / Central Plaza",
       "nombre": "Disney Stars on Parade",
-      "horario": "Vie 11 y Sáb 12: ~17:30 (orientativo)",
+      "horario": "Vie 11: ~17:30 (orientativo) · Sáb 12: confirmar en la app",
       "descripcion": "Desfile de personajes Disney en carrozas, con música y vestuario colorido. Recorre desde «it's a small world» al castillo y baja Main Street.",
       "consejo": "Consejo de Belén: buscar sitio con antelación para verla sin prisas.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
-      "fuente": "Disneyland Paris oficial (recorrido) + DLP Stats (hora, 11-sep-2026); confirmar en la app",
-      "categoria": "TOP TODOS"
+      "fuente": "Disneyland Paris oficial (recorrido). Hora sáb 12: no publicada en calendario DLP, 12-09-2026 06:30 CEST; confirmar en la app",
+      "categoria": "TOP TODOS",
+      "fecha_comprobacion": "12-09-2026 06:30 CEST"
     },
     {
       "parque": "Disneyland Park",
       "zona": "Castillo de la Bella Durmiente y Main Street U.S.A.",
       "nombre": "Disney Tales of Magic",
-      "horario": "Vie 11: ~21:00 (al cierre) · Sáb 12 y Dom 13: ~22:00 (orientativo, Thrill Data; confirmar en la app)",
-      "descripcion": "Espectáculo nocturno de proyecciones, efectos y fuegos sobre el castillo.",
+      "horario": "Vie 11: ~21:00 (al cierre) · Sáb 12: confirmar en la app · Dom 13: ~22:00 (orientativo, Thrill Data; confirmar en la app)",
+      "descripcion": "Espectáculo nocturno de proyecciones, efectos y fuegos sobre el castillo (sin drones; sin fuentes por obras del puente).",
       "consejo": "Entrar al parque antes del cierre; las puertas pueden cerrar antes del nocturno. Consejo de Belén: colocarse sin bloquear una salida si queréis marcharos al terminar.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
-      "fuente": "Disneyland Paris oficial/app + calendario DLP (vie 11) · Thrill Data (cierre sáb 12 y dom 13, no oficial clic a clic)",
-      "categoria": "TOP TODOS"
+      "fuente": "Disneyland Paris oficial/app. Hora sáb 12: no publicada en calendario DLP, 12-09-2026 06:30 CEST; confirmar en la app",
+      "categoria": "TOP TODOS",
+      "fecha_comprobacion": "12-09-2026 06:30 CEST"
     },
     {
       "parque": "Disney Adventure World",
@@ -318,13 +330,14 @@
       "nombre": "The Lion King: Rhythms of the Pride Lands",
       "parque": "Disneyland Park",
       "zona": "Frontierland Theater",
-      "horario": "Vie 11: ~16:05, ~17:05 · Sáb 12: 12:30, 13:30, 16:05, 17:05 · Dom 13: 12:30, 13:30, 16:05, 17:05 · Lun 14: 12:30",
+      "horario": "Vie 11: ~16:05, ~17:05 · Sáb 12: confirmar en la app · Dom 13: 12:30, 13:30, 16:05, 17:05 · Lun 14: 12:30",
       "descripcion": "Espectáculo de El Rey León.",
       "consejo": "Consultar la app para la sesión disponible.",
       "aplicacion": "11–14 septiembre 2026",
-      "fuente": "Ubicación: página oficial DLP, 11-sep-2026. Horas vie 11: DLP Stats (orientativo); confirmar en la app",
+      "fuente": "Ubicación: página oficial DLP. Horas sáb 12: Disney solo en app; calendario DLP 12-09-2026 06:30 CEST",
       "top": true,
-      "categoria": "TOP TODOS"
+      "categoria": "TOP TODOS",
+      "fecha_comprobacion": "12-09-2026 06:30 CEST"
     }
   ],
   "atracciones": [
@@ -541,7 +554,9 @@
       "fecha": "2026-09-12",
       "dia": "sábado 12",
       "titulo": "Disneyland Park",
-      "texto": "Con la entrada temprana, priorizar Big Thunder y después Alice’s Curious Labyrinth. Dumbo, Autopia, Pinocchio y Le Pays des Contes de Fées quedan como opciones secundarias. Ajustar por edades e intereses en la app."
+      "texto": "Horario no publicado ahora en el calendario oficial; confirmar en la app. Priorizar Big Thunder y después Alice’s Curious Labyrinth. Dumbo, Autopia, Pinocchio y Le Pays des Contes de Fées quedan como opciones secundarias. Stars on Parade, Tales of Magic y Lion King: hora confirmar en la app. Estar dentro del parque antes del cierre si queréis el nocturno. Ajustar por edades e intereses en la app.",
+      "parque": "grande (Disneyland, el del castillo)",
+      "zona": "Big Thunder y Alice’s Curious Labyrinth; Main Street para desfile y nocturno"
     },
     {
       "fecha": "2026-09-13",
