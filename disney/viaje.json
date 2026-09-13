@@ -4,42 +4,42 @@
   "descripcion": "",
   "zona_horaria": "Europe/Madrid",
   "activacion_consejo_agenda": "2026-09-11T00:00:00+02:00",
-  "actualizado": "2026-09-12",
+  "actualizado": "2026-09-13",
   "hoy": {
-    "fecha": "2026-09-12",
-    "modo": "after",
-    "titulo": "Disneyland Park",
-    "texto": "Hoy toca el parque grande (Disneyland, el del castillo), 09:30–22:00. Empezamos por Big Thunder Mountain y seguimos por Alice’s Curious Labyrinth. Por la tarde, personajes. Disney Stars on Parade ~17:30 por Main Street (orientativo, no garantizado). Disney Tales of Magic ~22:00 en el castillo / Main Street (orientativo, no garantizado). The Lion King (Frontierland Theater): hora confirmar en la app. Hay que estar dentro antes del cierre (22:00). Piratas e Indiana Jones abiertos; confirmar en la app.",
-    "fuente": "Plan del viaje; Otto 12-sep-2026 20:00 (Tales of Magic ~22:00, DLP Stats, orientativo). Indiana Jones y Piratas: DLP Stats y Queue-Times, 12-sep 20:00. Confirmar en la app.",
+    "fecha": "2026-09-13",
+    "modo": "dawn",
+    "titulo": "Disney Adventure World",
+    "texto": "Hoy toca el parque pequeño (Adventure World). Prioridad a Ratatouille. Luego Spider-Man si encaja. Slinky Dog si apetece montaña rusa; Frozen Ever After como alternativa tranquila. A las 10:00, cola virtual de Hero Training. Mickey and the Magician, A Celebration in Arendelle y Disney Cascade of Lights: confirmar hora en la app. Cascade va a la vez que Tales of Magic en el grande; no se ven los dos el mismo día.",
+    "fuente": "Plan del viaje. Horas de shows: confirmar en la app.",
     "agenda": [
       {
-        "hora": "09:30–22:00",
-        "texto": "Parque grande abierto 09:30–22:00.",
-        "confirmar": true
+        "hora": "mañana",
+        "texto": "Prioridad a Ratatouille.",
+        "confirmar": false
       },
       {
-        "hora": "mañana",
-        "texto": "Prioridad a Big Thunder Mountain.",
-        "confirmar": false
+        "hora": "10:00",
+        "texto": "Cola virtual de Hero Training.",
+        "confirmar": true
       },
       {
         "hora": "después",
-        "texto": "Seguir por Alice’s Curious Labyrinth.",
+        "texto": "Spider-Man si encaja. Slinky Dog si apetece montaña rusa; Frozen Ever After como alternativa tranquila.",
         "confirmar": false
       },
       {
-        "hora": "~17:30",
-        "texto": "Disney Stars on Parade — desfile, Main Street / Central Plaza. TOP TODOS. Hora orientativa, no garantizada.",
-        "confirmar": true
-      },
-      {
-        "hora": "~22:00",
-        "texto": "Disney Tales of Magic — nocturno, castillo / Main Street (proyecciones y pirotecnia, sin drones; sin fuentes por obras del puente). Estar dentro del parque antes del cierre (22:00). TOP TODOS. Hora orientativa, no garantizada.",
+        "hora": "Confirmar en la app",
+        "texto": "Mickey and the Magician — Animagique Theater (pequeño). TOP TODOS.",
         "confirmar": true
       },
       {
         "hora": "Confirmar en la app",
-        "texto": "The Lion King: Rhythms of the Pride Lands — Frontierland Theater, ~30 min, interior. TOP MAYORES si hay pases. LSF los fines de semana (oficial).",
+        "texto": "A Celebration in Arendelle — World of Frozen (pequeño). TOP NIÑOS.",
+        "confirmar": true
+      },
+      {
+        "hora": "Confirmar en la app",
+        "texto": "Disney Cascade of Lights — lago central (pequeño). A la vez que Tales of Magic en el grande; no se ven los dos el mismo día. TOP TODOS.",
         "confirmar": true
       }
     ]
@@ -179,12 +179,12 @@
       "fecha": "2026-09-13",
       "etiqueta": "Dom 13",
       "parque": "pequeño (Adventure World)",
-      "plan": "Día completo en el parque pequeño: Ratatouille y Spider-Man como referencias; añadir Slinky Dog si apetecen montañas rusas. Frozen Ever After queda como alternativa tranquila. A las 10:00 toca la cola virtual de Hero Training.",
+      "plan": "Hoy toca el parque pequeño (Adventure World). Prioridad a Ratatouille. Luego Spider-Man si encaja. Slinky Dog si apetece montaña rusa; Frozen Ever After como alternativa tranquila. A las 10:00, cola virtual de Hero Training. Mickey and the Magician, A Celebration in Arendelle y Disney Cascade of Lights: confirmar hora en la app. Cascade va a la vez que Tales of Magic en el grande; no se ven los dos el mismo día.",
       "agenda": [
         {
-          "hora": "8:30",
-          "texto": "Entrada a las 8:30; prioridad a Ratatouille y Spider-Man.",
-          "confirmar": true
+          "hora": "mañana",
+          "texto": "Prioridad a Ratatouille.",
+          "confirmar": false
         },
         {
           "hora": "10:00",
@@ -193,22 +193,22 @@
         },
         {
           "hora": "después",
-          "texto": "Elegir Slinky Dog si apetece una montaña rusa; Frozen Ever After como alternativa tranquila.",
+          "texto": "Spider-Man si encaja. Slinky Dog si apetece montaña rusa; Frozen Ever After como alternativa tranquila.",
           "confirmar": false
         },
         {
-          "hora": "21:50",
-          "texto": "Disney Cascade of Lights, al cierre.",
+          "hora": "Confirmar en la app",
+          "texto": "Mickey and the Magician — Animagique Theater (pequeño). TOP TODOS.",
           "confirmar": true
         },
         {
-          "hora": "13:00 / 14:05 / 15:10 / 17:25 / 18:30",
-          "texto": "Mickey and the Magician (Disney Adventure World).",
+          "hora": "Confirmar en la app",
+          "texto": "A Celebration in Arendelle — World of Frozen (pequeño). TOP NIÑOS.",
           "confirmar": true
         },
         {
-          "hora": "Confirmar",
-          "texto": "A Celebration in Arendelle (pequeño, World of Frozen). Sin hora oficial; confirmar en la app.",
+          "hora": "Confirmar en la app",
+          "texto": "Disney Cascade of Lights — lago central (pequeño). A la vez que Tales of Magic en el grande; no se ven los dos el mismo día. TOP TODOS.",
           "confirmar": true
         }
       ]
@@ -562,7 +562,9 @@
       "fecha": "2026-09-13",
       "dia": "domingo 13",
       "titulo": "Disney Adventure World",
-      "texto": "En el parque pequeño, priorizar Ratatouille y Spider-Man; si gustan las montañas rusas, añadir Slinky Dog. Frozen Ever After queda como opción familiar tranquila. Consultar colas y estados en la app."
+      "texto": "Hoy toca el parque pequeño. Prioridad a Ratatouille. Spider-Man si encaja. Slinky Dog si apetece montaña rusa; Frozen Ever After como alternativa tranquila. Hero Training: cola virtual a las 10:00. Mickey and the Magician, Arendelle y Cascade of Lights: confirmar hora en la app.",
+      "parque": "pequeño (Adventure World)",
+      "zona": "Worlds of Pixar · Ratatouille"
     },
     {
       "fecha": "2026-09-14",
