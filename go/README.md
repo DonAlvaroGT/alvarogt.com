@@ -15,7 +15,7 @@ python3 go/skinner_go.py --output go/data.json
 /Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name viajes/viajes.json --file viajes/viajes.json
 ```
 
-Los JSON viven en Firestore `casa_json` (`go_data`, `go_sports`, `viajes`). No van a git ni a GitHub Pages. La página en `alvarogt.com/go/` los lee en el cliente tras el login.
+Los JSON viven en Firestore `casa_json` (`go_data`, `go_sports`, `viajes`). No van a git ni a GitHub Pages. La página en `alvarogt.com/go/` los lee en el cliente tras el login. Hoy y Mañana pintan una línea de viaje solo si ese día cae en un viaje de `casa_json/viajes`.
 
 ## Login (cliente)
 
