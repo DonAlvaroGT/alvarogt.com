@@ -14,7 +14,7 @@
     .agenda-link,button.demo{align-self:flex-start;padding:11px 15px;border:1px solid var(--green);border-radius:999px;color:var(--paper);background:transparent;font:inherit;font-size:.82rem;text-decoration:none;cursor:pointer}button.demo[hidden]{display:none}.agenda-link:hover,.agenda-link:focus,button.demo:hover{background:var(--green);color:var(--bg)}
     .access-status{color:var(--muted);font-size:.76rem}
     #gate[hidden],#app[hidden]{display:none}#gate{min-height:36vh;display:grid;place-items:center;text-align:center;padding:48px 16px}#gate h2{font:400 2.4rem/1 Georgia,serif;margin:0 0 12px}#gate p{color:var(--muted);max-width:420px;margin:0 auto 22px;line-height:1.55}
-    main{padding:38px 0 70px}.days{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}article{background:var(--card);min-height:350px;padding:24px}.date{color:var(--green);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}.day-name{font:400 2.2rem/1 Georgia,serif;margin:34px 0 20px}.copy{color:var(--muted);line-height:1.65;margin:0}.copy strong{color:var(--paper);font-weight:500}.activities{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);color:var(--paper);line-height:1.6}.empty{color:var(--muted)}
+    main{padding:38px 0 70px}.days{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}article{background:var(--card);min-height:350px;padding:24px}.date{color:var(--green);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}.day-name{font:400 2.2rem/1 Georgia,serif;margin:34px 0 20px}.viaje{color:var(--green);font-size:.86rem;line-height:1.45;margin:-8px 0 16px}.copy{color:var(--muted);line-height:1.65;margin:0}.copy strong{color:var(--paper);font-weight:500}.activities{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);color:var(--paper);line-height:1.6}.empty{color:var(--muted)}
     .sports{margin-top:44px;padding-top:30px;border-top:1px solid var(--line)}.sports h2{font:400 clamp(2rem,7vw,3.7rem)/1 Georgia,serif;letter-spacing:-.04em;margin:10px 0 12px}.sports-intro{color:var(--muted);line-height:1.55;max-width:620px}.sports-list{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:24px}.sports-event{background:var(--card);padding:16px 18px;display:grid;grid-template-columns:110px 1fr;gap:12px}.sports-time{color:var(--green);font-variant-numeric:tabular-nums}.sports-event p{margin:0;line-height:1.45}.sports-meta{color:var(--muted);font-size:.82rem}.sports-event a{color:var(--paper);text-decoration:underline;text-underline-offset:3px}.sports-empty{background:var(--card);padding:20px;color:var(--muted);line-height:1.55}
     footer{margin-top:26px;color:var(--muted);font-size:.73rem;line-height:1.5}.error{padding:24px;border:1px solid #68433c;color:#f2c5b9}
     @media(max-width:650px){.wrap{width:min(100% - 28px,980px)}header{min-height:42vh}.days{grid-template-columns:1fr}article{min-height:0}.day-name{margin-top:24px}.sports-event{grid-template-columns:1fr;gap:4px}}
@@ -58,6 +58,7 @@
     </main>
   </div>
 <script type="module">
+  import { tripOn, tripLineText } from './trip_line.mjs';
   const allowed=['agarciatimon@gmail.com','luzolivas@gmail.com'];
   const zone='Europe/Madrid';
   const dayFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,weekday:'long',day:'numeric',month:'long'});
@@ -65,7 +66,7 @@
   const updatedFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,dateStyle:'long',timeStyle:'short'});
   const pretty=d=>dayFmt.format(new Date(d+'T12:00:00Z'));
   const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  function card(day,i){const label=i===0?'Hoy':'Mañana';const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C · ${safe(day.clothes)}${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');return `<article><div class="date">${label} · ${safe(pretty(day.date))}</div><h2 class="day-name">${label}</h2><p class="copy">${weather}</p><div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
+  function card(day,i,viaje){const label=i===0?'Hoy':'Mañana';const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C · ${safe(day.clothes)}${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');const trip=viaje?tripLineText(viaje,day.date):'';const tripHtml=trip?`<p class="viaje">${safe(trip)}</p>`:'';return `<article><div class="date">${label} · ${safe(pretty(day.date))}</div><h2 class="day-name">${label}</h2>${tripHtml}<p class="copy">${weather}</p><div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
 
   const sportsOrder=['MLB','NCAA Football AP Top 25','Real Madrid / Barcelona / Atlético','Miami Dolphins','Fórmula 1'];
   const agendaTime=e=>String(e.hora_madrid||'').match(/^(\d{1,2}):(\d{2})$/);
@@ -96,7 +97,12 @@
     try{
       const payload=await casaDoc('go_data');
       if(payload.schema_version!==1||!Array.isArray(payload.days)||payload.days.length!==2)throw Error('schema');
-      document.querySelector('#days').innerHTML=payload.days.map(card).join('');
+      let viajes=[];
+      try{
+        const v=await casaDoc('viajes');
+        if(v.schema_version===1&&Array.isArray(v.viajes))viajes=v.viajes;
+      }catch{}
+      document.querySelector('#days').innerHTML=payload.days.map((day,i)=>card(day,i,tripOn(viajes,day.date))).join('');
     }catch{
       document.querySelector('#days').innerHTML='<p class="error">No hay datos publicados para hoy y mañana. Vuelve a intentarlo más tarde.</p>';
     }
