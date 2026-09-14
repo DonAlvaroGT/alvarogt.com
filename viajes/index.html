@@ -58,7 +58,15 @@
     .items { margin: 14px 0 0; padding: 0; list-style: none; }
     .items li { padding: 8px 0; border-top: 1px solid var(--line); line-height: 1.45; color: var(--ink-soft); font-size: .88rem; }
     .items strong { color: var(--navy); }
-    .confirm, .flight a { color: var(--gold); }
+    .confirm, .flight a, .flight-card a { color: var(--gold); }
+    .flights { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+    .flight-card { padding: 14px 16px; border: 1px solid var(--line); background: var(--sky); }
+    .flight-card .code { color: var(--navy); font: 400 1.25rem/1.1 Georgia, serif; margin: 0 0 10px; }
+    .flight-card .legs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .flight-card .leg .when { color: var(--gold); font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .flight-card .leg .time { color: var(--navy); font-variant-numeric: tabular-nums; font-size: 1.15rem; margin: 4px 0 2px; }
+    .flight-card .hito { color: var(--navy); font-size: .86rem; margin: 10px 0 0; }
+    .flight-card .links { margin: 8px 0 0; font-size: .82rem; }
     .map-wrap { margin: 16px 0 8px; border: 1px solid var(--line); overflow: hidden; background: #e6edf2; }
     .map-wrap iframe { display: block; width: 100%; height: 180px; border: 0; }
     .map-wrap a { display: block; padding: 8px 12px; font-size: .75rem; color: var(--navy); text-decoration: none; }
@@ -73,7 +81,7 @@
     @media (max-width: 800px) {
       .wrap { width: min(100% - 30px, 1160px); }
       nav { padding-bottom: 28px; }
-      .clocks, .days, .trip { grid-template-columns: 1fr; }
+      .clocks, .days, .trip, .flight-card .legs { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -123,7 +131,7 @@
         <h2>Viajes terminados</h2>
         <div id="past-list"></div>
       </section>
-      <footer>Fuente de datos: viajes.json · Tiempo: Open-Meteo · Mapa: OpenStreetMap · Vuelos: Flightradar24 (enlace).<br>Creado por Álvaro GT y sus minions</footer>
+      <footer>Fuente de datos: viajes.json · Tiempo: Open-Meteo · Mapa: OpenStreetMap · Vuelos: Flightradar24 y FlightAware (enlaces, sin seguimiento en vivo). Antelación al aeropuerto: valor de casa, no de Aena.<br>Creado por Álvaro GT y sus minions</footer>
     </main>
   </div>
 
@@ -248,6 +256,105 @@ function osmLink(lat, lon) {
 function fr24(code) {
   return `https://www.flightradar24.com/${encodeURIComponent(String(code).replace(/\s+/g, ''))}`;
 }
+function flightAware(code) {
+  return `https://www.flightaware.com/live/flight/${encodeURIComponent(String(code).replace(/\s+/g, ''))}`;
+}
+function parseISO(s) {
+  if (!s) return null;
+  const d = new Date(s);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+function fmtFlightLocal(iso, tz) {
+  if (!iso) return null;
+  const d = parseISO(iso);
+  if (!d) return null;
+  const opts = {weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit', hour12:false, timeZoneName:'short'};
+  if (tz) opts.timeZone = tz;
+  else {
+    const m = String(iso).match(/T(\d{2}:\d{2})/);
+    return m ? m[1] : null;
+  }
+  try {
+    return new Intl.DateTimeFormat('es-ES', opts).format(d);
+  } catch {
+    return null;
+  }
+}
+function fmtHM(date, tz) {
+  const opts = {hour:'2-digit', minute:'2-digit', hour12:false};
+  if (tz) opts.timeZone = tz;
+  return new Intl.DateTimeFormat('es-ES', opts).format(date);
+}
+function flightCountdown(iso, isoLlegada, now = new Date()) {
+  const dep = parseISO(iso);
+  if (!dep) return '';
+  const ms = dep - now;
+  if (ms > 0) {
+    const min = Math.round(ms / 60000);
+    const days = Math.floor(min / 1440);
+    const hours = Math.floor((min % 1440) / 60);
+    const mins = min % 60;
+    if (days > 0) return `Faltan ${days} d ${hours} h`;
+    if (hours > 0) return `Faltan ${hours} h ${mins} min`;
+    return `Faltan ${mins} min`;
+  }
+  const arr = parseISO(isoLlegada);
+  if (arr && now < arr) return 'En vuelo';
+  if (arr && now >= arr) return 'Llegó';
+  return 'Ya ha salido';
+}
+function flightCard(v) {
+  const missing = !v.salida || !v.llegada || !v.tz_origen || !v.tz_destino;
+  const notaPide = /confirmar/i.test(v.nota || '');
+  const showConfirm = missing || notaPide;
+  const airline = v.aerolinea ? ` · ${esc(v.aerolinea)}` : '';
+  const quien = v.quien ? `<p class="meta">${esc(v.quien)}</p>` : '';
+  const termOut = v.terminal_salida ? ` · terminal ${esc(v.terminal_salida)}` : '';
+  const gate = v.puerta ? ` · puerta ${esc(v.puerta)}` : '';
+  const termIn = v.terminal_llegada ? ` · terminal ${esc(v.terminal_llegada)}` : '';
+  const outText = v.salida ? (fmtFlightLocal(v.salida, v.tz_origen) || 'Confirmar en la app') : 'Confirmar en la app';
+  const arrText = v.llegada ? (fmtFlightLocal(v.llegada, v.tz_destino) || 'Confirmar en la app') : 'Confirmar en la app';
+  const arrWhen = v.offset_llegada ? `Llegada (+${esc(String(v.offset_llegada))})` : 'Llegada';
+  const tzOut = v.tz_origen ? esc(v.tz_origen) : '';
+  const tzIn = v.tz_destino ? esc(v.tz_destino) : '';
+  const cd = v.salida
+    ? `<p class="count" data-salida="${esc(v.salida)}" data-llegada="${esc(v.llegada || '')}">${esc(flightCountdown(v.salida, v.llegada))}</p>`
+    : '';
+  let hito = '';
+  const mins = Number(v.antelacion_min);
+  const dep = parseISO(v.salida);
+  if (v.salida && Number.isFinite(mins) && mins > 0 && dep) {
+    const at = new Date(dep.getTime() - mins * 60000);
+    const hm = fmtHM(at, v.tz_origen || undefined);
+    hito = `<p class="hito">Toca estar en el aeropuerto a las ${esc(hm)} · antelación de casa (${esc(String(mins))} min)</p>`;
+  }
+  const nota = v.nota && !/^horas locales\.?$/i.test(v.nota.trim())
+    ? `<p class="meta">${esc(v.nota)}</p>`
+    : '';
+  const confirm = showConfirm ? '<p class="confirm">Confirmar en la app</p>' : '';
+  const links = `<p class="links"><a href="${esc(fr24(v.codigo))}" target="_blank" rel="noopener">Flightradar24</a> · <a href="${esc(flightAware(v.codigo))}" target="_blank" rel="noopener">FlightAware</a></p>`;
+  return `<li class="flight-card">
+    <p class="code"><strong>${esc(v.codigo)}</strong>${airline}</p>
+    ${quien}
+    <div class="legs">
+      <div class="leg">
+        <div class="when">Salida ${esc(v.origen || '')}</div>
+        <div class="time">${esc(outText)}</div>
+        <p class="meta">${tzOut}${termOut}${gate}</p>
+      </div>
+      <div class="leg">
+        <div class="when">${arrWhen} ${esc(v.destino || '')}</div>
+        <div class="time">${esc(arrText)}</div>
+        <p class="meta">${tzIn}${termIn}</p>
+      </div>
+    </div>
+    ${cd}
+    ${hito}
+    ${nota}
+    ${confirm}
+    ${links}
+  </li>`;
+}
 
 let data = null;
 let started = false;
@@ -296,6 +403,9 @@ function tick() {
     if (!tz) return;
     el.textContent = clockFmt(tz).format(new Date());
   });
+  document.querySelectorAll('[data-salida]').forEach(el => {
+    el.textContent = flightCountdown(el.dataset.salida, el.dataset.llegada || '');
+  });
 }
 
 function dayCard(label, dayKey, viajes) {
@@ -306,7 +416,7 @@ function dayCard(label, dayKey, viajes) {
   }
   const flightCodes = (place.vuelos || []).map(v => v.codigo).filter(Boolean);
   const items = (place.items || []).filter(it => !flightCodes.some(c => String(it.texto).includes(c))).map(it => `<li><strong>${esc(it.hora || '')}</strong> ${esc(it.texto)}${it.confirmar ? ' <span class="confirm">· Confirmar en la app</span>' : ''}</li>`).join('');
-  const flights = (place.vuelos || []).map(v => `<li class="flight"><strong>${esc(v.codigo)}</strong> ${esc(v.ruta)}${v.nota ? ` · ${esc(v.nota)}` : ''} · <a href="${esc(fr24(v.codigo))}" target="_blank" rel="noopener">Flightradar24</a></li>`).join('');
+  const flights = (place.vuelos || []).map(flightCard).join('');
   const link = place.detalle ? `<p class="meta"><a href="${esc(place.detalle)}">Detalle del viaje →</a></p>` : '';
   const hotel = place.hotel ? `<p class="copy"><strong>Hotel:</strong> ${esc(place.hotel)}</p>` : '';
   const map = (place.latitud != null && place.longitud != null) ? `<div class="map-wrap"><iframe title="Mapa ${esc(place.label)}" src="${esc(osmEmbed(place.latitud, place.longitud))}" loading="lazy"></iframe><a href="${esc(osmLink(place.latitud, place.longitud))}" target="_blank" rel="noopener">OpenStreetMap · ${esc(place.label)}</a></div>` : '';
@@ -319,7 +429,8 @@ function dayCard(label, dayKey, viajes) {
     ${place.plan ? `<p class="copy">${esc(place.plan)}</p>` : ''}
     <p class="wx-day copy" data-day-wx="${esc(dayKey)}">Tiempo: consultando…</p>
     ${map}
-    <ul class="items">${flights}${items}</ul>
+    ${flights ? `<ul class="flights">${flights}</ul>` : ''}
+    ${items ? `<ul class="items">${items}</ul>` : ''}
     ${link}
   </article>`;
 }
