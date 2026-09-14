@@ -4,42 +4,32 @@
   "descripcion": "",
   "zona_horaria": "Europe/Madrid",
   "activacion_consejo_agenda": "2026-09-11T00:00:00+02:00",
-  "actualizado": "2026-09-13",
+  "actualizado": "2026-09-14",
   "hoy": {
-    "fecha": "2026-09-13",
-    "modo": "after",
-    "titulo": "Disney Adventure World",
-    "texto": "Hoy toca el parque pequeño (Adventure World). Prioridad a Ratatouille. Luego Spider-Man si encaja. Slinky Dog si apetece montaña rusa; Frozen Ever After como alternativa tranquila. A las 10:00, cola virtual de Hero Training. Mickey and the Magician, A Celebration in Arendelle y Disney Cascade of Lights: confirmar hora en la app. Cascade va a la vez que Tales of Magic en el grande; no se ven los dos el mismo día.",
-    "fuente": "Plan del viaje. Horas de shows: confirmar en la app.",
+    "fecha": "2026-09-14",
+    "modo": "dawn",
+    "titulo": "Mañana de parque y maletas",
+    "texto": "Hoy toca mañana de parque (por confirmar) hasta las 13:30. A las 13:45 recogemos las maletas. Luego el vuelo AF1100, CDG 17:00 → MAD 19:15. The Lion King: Rhythms of the Pride Lands a las 12:30 si estamos en el grande. Confirmar parque y hora en la app.",
+    "fuente": "Plan del viaje. Parque del lunes por confirmar. Horas de shows: confirmar en la app. Otto 14-sep dawn: sin briefing (timeout).",
     "agenda": [
       {
-        "hora": "mañana",
-        "texto": "Prioridad a Ratatouille.",
+        "hora": "8:30–13:30",
+        "texto": "Mañana de parque; parque por confirmar.",
+        "confirmar": true
+      },
+      {
+        "hora": "12:30",
+        "texto": "The Lion King: Rhythms of the Pride Lands — Frontierland Theater (grande), si el parque es el grande. TOP TODOS.",
+        "confirmar": true
+      },
+      {
+        "hora": "13:45",
+        "texto": "Recoger las maletas y salir hacia el vuelo de vuelta.",
         "confirmar": false
       },
       {
-        "hora": "10:00",
-        "texto": "Cola virtual de Hero Training.",
-        "confirmar": true
-      },
-      {
-        "hora": "después",
-        "texto": "Spider-Man si encaja. Slinky Dog si apetece montaña rusa; Frozen Ever After como alternativa tranquila.",
-        "confirmar": false
-      },
-      {
-        "hora": "Confirmar en la app",
-        "texto": "Mickey and the Magician — Animagique Theater (pequeño). TOP TODOS.",
-        "confirmar": true
-      },
-      {
-        "hora": "Confirmar en la app",
-        "texto": "A Celebration in Arendelle — World of Frozen (pequeño). TOP NIÑOS.",
-        "confirmar": true
-      },
-      {
-        "hora": "Confirmar en la app",
-        "texto": "Disney Cascade of Lights — lago central (pequeño). A la vez que Tales of Magic en el grande; no se ven los dos el mismo día. TOP TODOS.",
+        "hora": "17:00",
+        "texto": "AF1100 · CDG 17:00 → MAD 19:15.",
         "confirmar": true
       }
     ]
@@ -216,12 +206,17 @@
     {
       "fecha": "2026-09-14",
       "etiqueta": "Lun 14",
-      "parque": "parque, mañana",
-      "plan": "Mañana de parque de 8:30 a 13:30. A las 13:45 recogemos las maletas y después toca el vuelo de vuelta.",
+      "parque": "mañana, parque por confirmar",
+      "plan": "Hoy toca mañana de parque (por confirmar) hasta las 13:30. A las 13:45 recogemos las maletas. Luego el vuelo AF1100, CDG 17:00 → MAD 19:15. The Lion King: Rhythms of the Pride Lands a las 12:30 si estamos en el grande. Confirmar parque y hora en la app.",
       "agenda": [
         {
           "hora": "8:30–13:30",
-          "texto": "Mañana de parque de 8:30 a 13:30; parque por confirmar.",
+          "texto": "Mañana de parque; parque por confirmar.",
+          "confirmar": true
+        },
+        {
+          "hora": "12:30",
+          "texto": "The Lion King: Rhythms of the Pride Lands — Frontierland Theater (grande), si el parque es el grande. TOP TODOS.",
           "confirmar": true
         },
         {
@@ -230,13 +225,9 @@
           "confirmar": false
         },
         {
-          "hora": "12:30",
-          "texto": "The Lion King: Rhythms of the Pride Lands (Disneyland Park).",
+          "hora": "17:00",
+          "texto": "AF1100 · CDG 17:00 → MAD 19:15.",
           "confirmar": true
-        },
-        {
-          "hora": "Espectáculos",
-          "texto": "The Lion King: Rhythms of the Pride Lands 12:30 (Disneyland Park)."
         }
       ]
     }
@@ -569,8 +560,10 @@
     {
       "fecha": "2026-09-14",
       "dia": "lunes 14",
-      "titulo": "Parque por confirmar",
-      "texto": "Al ser una mañana corta, escoger solo una zona y una o dos experiencias favoritas; no perseguir las prescindibles. Confirmar parque, horarios y estados en la app antes de salir."
+      "titulo": "Mañana de parque y maletas",
+      "texto": "Hoy toca mañana de parque (por confirmar). Escoger solo una zona y una o dos experiencias. A las 13:45 maletas. Vuelo AF1100 a las 17:00. Lion King 12:30 si el parque es el grande; confirmar en la app.",
+      "parque": "por confirmar",
+      "zona": "una o dos experiencias; maletas 13:45"
     }
   ],
   "nota_operativa": "Horarios, cierres, reaperturas y espectáculos pueden cambiar. Confirmar siempre en la app oficial el mismo día. El calendario consultado no permite confirmar cierres de todo el periodo; si una atracción aparece con estado temporal o incierto, comprobar estado en la app. El consejo y la agenda destacados se muestran desde las 00:00, hora Europe/Madrid, y se limitan al día actual del viaje; fuera de las fechas, no se muestran.",
