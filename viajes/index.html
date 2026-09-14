@@ -570,7 +570,8 @@ function renderMonths() {
   const legend = names.map(n => `<span><i style="background:${esc(quienColor(n, QUIEN_DOT))}"></i>${esc(n)}</span>`).join('');
   const dow = ['L','M','X','J','V','S','D'].map(d => `<div class="cal-dow">${d}</div>`).join('');
   const grids = months.map(({y, m}) => {
-    const title = new Intl.DateTimeFormat('es-ES', {month:'long', year:'numeric', timeZone:'UTC'}).format(new Date(Date.UTC(y, m - 1, 1)));
+    const monthName = new Intl.DateTimeFormat('es-ES', {month:'long', timeZone:'UTC'}).format(new Date(Date.UTC(y, m - 1, 1)));
+    const title = monthName.charAt(0).toUpperCase() + monthName.slice(1) + ' ' + y;
     const days = monthCells(y, m).map(c => {
       const key = `${c.y}-${String(c.m).padStart(2,'0')}-${String(c.d).padStart(2,'0')}`;
       const hits = tripsCovering(data.viajes, key);
