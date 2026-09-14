@@ -8,18 +8,23 @@
   "hoy": {
     "fecha": "2026-09-14",
     "modo": "after",
-    "titulo": "Mañana de parque y maletas",
-    "texto": "Hoy toca mañana de parque (por confirmar) hasta las 13:30. A las 13:45 recogemos las maletas. Luego el vuelo AF1100, CDG 17:00 → MAD 19:15. The Lion King: Rhythms of the Pride Lands a las 12:30 si estamos en el grande. Confirmar parque y hora en la app.",
-    "fuente": "Plan del viaje. Parque del lunes por confirmar. Horas de shows: confirmar en la app. Otto 14-sep dawn: sin briefing (timeout).",
+    "titulo": "Mañana en el pequeño y maletas",
+    "texto": "Hoy toca el parque pequeño (Adventure World) por la mañana: Frozen Ever After y World of Frozen, y lo que quede, hasta las 13:30. A las 13:45 recogemos las maletas. Luego el vuelo AF1100, CDG 17:00 → MAD 19:15. Si seguís en el pequeño: A Celebration in Arendelle ~12:20; Mickey and the Magician ~13:00 en Animagique (el de las 13:00 pisa las maletas). Horas orientativas, no garantizadas; confirmar en la app.",
+    "fuente": "Plan de casa. Horas de shows: DLP Stats, 14-sep-2026 12:00, orientativo, no garantizado; confirmar en la app. AF1100: FlightAware 14-sep 12:00, en hora, puerta G35; Flightradar24 estima despegue ~17:10. Confirmar terminal y puerta en Air France.",
     "agenda": [
       {
-        "hora": "8:30–13:30",
-        "texto": "Mañana de parque; parque por confirmar.",
+        "hora": "mañana–13:30",
+        "texto": "Parque pequeño (Adventure World): Frozen Ever After / World of Frozen y lo que quede.",
+        "confirmar": false
+      },
+      {
+        "hora": "12:20",
+        "texto": "A Celebration in Arendelle — World of Frozen (pequeño). TOP NIÑOS. Hora orientativa, no garantizada.",
         "confirmar": true
       },
       {
-        "hora": "12:30",
-        "texto": "The Lion King: Rhythms of the Pride Lands — Frontierland Theater (grande), si el parque es el grande. TOP TODOS.",
+        "hora": "13:00",
+        "texto": "Mickey and the Magician — Animagique Theater (pequeño). El de las 13:00 pisa las maletas. TOP TODOS. Hora orientativa, no garantizada.",
         "confirmar": true
       },
       {
@@ -29,7 +34,7 @@
       },
       {
         "hora": "17:00",
-        "texto": "AF1100 · CDG 17:00 → MAD 19:15.",
+        "texto": "AF1100 · CDG 17:00 → MAD 19:15. Puerta G35. Confirmar terminal el día.",
         "confirmar": true
       }
     ]
@@ -83,8 +88,9 @@
     {
       "codigo": "AF1100",
       "detalle": "14-sep · CDG 17:00 → MAD 19:15",
-      "salida": "CDG, terminal 2 (confirmar el día)",
-      "llegada": "MAD, terminal T2"
+      "salida": "CDG, puerta G35 · confirmar terminal el día",
+      "llegada": "MAD, terminal T2",
+      "nota": "FlightAware lo da en hora (14-sep 12:00). Flightradar24 estima el despegue a las 17:10. Confirmar terminal y puerta en Air France."
     }
   ],
   "tiempo": {
@@ -206,17 +212,22 @@
     {
       "fecha": "2026-09-14",
       "etiqueta": "Lun 14",
-      "parque": "mañana, parque por confirmar",
-      "plan": "Hoy toca mañana de parque (por confirmar) hasta las 13:30. A las 13:45 recogemos las maletas. Luego el vuelo AF1100, CDG 17:00 → MAD 19:15. The Lion King: Rhythms of the Pride Lands a las 12:30 si estamos en el grande. Confirmar parque y hora en la app.",
+      "parque": "pequeño (Adventure World)",
+      "plan": "Hoy toca el parque pequeño (Adventure World) por la mañana: Frozen Ever After y World of Frozen, y lo que quede, hasta las 13:30. A las 13:45 recogemos las maletas. Luego el vuelo AF1100, CDG 17:00 → MAD 19:15. Si seguís en el pequeño: A Celebration in Arendelle ~12:20; Mickey and the Magician ~13:00 en Animagique (el de las 13:00 pisa las maletas). Horas orientativas, no garantizadas; confirmar en la app.",
       "agenda": [
         {
-          "hora": "8:30–13:30",
-          "texto": "Mañana de parque; parque por confirmar.",
+          "hora": "mañana–13:30",
+          "texto": "Parque pequeño (Adventure World): Frozen Ever After / World of Frozen y lo que quede.",
+          "confirmar": false
+        },
+        {
+          "hora": "12:20",
+          "texto": "A Celebration in Arendelle — World of Frozen (pequeño). TOP NIÑOS. Hora orientativa, no garantizada.",
           "confirmar": true
         },
         {
-          "hora": "12:30",
-          "texto": "The Lion King: Rhythms of the Pride Lands — Frontierland Theater (grande), si el parque es el grande. TOP TODOS.",
+          "hora": "13:00",
+          "texto": "Mickey and the Magician — Animagique Theater (pequeño). El de las 13:00 pisa las maletas. TOP TODOS. Hora orientativa, no garantizada.",
           "confirmar": true
         },
         {
@@ -226,7 +237,7 @@
         },
         {
           "hora": "17:00",
-          "texto": "AF1100 · CDG 17:00 → MAD 19:15.",
+          "texto": "AF1100 · CDG 17:00 → MAD 19:15. Puerta G35. Confirmar terminal el día.",
           "confirmar": true
         }
       ]
@@ -237,12 +248,12 @@
       "parque": "Disney Adventure World",
       "zona": "World Premiere Plaza · Animagique Theater",
       "nombre": "Mickey and the Magician",
-      "horario": "Vie 11: 14:05, 15:10, 17:25, 18:30 · Sáb 12: 13:00, 14:05, 15:10, 17:25, 18:30 · Dom 13: 13:00, 14:05, 15:10, 17:25, 18:30",
+      "horario": "Vie 11: 14:05, 15:10, 17:25, 18:30 · Sáb 12: 13:00, 14:05, 15:10, 17:25, 18:30 · Dom 13: 13:00, 14:05, 15:10, 17:25, 18:30 · Lun 14: ~13:00 (DLP Stats, orientativo; pisa las maletas)",
       "descripcion": "Espectáculo interior de Mickey con magia, música y personajes Disney.",
       "consejo": "Consejo de Belén: entrar pronto para intentar asegurar sitio en un espectáculo interior.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
-      "fuente": "Disneyland Paris oficial/app",
+      "fuente": "Disneyland Paris oficial/app. Hora lun 14: DLP Stats, 14-sep-2026 12:00, orientativo, no garantizado; confirmar en la app",
       "categoria": "TOP TODOS"
     },
     {
@@ -297,12 +308,12 @@
       "parque": "Disney Adventure World",
       "zona": "World of Frozen · fiordo frente al castillo de Arendelle",
       "nombre": "A Celebration in Arendelle",
-      "horario": "Confirmar en la app",
+      "horario": "Vie 11–dom 13: confirmar en la app · Lun 14: ~12:20 (DLP Stats, orientativo)",
       "descripcion": "Espectáculo exterior con Anna, Elsa, Olaf, Kristoff y habitantes de Arendelle.",
       "consejo": "Consejo de Belén: llevar un plan alternativo si la sesión exterior cambia por meteorología.",
       "aplicacion": "11–14 septiembre 2026",
       "top": true,
-      "fuente": "Disneyland Paris oficial/app",
+      "fuente": "Disneyland Paris oficial/app. Hora lun 14: DLP Stats, 14-sep-2026 12:00, orientativo, no garantizado; confirmar en la app",
       "categoria": "TOP NIÑOS"
     },
     {
@@ -321,7 +332,7 @@
       "nombre": "The Lion King: Rhythms of the Pride Lands",
       "parque": "Disneyland Park",
       "zona": "Frontierland Theater",
-      "horario": "Vie 11: ~16:05, ~17:05 · Sáb 12: confirmar en la app · Dom 13: 12:30, 13:30, 16:05, 17:05 · Lun 14: 12:30",
+      "horario": "Vie 11: ~16:05, ~17:05 · Sáb 12: confirmar en la app · Dom 13: 12:30, 13:30, 16:05, 17:05",
       "descripcion": "Espectáculo de El Rey León.",
       "consejo": "Consultar la app para la sesión disponible.",
       "aplicacion": "11–14 septiembre 2026",
@@ -560,10 +571,10 @@
     {
       "fecha": "2026-09-14",
       "dia": "lunes 14",
-      "titulo": "Mañana de parque y maletas",
-      "texto": "Hoy toca mañana de parque (por confirmar). Escoger solo una zona y una o dos experiencias. A las 13:45 maletas. Vuelo AF1100 a las 17:00. Lion King 12:30 si el parque es el grande; confirmar en la app.",
-      "parque": "por confirmar",
-      "zona": "una o dos experiencias; maletas 13:45"
+      "titulo": "Mañana en el pequeño y maletas",
+      "texto": "Hoy toca el parque pequeño. Frozen Ever After y World of Frozen, y lo que quede, hasta las 13:30. Arendelle ~12:20; Mickey ~13:00 (pisa las maletas). A las 13:45 maletas. Vuelo AF1100 a las 17:00, puerta G35; confirmar terminal el día.",
+      "parque": "pequeño (Adventure World)",
+      "zona": "World of Frozen · Frozen Ever After; maletas 13:45"
     }
   ],
   "nota_operativa": "Horarios, cierres, reaperturas y espectáculos pueden cambiar. Confirmar siempre en la app oficial el mismo día. El calendario consultado no permite confirmar cierres de todo el periodo; si una atracción aparece con estado temporal o incierto, comprobar estado en la app. El consejo y la agenda destacados se muestran desde las 00:00, hora Europe/Madrid, y se limitan al día actual del viaje; fuera de las fechas, no se muestran.",
