@@ -78,10 +78,27 @@
     .done { color: var(--ink-soft); }
     footer { color: var(--ink-soft); font-size: .72rem; border-top: 1px solid var(--line); padding: 18px 0 48px; margin-top: 28px; line-height: 1.5; }
     .error { padding: 20px; border: 1px solid #e3c4c4; color: #8a3030; background: #fff6f6; }
+    .months { margin: 0 0 48px; }
+    .months h2 { color: var(--navy); font: 400 clamp(2rem, 5vw, 3.4rem)/.95 Georgia, serif; margin: 0 0 18px; }
+    .month-legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin: 0 0 16px; color: var(--ink-soft); font-size: .82rem; }
+    .month-legend span { display: inline-flex; align-items: center; gap: 8px; }
+    .month-legend i { width: 12px; height: 12px; display: inline-block; border: 1px solid var(--line); }
+    .month-grids { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .month-box { background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow); padding: 18px 16px 16px; min-width: 0; }
+    .month-box h3 { color: var(--navy); font: 400 1.45rem/1.1 Georgia, serif; margin: 0 0 12px; text-transform: capitalize; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+    .cal-dow, .cal-day { min-width: 0; text-align: center; font-variant-numeric: tabular-nums; }
+    .cal-dow { color: var(--gold); font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 0 0 6px; }
+    .cal-day { min-height: 38px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--navy); font-size: .82rem; }
+    .cal-day.other { color: var(--ink-soft); opacity: .38; }
+    .cal-day.today { box-shadow: inset 0 0 0 2px var(--navy); }
+    .cal-day.marked { background: var(--mark); }
+    .cal-dots { display: flex; gap: 3px; height: 6px; }
+    .cal-dots i { width: 6px; height: 6px; display: block; }
     @media (max-width: 800px) {
       .wrap { width: min(100% - 30px, 1160px); }
       nav { padding-bottom: 28px; }
-      .clocks, .days, .trip, .flight-card .legs { grid-template-columns: 1fr; }
+      .clocks, .days, .trip, .flight-card .legs, .month-grids { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -121,6 +138,7 @@
       <div id="local-banner" class="banner" hidden></div>
       <section class="clocks" id="clocks" aria-label="Hora y tiempo"></section>
       <section class="days" id="days" aria-live="polite"></section>
+      <section class="months" id="month-view" aria-label="Calendario"></section>
       <section class="trips">
         <p class="eyebrow">Próximos</p>
         <h2>Resumen de viajes</h2>
@@ -491,6 +509,89 @@ async function renderTrips() {
   pastList.innerHTML = (await Promise.all(hechos.map(v => card(v, true)))).join('');
 }
 
+const QUIEN_ORDER = ['Olivas Holgado', 'Maribel y Agustín', 'Gugus', 'García Timón'];
+const QUIEN_COLOR = {
+  'Olivas Holgado': '#c5d8eb',
+  'Maribel y Agustín': '#f0e0c0',
+  'Gugus': '#cde8d8',
+  'García Timón': '#e4d0dc'
+};
+const QUIEN_DOT = {
+  'Olivas Holgado': '#3a6b9e',
+  'Maribel y Agustín': '#ad7b27',
+  'Gugus': '#2f7d5a',
+  'García Timón': '#8b4a6b'
+};
+function addMonth(y, m, n) {
+  const d = new Date(Date.UTC(y, m - 1 + n, 1));
+  return {y: d.getUTCFullYear(), m: d.getUTCMonth() + 1};
+}
+function daysInMonth(y, m) {
+  return new Date(Date.UTC(y, m, 0)).getUTCDate();
+}
+function monthCells(y, m) {
+  const first = new Date(Date.UTC(y, m - 1, 1));
+  const lead = (first.getUTCDay() + 6) % 7;
+  const dim = daysInMonth(y, m);
+  const prev = addMonth(y, m, -1);
+  const prevDim = daysInMonth(prev.y, prev.m);
+  const next = addMonth(y, m, 1);
+  const cells = [];
+  for (let i = lead; i > 0; i--) cells.push({y: prev.y, m: prev.m, d: prevDim - i + 1, other: true});
+  for (let d = 1; d <= dim; d++) cells.push({y, m, d, other: false});
+  let nd = 1;
+  while (cells.length < 42) cells.push({y: next.y, m: next.m, d: nd++, other: true});
+  return cells;
+}
+function tripsCovering(viajes, key) {
+  return viajes.filter(v => covers(v.inicio, v.fin, key));
+}
+function quienColor(quien, map) {
+  if (map[quien]) return map[quien];
+  const extras = ['#d7c4b8', '#c9d4c4', '#d4c9e0', '#c4d4d8'];
+  let h = 0;
+  for (const c of String(quien)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return extras[h % extras.length];
+}
+function renderMonths() {
+  const box = document.querySelector('#month-view');
+  if (!box) return;
+  const realToday = ymd(casa);
+  const [ty, tm] = realToday.split('-').map(Number);
+  const months = [{y: ty, m: tm}, addMonth(ty, tm, 1)];
+  const names = [...new Set((data.viajes || []).map(v => v.quien).filter(Boolean))];
+  names.sort((a, b) => {
+    const ia = QUIEN_ORDER.indexOf(a), ib = QUIEN_ORDER.indexOf(b);
+    if (ia === -1 && ib === -1) return a.localeCompare(b, 'es');
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
+  });
+  const legend = names.map(n => `<span><i style="background:${esc(quienColor(n, QUIEN_DOT))}"></i>${esc(n)}</span>`).join('');
+  const dow = ['L','M','X','J','V','S','D'].map(d => `<div class="cal-dow">${d}</div>`).join('');
+  const grids = months.map(({y, m}) => {
+    const title = new Intl.DateTimeFormat('es-ES', {month:'long', year:'numeric', timeZone:'UTC'}).format(new Date(Date.UTC(y, m - 1, 1)));
+    const days = monthCells(y, m).map(c => {
+      const key = `${c.y}-${String(c.m).padStart(2,'0')}-${String(c.d).padStart(2,'0')}`;
+      const hits = tripsCovering(data.viajes, key);
+      const cls = ['cal-day'];
+      if (c.other) cls.push('other');
+      if (key === realToday) cls.push('today');
+      let style = '';
+      let dots = '';
+      if (hits.length === 1) {
+        cls.push('marked');
+        style = ` style="--mark:${esc(quienColor(hits[0].quien, QUIEN_COLOR))}"`;
+      } else if (hits.length > 1) {
+        dots = `<span class="cal-dots">${hits.map(h => `<i style="background:${esc(quienColor(h.quien, QUIEN_DOT))}"></i>`).join('')}</span>`;
+      }
+      return `<div class="${cls.join(' ')}" data-day="${esc(key)}"${style}><span>${c.d}</span>${dots}</div>`;
+    }).join('');
+    return `<article class="month-box"><h3>${esc(title)}</h3><div class="cal-grid">${dow}${days}</div></article>`;
+  }).join('');
+  box.innerHTML = `<p class="eyebrow">Calendario</p><h2>Este mes y el siguiente</h2><div class="month-legend">${legend}</div><div class="month-grids">${grids}</div>`;
+}
+
 let fsApi = null, db = null;
 async function casaDoc(id) {
   const snap = await fsApi.getDoc(fsApi.doc(db, 'casa_json', id));
@@ -511,6 +612,7 @@ async function startApp() {
   renderClocks();
   tick();
   setInterval(tick, 1000);
+  renderMonths();
   await Promise.all([renderDays(), renderTrips()]);
 }
 
