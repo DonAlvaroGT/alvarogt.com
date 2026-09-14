@@ -28,6 +28,11 @@ def clothes(low, high):
     return "ropa fresca y gorra"
 
 
+def nacho_uniform(day):
+    """Regla de casa para Nacho: chándal martes y miércoles; uniforme el resto de días lectivos."""
+    return "chándal" if day.weekday() in (1, 2) else "uniforme"
+
+
 def filter_events(events, dates):
     result = []
     for event in events:
@@ -83,7 +88,7 @@ def build_payload(today, weather, events):
     for day in dates:
         values = weather.get(day.isoformat(), {})
         day_events = [e for e in selected if e["start"].startswith(day.isoformat())]
-        item = {"date": day.isoformat(), "min": values.get("min"), "max": values.get("max"), "rain_probability": values.get("rain_probability"), "clothes": clothes(values["min"], values["max"]) if "min" in values and "max" in values else None, "events": []}
+        item = {"date": day.isoformat(), "min": values.get("min"), "max": values.get("max"), "rain_probability": values.get("rain_probability"), "clothes": clothes(values["min"], values["max"]) if "min" in values and "max" in values else None, "nacho_ropa": nacho_uniform(day), "events": []}
         for event in day_events:
             start = datetime.fromisoformat(event["start"])
             item["events"].append({"time": start.strftime("%H:%M"), "title": event["title"], "location": event["location"]})
