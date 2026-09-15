@@ -87,6 +87,8 @@
     .copy { color: var(--ink-soft); line-height: 1.65; margin: 0; }
     .copy strong { color: var(--navy); font-weight: 500; }
     .activities { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--ink); line-height: 1.6; }
+    .comedor { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+    .comedor ul { margin: 8px 0 0; padding-left: 1.15em; color: var(--ink); line-height: 1.55; }
     .empty { color: var(--ink-soft); }
     .sports { margin-top: 44px; padding-top: 30px; border-top: 1px solid var(--line); }
     .sports h2 { color: var(--navy); font: 400 clamp(2rem, 7vw, 3.7rem)/1 Georgia, serif; letter-spacing: -.04em; margin: 10px 0 12px; }
@@ -179,6 +181,7 @@
   </div>
 <script type="module">
   import { tripOn, tripLineText } from './trip_line.mjs';
+  import { menuDelDia } from './comedor.mjs';
   const allowed=['agarciatimon@gmail.com','luzolivas@gmail.com'];
   const embedded=(()=>{try{return window.parent!==window&&window.parent.location.origin===location.origin}catch{return false}})();
   if(embedded)document.documentElement.classList.add('embedded');
@@ -188,7 +191,8 @@
   const updatedFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,dateStyle:'long',timeStyle:'short'});
   const pretty=d=>dayFmt.format(new Date(d+'T12:00:00Z'));
   const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  function card(day,i,viaje){const label=i===0?'Hoy':'Mañana';const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C · ${safe(day.clothes)}${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');const nacho=day.nacho_ropa?`<p class="copy"><strong>Nacho: ${safe(day.nacho_ropa)}</strong></p>`:'';const trip=viaje?tripLineText(viaje,day.date):'';const tripHtml=trip?`<p class="viaje">${safe(trip)}</p>`:'';return `<article><div class="date">${label} · ${safe(pretty(day.date))}</div><h2 class="day-name">${label}</h2>${tripHtml}<p class="copy">${weather}</p><div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
+  function comedorBlock(payload,date){const platos=menuDelDia(payload,date);if(!platos)return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><p class="copy empty">Sin menú de comedor</p></div>`;return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><ul>${platos.map(p=>`<li>${safe(p)}</li>`).join('')}</ul></div>`}
+  function card(day,i,viaje,comedor){const label=i===0?'Hoy':'Mañana';const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C · ${safe(day.clothes)}${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');const nacho=day.nacho_ropa?`<p class="copy"><strong>Nacho: ${safe(day.nacho_ropa)}</strong></p>`:'';const trip=viaje?tripLineText(viaje,day.date):'';const tripHtml=trip?`<p class="viaje">${safe(trip)}</p>`:'';return `<article><div class="date">${label} · ${safe(pretty(day.date))}</div><h2 class="day-name">${label}</h2>${tripHtml}<p class="copy">${weather}</p>${nacho}${comedorBlock(comedor,day.date)}<div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
 
   const sportsOrder=['MLB','NCAA Football AP Top 25','Real Madrid / Barcelona / Atlético','Miami Dolphins','Fórmula 1'];
   const agendaTime=e=>String(e.hora_madrid||'').match(/^(\d{1,2}):(\d{2})$/);
@@ -264,7 +268,12 @@
         const v=await casaDoc('viajes');
         if(v.schema_version===1&&Array.isArray(v.viajes))viajes=v.viajes;
       }catch{}
-      document.querySelector('#days').innerHTML=payload.days.map((day,i)=>card(day,i,tripOn(viajes,day.date))).join('');
+      let comedor=null;
+      try{
+        const c=await casaDoc('go_comedor');
+        if(c.schema_version===1&&c.timezone===zone&&c.dias&&typeof c.dias==='object')comedor=c;
+      }catch{}
+      document.querySelector('#days').innerHTML=payload.days.map((day,i)=>card(day,i,tripOn(viajes,day.date),comedor)).join('');
     }catch{
       document.querySelector('#days').innerHTML='<p class="error">No hay datos publicados para hoy y mañana. Vuelve a intentarlo más tarde.</p>';
     }
