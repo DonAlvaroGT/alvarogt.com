@@ -43,7 +43,7 @@
     #gate h2 { color: var(--navy); font: 400 2.6rem/1 Georgia, serif; margin: 0 0 12px; }
     #gate p { color: var(--ink-soft); max-width: 420px; margin: 0 auto 22px; line-height: 1.55; }
     .banner { margin: 0 0 22px; padding: 12px 14px; border: 1px solid #e4d2a8; background: #fff8e8; color: #7a5b16; font-size: .82rem; }
-    .clocks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 8px 0 36px; }
+    .clocks { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 8px 0 36px; }
     .clock-box { background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow); padding: 20px 18px; min-height: 148px; }
     .clock-box .when { color: var(--gold); font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
     .clock-box h2 { color: var(--navy); font: 400 1.55rem/1 Georgia, serif; margin: 10px 0 8px; }
@@ -376,31 +376,62 @@ function flightCard(v) {
 
 let data = null;
 let started = false;
-function thirdPlace(viajes, today, tomorrow) {
-  const nowTrip = tripOn(viajes, today);
-  const nowPlace = nowTrip ? placeOn(nowTrip, today) : null;
-  if (nowPlace) return {when: 'Hoy', trip: nowTrip, place: nowPlace};
-  const nextTrip = tripOn(viajes, tomorrow);
-  const nextPlace = nextTrip ? placeOn(nextTrip, tomorrow) : null;
-  if (nextPlace) return {when: 'Mañana', trip: nextTrip, place: nextPlace};
-  return null;
+function placeForClock(viaje, day) {
+  const p = placeOn(viaje, day);
+  if (p) return p;
+  if (!covers(viaje.inicio, viaje.fin, day)) return null;
+  const lp = viaje.lugar_principal;
+  if (lp?.label) {
+    return {
+      label: lp.label, timezone: lp.timezone, latitud: lp.latitud, longitud: lp.longitud,
+      titulo: viaje.titulo, quien: viaje.quien
+    };
+  }
+  const prev = (viaje.dias || []).filter(d => d.fecha <= day && d.donde).sort((a, b) => a.fecha.localeCompare(b.fecha));
+  const last = prev[prev.length - 1];
+  if (!last) return null;
+  return {
+    label: last.donde, timezone: last.timezone, latitud: last.latitud, longitud: last.longitud,
+    titulo: viaje.titulo, quien: viaje.quien
+  };
+}
+function tripPlaces(viajes, today, tomorrow) {
+  const collect = (day, when) => (viajes || [])
+    .filter(v => covers(v.inicio, v.fin, day))
+    .map(v => {
+      const place = placeForClock(v, day);
+      return place ? {when, trip: v, place} : null;
+    })
+    .filter(Boolean);
+  const now = collect(today, 'Hoy');
+  if (now.length) return now;
+  return collect(tomorrow, 'Mañana');
+}
+function clockBoxes(viajes, clocks, today, tomorrow) {
+  const house = (clocks || []).map(c => ({...c, when: c.apartado || 'Casa'}));
+  const houseLabels = new Set(house.map(c => String(c.label || '').trim().toLowerCase()));
+  const extras = tripPlaces(viajes, today, tomorrow).filter(extra => {
+    const label = String(extra.place.label || '').trim().toLowerCase();
+    return label && !houseLabels.has(label);
+  });
+  const tripBoxes = extras.map((extra, i) => ({
+    id: `viaje-${extra.trip.id || i}`,
+    label: extra.place.label,
+    timezone: extra.place.timezone,
+    latitud: extra.place.latitud,
+    longitud: extra.place.longitud,
+    when: extra.place.quien ? `${extra.when} · ${extra.place.quien}` : extra.when
+  }));
+  return [
+    ...house,
+    ...(tripBoxes.length ? tripBoxes : [{id: 'viaje', label: 'Sin viaje', timezone: null, when: 'Hoy', empty: true}])
+  ];
 }
 
 function renderClocks() {
   const today = todayKey();
   const tomorrow = addDay(today, 1);
-  const extra = thirdPlace(data.viajes, today, tomorrow);
-  const boxes = [
-    ...data.clocks.map(c => ({...c, when: c.apartado || 'Casa'})),
-    extra ? {
-      id: 'viaje',
-      label: extra.place.label,
-      timezone: extra.place.timezone,
-      latitud: extra.place.latitud,
-      longitud: extra.place.longitud,
-      when: extra.when
-    } : {id: 'viaje', label: 'Sin viaje', timezone: null, when: 'Hoy', empty: true}
-  ];
+  const boxes = clockBoxes(data.viajes, data.clocks, today, tomorrow);
   document.querySelector('#clocks').innerHTML = boxes.map(c => `
     <article class="clock-box" data-clock="${esc(c.id)}">
       <div class="when">${esc(c.when)}</div>
