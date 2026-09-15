@@ -20,14 +20,6 @@ KEYS = ("nacho", "luz", "molletito", "mollete")
 SKIP_CAL = {"Trabajo"}
 
 
-def clothes(low, high):
-    if low < 8: return "ropa larga y abrigo"
-    if low < 14: return "ropa larga y chaqueta"
-    if high < 22: return "ropa larga y cortavientos"
-    if high < 28: return "ropa corta y una capa fina"
-    return "ropa fresca y gorra"
-
-
 def nacho_uniform(day):
     """Regla de casa para Nacho: chándal martes y miércoles; uniforme el resto de días lectivos."""
     return "chándal" if day.weekday() in (1, 2) else "uniforme"
@@ -88,7 +80,7 @@ def build_payload(today, weather, events):
     for day in dates:
         values = weather.get(day.isoformat(), {})
         day_events = [e for e in selected if e["start"].startswith(day.isoformat())]
-        item = {"date": day.isoformat(), "min": values.get("min"), "max": values.get("max"), "rain_probability": values.get("rain_probability"), "clothes": clothes(values["min"], values["max"]) if "min" in values and "max" in values else None, "nacho_ropa": nacho_uniform(day), "events": []}
+        item = {"date": day.isoformat(), "min": values.get("min"), "max": values.get("max"), "rain_probability": values.get("rain_probability"), "nacho_ropa": nacho_uniform(day), "events": []}
         for event in day_events:
             start = datetime.fromisoformat(event["start"])
             item["events"].append({"time": start.strftime("%H:%M"), "title": event["title"], "location": event["location"]})
@@ -109,7 +101,7 @@ def validate_payload(payload):
 
 def render_day(day, label):
     def esc(value): return html.escape(str(value), quote=True)
-    weather = "Previsión no disponible." if day.get("min") is None else f"{esc(day['min'])}–{esc(day['max'])} °C · {esc(day['clothes'])}"
+    weather = "Previsión no disponible." if day.get("min") is None else f"{esc(day['min'])}–{esc(day['max'])} °C"
     rain = "" if day.get("rain_probability") is None else f" · lluvia {esc(day['rain_probability'])}%"
     events = "".join(f"<li><strong>{esc(e['time'])}</strong> {esc(e['title'])}{(' · ' + esc(e['location'])) if e['location'] else ''}</li>" for e in day["events"])
     activity_html = "<ul>" + events + "</ul>" if events else '<span class="empty">No hay extraescolares apuntadas</span>'

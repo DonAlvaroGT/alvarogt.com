@@ -181,13 +181,13 @@
     </main>
   </div>
 <script type="module">
-  import { tripOn, tripLineText } from './trip_line.mjs?v=20260915c';
-  import { menuDelDia } from './comedor.mjs?v=20260915c';
-  import { formatPublicado } from './stamp.mjs?v=20260915c';
-  import { nachoRopa } from './ropa.mjs?v=20260915c';
-  import { fetchTiempo } from './tiempo.mjs?v=20260915c';
-  import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20260915c';
-  import { ymdInZone, nextYmd } from './fechas.mjs?v=20260915c';
+  import { tripOn, tripLineText } from './trip_line.mjs?v=20260915d';
+  import { menuDelDia } from './comedor.mjs?v=20260915d';
+  import { formatPublicado } from './stamp.mjs?v=20260915d';
+  import { nachoRopa } from './ropa.mjs?v=20260915d';
+  import { fetchTiempo } from './tiempo.mjs?v=20260915d';
+  import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20260915d';
+  import { ymdInZone, nextYmd } from './fechas.mjs?v=20260915d';
   const allowed=['agarciatimon@gmail.com','luzolivas@gmail.com'];
   const embedded=(()=>{try{return window.parent!==window&&window.parent.location.origin===location.origin}catch{return false}})();
   if(embedded)document.documentElement.classList.add('embedded');
@@ -197,7 +197,7 @@
   const pretty=d=>dayFmt.format(new Date(d+'T12:00:00Z'));
   const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function comedorBlock(payload,date){const platos=menuDelDia(payload,date);if(!platos)return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><p class="copy empty">Sin menú de comedor</p></div>`;return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><ul>${platos.map(p=>`<li>${safe(p)}</li>`).join('')}</ul></div>`}
-  function card(day,i,viaje,comedor){const label=i===0?'Hoy':'Mañana';const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C · ${safe(day.clothes)}${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');const nacho=day.nacho_ropa?`<p class="copy"><strong>Nacho: ${safe(day.nacho_ropa)}</strong></p>`:'';const trip=viaje?tripLineText(viaje,day.date):'';const tripHtml=trip?`<p class="viaje">${safe(trip)}</p>`:'';return `<article><div class="date">${label} · ${safe(pretty(day.date))}</div><h2 class="day-name">${label}</h2>${tripHtml}<p class="copy">${weather}</p>${nacho}${comedorBlock(comedor,day.date)}<div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
+  function card(day,i,viaje,comedor){const label=i===0?'Hoy':'Mañana';const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');const nacho=day.nacho_ropa?`<p class="copy"><strong>Nacho: ${safe(day.nacho_ropa)}</strong></p>`:'';const trip=viaje?tripLineText(viaje,day.date):'';const tripHtml=trip?`<p class="viaje">${safe(trip)}</p>`:'';return `<article><div class="date">${label} · ${safe(pretty(day.date))}</div><h2 class="day-name">${label}</h2>${tripHtml}<p class="copy">${weather}</p>${nacho}${comedorBlock(comedor,day.date)}<div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
 
   const sportsOrder=['MLB','NCAA Football AP Top 25','Real Madrid / Barcelona / Atlético','Miami Dolphins','Fórmula 1'];
   const agendaTime=e=>String(e.hora_madrid||'').match(/^(\d{1,2}):(\d{2})$/);
@@ -293,7 +293,6 @@
         min:w.min??null,
         max:w.max??null,
         rain_probability:w.rain_probability??null,
-        clothes:w.clothes||null,
         nacho_ropa:nachoRopa(date),
         events:mergeEvents(eventsFromReglas(reglas,date),fromCal[date]||[]),
       };

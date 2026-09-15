@@ -1,15 +1,6 @@
 export const MADRID = { latitude: 40.4168, longitude: -3.7038 };
 export const TIEMPO_URL = 'https://api.open-meteo.com/v1/forecast?latitude=40.4168&longitude=-3.7038&daily=temperature_2m_min,temperature_2m_max,precipitation_probability_max&timezone=Europe%2FMadrid&forecast_days=2';
 
-export function clothesFromTemps(low, high) {
-  if (typeof low !== 'number' || typeof high !== 'number' || Number.isNaN(low) || Number.isNaN(high)) return null;
-  if (low < 8) return 'ropa larga y abrigo';
-  if (low < 14) return 'ropa larga y chaqueta';
-  if (high < 22) return 'ropa larga y cortavientos';
-  if (high < 28) return 'ropa corta y una capa fina';
-  return 'ropa fresca y gorra';
-}
-
 export function parseTiempo(payload) {
   const daily = payload && payload.daily;
   if (!daily || !Array.isArray(daily.time)) return null;
@@ -27,7 +18,6 @@ export function parseTiempo(payload) {
       min,
       max,
       rain_probability: typeof rainRaw === 'number' ? rainRaw : null,
-      clothes: clothesFromTemps(min, max),
     };
   }
   return Object.keys(out).length ? out : null;
@@ -44,7 +34,7 @@ export async function fetchTiempo(fetchImpl = fetch) {
 }
 
 export function weatherCopy(day) {
-  if (!day || day.min == null || day.max == null || !day.clothes) return 'Previsión no disponible.';
+  if (!day || day.min == null || day.max == null) return 'Previsión no disponible.';
   const rain = day.rain_probability == null ? '' : ` · lluvia ${day.rain_probability}%`;
-  return `${day.min}–${day.max} °C · ${day.clothes}${rain}.`;
+  return `${day.min}–${day.max} °C${rain}.`;
 }

@@ -1,9 +1,5 @@
 import assert from 'node:assert/strict';
-import { clothesFromTemps, parseTiempo, weatherCopy, fetchTiempo, TIEMPO_URL } from './tiempo.mjs';
-
-assert.equal(clothesFromTemps(18, 35.2), 'ropa fresca y gorra');
-assert.equal(clothesFromTemps(18.4, 26.4), 'ropa corta y una capa fina');
-assert.equal(clothesFromTemps(null, 20), null);
+import { parseTiempo, weatherCopy, fetchTiempo, TIEMPO_URL } from './tiempo.mjs';
 
 const parsed = parseTiempo({
   timezone: 'Europe/Madrid',
@@ -16,7 +12,9 @@ const parsed = parseTiempo({
 });
 assert.equal(parsed['2026-09-15'].min, 17.7);
 assert.equal(parsed['2026-09-16'].rain_probability, 5);
-assert.equal(weatherCopy(parsed['2026-09-15']), '17.7–35.2 °C · ropa fresca y gorra · lluvia 0%.');
+assert.equal(parsed['2026-09-15'].clothes, undefined);
+assert.equal(weatherCopy(parsed['2026-09-15']), '17.7–35.2 °C · lluvia 0%.');
+assert.ok(!weatherCopy(parsed['2026-09-15']).includes('ropa'));
 assert.equal(weatherCopy({}), 'Previsión no disponible.');
 assert.equal(parseTiempo({ timezone: 'UTC', daily: { time: ['2026-09-15'] } }), null);
 
@@ -27,5 +25,7 @@ if (live) {
   assert.ok(days.length >= 1);
   const first = live[days[0]];
   if (first.min == null) assert.equal(weatherCopy(first), 'Previsión no disponible.');
+  assert.equal(first.clothes, undefined);
+  assert.ok(!JSON.stringify(first).includes('ropa fresca'));
 }
 console.log('ok tiempo');
