@@ -289,12 +289,7 @@ export function boot() {
   window.addEventListener('message', (ev) => {
     if (ev.origin !== location.origin) return;
     if (!ev.data || ev.data.casa !== 'frame-size') return;
-    const target = scrollerFrames().find((f) => {
-      try { return f.contentWindow === ev.source; } catch { return false; }
-    });
-    if (!target) return;
-    const h = Number(ev.data.height);
-    if (Number.isFinite(h) && h > 200) target.style.height = `${Math.ceil(h)}px`;
+    /* Altura la da el hueco del scroller, no el postMessage (banda negra). */
   });
 
   window.addEventListener('pageshow', (ev) => {
