@@ -86,6 +86,20 @@ class SportsSchemaTests(unittest.TestCase):
         for event in events:
             self.assertRegex(str(event.get("hora_madrid") or ""), AGENDA_TIME)
 
+    def test_html_previa_uses_real_sports_fields_only(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn("function sportsPrevia", html)
+        self.assertIn("function sportsLine", html)
+        self.assertIn("Sin partidos de la lista hoy.", html)
+        self.assertIn("e.hora_madrid", html)
+        self.assertIn("e.canal", html)
+        self.assertIn("e.evento", html)
+        self.assertIn("sports-schema", html)
+        self.assertIn("sports-canal", html)
+        self.assertIn("id=\"sports-intro\"", html)
+        self.assertNotIn("Tablón familiar →", html)
+        self.assertNotIn('href="/viajes/"', html)
+
     def test_canal_optional_does_not_break_schema(self):
         payload = validate_sports({
             "date": "2026-09-15",

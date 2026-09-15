@@ -155,10 +155,6 @@
         <button id="google-sign-in" class="demo" type="button">Entrar</button>
         <button id="google-sign-out" class="demo" type="button" hidden>Salir</button>
       </div>
-      <div class="row">
-        <a class="agenda-link" href="#agenda-deportiva">Agenda deportiva</a><a class="agenda-link" href="https://alvarogt.com/tablon/" aria-label="Abrir el tablón familiar de tareas">Tablón familiar →</a>
-      </div>
-      <a class="agenda-link" href="/viajes/">Viajes</a>
     </div>
   </header>
   <section id="gate" class="wrap">
@@ -175,7 +171,7 @@
       <section class="sports" id="agenda-deportiva" aria-labelledby="agenda-title">
         <div class="kicker">Hoy · Madrid</div>
         <h2 id="agenda-title">Agenda deportiva</h2>
-        <p class="sports-intro">La agenda de hoy se carga al abrir la página y cubre de 10:00 a 22:30, hora de Madrid.</p>
+        <p class="sports-intro" id="sports-intro">La agenda de hoy se carga al abrir.</p>
         <div class="sports-list" id="sports-agenda" aria-live="polite"><p class="sports-empty">La agenda de hoy se carga al abrir; si no hay evento en la ventana, no aparece.</p></div>
       </section>
       <footer><span class="source">Fuente del tiempo: Open-Meteo</span><br>La página se actualiza sola al abrirla.<br>Creado por Álvaro GT y sus minions</footer>
@@ -196,8 +192,21 @@
 
   const sportsOrder=['MLB','NCAA Football AP Top 25','Real Madrid / Barcelona / Atlético','Miami Dolphins','Fórmula 1'];
   const agendaTime=e=>String(e.hora_madrid||'').match(/^(\d{1,2}):(\d{2})$/);
+  function sportsLine(e){
+    const name=String(e.evento||'').replace(/\s+vs\.?\s+/i,'–');
+    const hora=String(e.hora_madrid||'');
+    const canal=typeof e.canal==='string'&&e.canal.trim()?e.canal.trim():'';
+    return canal?`${name} a las ${hora} en ${canal}`:`${name} a las ${hora}`;
+  }
+  function sportsPrevia(list){
+    if(!list.length)return 'Sin partidos de la lista hoy.';
+    if(list.length===1)return `Hoy ${sportsLine(list[0])}.`;
+    return `Hoy ${sportsLine(list[0])} y ${sportsLine(list[1])}.`;
+  }
   function renderSportsAgenda(payload){
     const list=(payload.events||payload.eventos||[]).filter(e=>{const m=agendaTime(e);if(!m)return false;const mins=Number(m[1])*60+Number(m[2]);return mins>=600&&mins<=1350}).sort((a,b)=>{const ab=/Brewers/i.test(a.evento)?-1:0,bb=/Brewers/i.test(b.evento)?-1:0;const ao=sportsOrder.indexOf(a.competicion),bo=sportsOrder.indexOf(b.competicion);return ab-bb||(ao<0?99:ao)-(bo<0?99:bo)||String(a.hora_madrid).localeCompare(String(b.hora_madrid))});
+    const intro=document.querySelector('#sports-intro');
+    if(intro)intro.textContent=sportsPrevia(list);
     const target=document.querySelector('#sports-agenda');
     target.innerHTML=list.length?list.map(e=>{const canal=typeof e.canal==='string'&&e.canal.trim()?` <span class="sports-canal">📺 ${safe(e.canal.trim())}</span>`:'';return `<div class="sports-event"><div class="sports-time">${safe(e.hora_madrid)}<br><span class="sports-meta">${safe(e.deporte)}</span></div><p><a href="${safe(e.fuente)}" rel="noopener">${safe(e.evento)}</a>${canal}<br><span class="sports-meta">${safe(e.competicion)} · Interés ${safe(e.interes)}</span></p></div>`}).join(''):`<p class="sports-empty">${safe(payload.motivo||'No hay eventos verificables dentro de la ventana.')}</p>`;
   }

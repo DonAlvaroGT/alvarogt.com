@@ -45,8 +45,13 @@ class GoClientAuthHtmlTests(unittest.TestCase):
         self.assertIn("Entra con Google", self.html)
         self.assertIn("Continuar con Google", self.html)
         self.assertIn("Agenda deportiva", self.html)
-        self.assertIn("/tablon/", self.html)
-        self.assertIn("/viajes/", self.html)
+        self.assertIn('id="sports-intro"', self.html)
+        self.assertIn("function sportsPrevia", self.html)
+        self.assertIn("Sin partidos de la lista hoy.", self.html)
+        self.assertNotIn('href="/viajes/"', self.html)
+        self.assertNotIn("https://alvarogt.com/tablon/", self.html)
+        self.assertNotIn("Tablón familiar →", self.html)
+        self.assertNotIn(">Viajes</a>", self.html)
 
     def test_client_firebase_not_cloud_run(self):
         self.assertNotIn("run.app", self.html)
