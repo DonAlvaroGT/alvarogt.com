@@ -16,6 +16,8 @@ class CasaShellTests(unittest.TestCase):
         iframe = re.search(r"<iframe\b[^>]*>", HTML)
         self.assertTrue(iframe)
         self.assertNotIn("src=", iframe.group(0) if iframe else "")
+        self.assertNotIn("sandbox=", iframe.group(0) if iframe else "")
+        self.assertIn('id="scroller"', HTML)
         self.assertIn("Continuar con Google", HTML)
         self.assertIn("Solo Álvaro y Lucita", HTML)
 
@@ -49,6 +51,9 @@ class CasaShellTests(unittest.TestCase):
         self.assertIn("'/go/'", JS)
         self.assertIn("'/tablon/'", JS)
         self.assertIn("'/viajes/'", JS)
+        self.assertIn("window.__casaAuth", JS)
+        self.assertIn("frame-size", JS)
+        self.assertIn("-webkit-overflow-scrolling: touch", HTML)
         self.assertNotIn("run.app", JS)
         self.assertNotIn("run.app", HTML)
 

@@ -68,6 +68,7 @@ export function showView(name) {
   if (!frame) return src;
   const current = frame.getAttribute('data-casa-view') || '';
   if (current !== name) {
+    if (frame.style) frame.style.height = '';
     frame.setAttribute('data-casa-view', name);
     frame.src = src;
   }
@@ -103,6 +104,14 @@ export function boot() {
     } catch {}
   });
 
+  window.addEventListener('message', (ev) => {
+    if (ev.origin !== location.origin) return;
+    if (!ev.data || ev.data.casa !== 'frame-size') return;
+    if (!frame || ev.source !== frame.contentWindow) return;
+    const h = Number(ev.data.height);
+    if (Number.isFinite(h) && h > 200) frame.style.height = `${Math.ceil(h)}px`;
+  });
+
   showGate('Acceso · comprobando');
 
   if (!HOSTS.includes(location.hostname)) {
@@ -123,6 +132,10 @@ async function setupGoogle(setStatus, markLogin, wasLogin, clearLogin) {
     const app = initializeApp(config);
     const service = auth.getAuth(app);
     await auth.setPersistence(service, auth.browserLocalPersistence);
+    window.__casaAuth = {
+      email: () => String((service.currentUser && service.currentUser.email) || '').toLowerCase(),
+      idToken: async () => (service.currentUser ? service.currentUser.getIdToken() : null)
+    };
     const provider = new auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
 

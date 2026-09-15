@@ -74,6 +74,13 @@ class GoClientAuthHtmlTests(unittest.TestCase):
         self.assertNotIn("fetch('sports.json'", self.html)
         self.assertIn("No hay datos publicados", self.html)
         self.assertIn("No hay agenda deportiva publicada", self.html)
+        self.assertIn("html.embedded", self.html)
+        self.assertIn("parentAdult", self.html)
+        self.assertIn("__casaAuth", self.html)
+        self.assertIn("frame-size", self.html)
+        self.assertIn("sports-schema", self.html)
+        self.assertIn("payload.window?.start!=='10:00'", self.html)
+        self.assertIn("payload.window?.end!=='22:30'", self.html)
 
 
 if __name__ == "__main__":
