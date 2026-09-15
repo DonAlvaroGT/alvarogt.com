@@ -73,6 +73,16 @@ class CasaShellTests(unittest.TestCase):
         self.assertIn("about:blank", JS)
         self.assertNotIn("frame.src = 'about:blank'", JS)
         self.assertNotIn('frame.src = "about:blank"', JS)
+        self.assertIn("casa.lastTab", JS)
+        self.assertIn("lastTab()", JS)
+        self.assertIn("#queue-list", JS)
+        self.assertIn(".queue-item", JS)
+        self.assertIn("tab-dot", JS)
+        self.assertIn("tab-dot", HTML)
+        self.assertNotIn("Notification", JS)
+        self.assertNotIn("serviceWorker", JS)
+        self.assertNotIn("Salir", HTML)
+        self.assertEqual(HTML.count('data-view="'), 3)
 
     def test_does_not_copy_the_three_apps(self):
         self.assertNotIn("casaDoc", JS)

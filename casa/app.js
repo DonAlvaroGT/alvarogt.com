@@ -9,6 +9,8 @@ export const HOSTS = [
   'tablongo.firebaseapp.com'
 ];
 export const HINT_KEY = 'casa.lastAdult';
+export const TAB_KEY = 'casa.lastTab';
+export const TAB_NAMES = ['go', 'tablon', 'viajes'];
 const TITLES = { go: 'Go', tablon: 'Tablón', viajes: 'Viajes' };
 
 export function isAdult(email) {
@@ -56,6 +58,61 @@ export function rememberAdult(email) {
   const v = String(email || '').toLowerCase();
   if (!isAdult(v)) return;
   try { localStorage.setItem(HINT_KEY, v); } catch {}
+}
+
+export function lastTab() {
+  try {
+    const v = String((globalThis.localStorage && localStorage.getItem(TAB_KEY)) || '');
+    return TAB_NAMES.includes(v) ? v : 'go';
+  } catch {
+    return 'go';
+  }
+}
+
+export function rememberTab(name) {
+  if (!TAB_NAMES.includes(name)) return;
+  try { localStorage.setItem(TAB_KEY, name); } catch {}
+}
+
+export function queueHasPending(doc) {
+  try {
+    const list = doc && doc.querySelector('#queue-list');
+    if (!list) return false;
+    return list.querySelectorAll('.queue-item').length > 0;
+  } catch {
+    return false;
+  }
+}
+
+export function setTablonQueueDot(on) {
+  const btn = document.querySelector('#tabs button[data-view="tablon"]');
+  if (!btn) return false;
+  btn.classList.toggle('has-queue', !!on);
+  const dot = btn.querySelector('.tab-dot');
+  if (dot) dot.hidden = !on;
+  return !!on;
+}
+
+export function readTablonQueueFromFrame(frame) {
+  try {
+    if (!frame || isFrameDead(frame)) return null;
+    const doc = frame.contentDocument;
+    if (!doc || !doc.querySelector('#queue-list')) return null;
+    return queueHasPending(doc);
+  } catch {
+    return null;
+  }
+}
+
+export function refreshTablonQueueDot() {
+  const scroller = document.querySelector('#scroller');
+  const frame = scroller && scroller.querySelector('iframe[data-casa-view="tablon"]');
+  const pending = readTablonQueueFromFrame(frame);
+  if (pending === null) {
+    setTablonQueueDot(false);
+    return false;
+  }
+  return setTablonQueueDot(pending);
 }
 
 export function googleParams() {
@@ -109,21 +166,39 @@ function bindFrame(frame) {
       const path = frame.contentWindow?.location?.pathname;
       if (path && path !== 'blank') markTab(tabFromPath(path));
     } catch {}
+    if (frame.getAttribute('data-casa-view') === 'tablon') watchTablonQueue(frame);
   });
 }
 
+function watchTablonQueue(frame) {
+  refreshTablonQueueDot();
+  try {
+    const doc = frame && frame.contentDocument;
+    const list = doc && doc.querySelector('#queue-list');
+    if (!list || typeof MutationObserver === 'undefined') return;
+    if (frame.__casaQueueObs) {
+      try { frame.__casaQueueObs.disconnect(); } catch {}
+    }
+    const obs = new MutationObserver(() => { refreshTablonQueueDot(); });
+    obs.observe(list, { childList: true, subtree: true });
+    frame.__casaQueueObs = obs;
+  } catch {}
+}
+
 export function showView(name) {
-  const src = srcFor(name);
+  const view = TAB_NAMES.includes(name) ? name : 'go';
+  rememberTab(view);
+  const src = srcFor(view);
   const scroller = document.querySelector('#scroller');
   if (!scroller) {
-    markTab(name);
+    markTab(view);
     return src;
   }
-  let frame = scroller.querySelector(`iframe[data-casa-view="${name}"]`);
+  let frame = scroller.querySelector(`iframe[data-casa-view="${view}"]`);
   if (!frame) {
     frame = document.createElement('iframe');
-    frame.setAttribute('data-casa-view', name);
-    frame.setAttribute('title', TITLES[name] || name);
+    frame.setAttribute('data-casa-view', view);
+    frame.setAttribute('title', TITLES[view] || view);
     frame.src = src;
     if (frame.style) {
       frame.style.display = 'none';
@@ -135,9 +210,10 @@ export function showView(name) {
     bindFrame(frame);
   }
   scroller.querySelectorAll('iframe').forEach((f) => {
-    if (f.style) f.style.display = f.getAttribute('data-casa-view') === name ? 'block' : 'none';
+    if (f.style) f.style.display = f.getAttribute('data-casa-view') === view ? 'block' : 'none';
   });
-  markTab(name);
+  markTab(view);
+  if (view === 'tablon') refreshTablonQueueDot();
   return src;
 }
 
@@ -147,8 +223,7 @@ export function showShell() {
   if (gate) gate.hidden = true;
   if (shell) shell.hidden = false;
   hideExpiredOverlay();
-  const selected = document.querySelector('#tabs button[aria-selected="true"]');
-  showView((selected && selected.dataset.view) || 'go');
+  showView(lastTab());
 }
 
 export function isFrameDead(frame) {

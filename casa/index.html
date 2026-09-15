@@ -101,6 +101,7 @@
       padding-right: max(8px, env(safe-area-inset-right, 0px));
     }
     #tabs button {
+      position: relative;
       flex: 1 1 0;
       margin: 0;
       padding: 10px 8px;
@@ -115,6 +116,16 @@
       background: var(--paper);
       color: var(--bg);
     }
+    .tab-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      margin-left: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      vertical-align: 1px;
+    }
+    .tab-dot[hidden] { display: none !important; }
     #session-overlay {
       position: fixed;
       inset: 0;
@@ -140,7 +151,7 @@
     <div id="scroller"></div>
     <nav id="tabs" aria-label="Secciones de casa">
       <button type="button" data-view="go" aria-selected="true">Go</button>
-      <button type="button" data-view="tablon" aria-selected="false">Tablón</button>
+      <button type="button" data-view="tablon" aria-selected="false">Tablón<span class="tab-dot" hidden aria-hidden="true"></span></button>
       <button type="button" data-view="viajes" aria-selected="false">Viajes</button>
     </nav>
   </div>
