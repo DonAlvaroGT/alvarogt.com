@@ -53,6 +53,9 @@
     article.day { background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow); padding: 24px; }
     .date { color: var(--gold); font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
     article.day h3 { color: var(--navy); font: 400 2rem/1 Georgia, serif; margin: 16px 0 12px; }
+    .trip-hit { color: var(--navy); margin: 12px 0 6px; font-size: .95rem; line-height: 1.4; }
+    .day-trip { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+    .day-trip:first-of-type { border-top: 0; padding-top: 0; }
     .copy, .meta { color: var(--ink-soft); line-height: 1.55; margin: 0 0 8px; font-size: .9rem; }
     .copy strong { color: var(--navy); font-weight: 600; }
     .items { margin: 14px 0 0; padding: 0; list-style: none; }
@@ -232,6 +235,14 @@ function diaFuente(viaje) {
 }
 function tripOn(viajes, day) {
   return viajes.find(v => covers(v.inicio, v.fin, day) && placeOn(v, day)) || viajes.find(v => covers(v.inicio, v.fin, day));
+}
+function tripHitText(viaje, day) {
+  const place = placeOn(viaje, day) || viaje.lugar_principal || {};
+  const core = [viaje.quien, viaje.titulo].filter(Boolean).join(' · ');
+  return place.label ? `✈️ ${core} (${place.label})` : `✈️ ${core}`;
+}
+function dayWxId(dayKey, trip, trips) {
+  return trips.length === 1 ? dayKey : `${dayKey}:${trip.id || trip.titulo || ''}`;
 }
 function daysBetween(from, to) {
   const [fy, fm, fd] = from.split('-').map(Number);
@@ -457,30 +468,51 @@ function tick() {
   });
 }
 
-function dayCard(label, dayKey, viajes) {
-  const trip = tripOn(viajes, dayKey);
-  const place = trip ? placeOn(trip, dayKey) : null;
-  if (!place) {
-    return `<article class="day"><div class="date">${esc(label)} · ${esc(pretty(dayKey, casa))}</div><h3>${esc(label)}</h3><p class="copy">Sin viaje este día.</p></article>`;
-  }
+function dayPlaceBody(place, wxId, withMap) {
   const flightCodes = (place.vuelos || []).map(v => v.codigo).filter(Boolean);
   const items = (place.items || []).filter(it => !flightCodes.some(c => String(it.texto).includes(c))).map(it => `<li><strong>${esc(it.hora || '')}</strong> ${esc(it.texto)}${it.confirmar ? ' <span class="confirm">· Confirmar en la app</span>' : ''}</li>`).join('');
   const flights = (place.vuelos || []).map(flightCard).join('');
   const link = place.detalle ? `<p class="meta"><a href="${esc(place.detalle)}">Detalle del viaje →</a></p>` : '';
   const hotel = place.hotel ? `<p class="copy"><strong>Hotel:</strong> ${esc(place.hotel)}</p>` : '';
-  const map = (place.latitud != null && place.longitud != null) ? `<div class="map-wrap"><iframe title="Mapa ${esc(place.label)}" src="${esc(osmEmbed(place.latitud, place.longitud))}" loading="lazy"></iframe><a href="${esc(osmLink(place.latitud, place.longitud))}" target="_blank" rel="noopener">OpenStreetMap · ${esc(place.label)}</a></div>` : '';
-  return `<article class="day">
-    <div class="date">${esc(label)} · ${esc(pretty(dayKey, place.timezone || casa))}</div>
-    <h3>${esc(place.titulo)}</h3>
+  const map = (withMap && place.latitud != null && place.longitud != null) ? `<div class="map-wrap"><iframe title="Mapa ${esc(place.label)}" src="${esc(osmEmbed(place.latitud, place.longitud))}" loading="lazy"></iframe><a href="${esc(osmLink(place.latitud, place.longitud))}" target="_blank" rel="noopener">OpenStreetMap · ${esc(place.label)}</a></div>` : '';
+  return `
     <p class="copy"><strong>Dónde:</strong> ${esc(place.label)}</p>
     <p class="copy"><strong>Quién:</strong> ${esc(place.quien)}</p>
     ${hotel}
     ${place.plan ? `<p class="copy">${esc(place.plan)}</p>` : ''}
-    <p class="wx-day copy" data-day-wx="${esc(dayKey)}">Tiempo: consultando…</p>
+    <p class="wx-day copy" data-day-wx="${esc(wxId)}">Tiempo: consultando…</p>
     ${map}
     ${flights ? `<ul class="flights">${flights}</ul>` : ''}
     ${items ? `<ul class="items">${items}</ul>` : ''}
-    ${link}
+    ${link}`;
+}
+
+function dayCard(label, dayKey, viajes) {
+  const trips = tripsCovering(viajes, dayKey);
+  if (!trips.length) {
+    return `<article class="day"><div class="date">${esc(label)} · ${esc(pretty(dayKey, casa))}</div><h3>${esc(label)}</h3><p class="copy">Sin viaje este día.</p></article>`;
+  }
+  if (trips.length === 1) {
+    const trip = trips[0];
+    const place = placeOn(trip, dayKey);
+    if (!place) {
+      return `<article class="day"><div class="date">${esc(label)} · ${esc(pretty(dayKey, casa))}</div><h3>${esc(label)}</h3><p class="copy">Sin viaje este día.</p></article>`;
+    }
+    return `<article class="day">
+    <div class="date">${esc(label)} · ${esc(pretty(dayKey, place.timezone || casa))}</div>
+    <h3>${esc(place.titulo)}</h3>
+    ${dayPlaceBody(place, dayWxId(dayKey, trip, trips), true)}
+  </article>`;
+  }
+  const blocks = trips.map(trip => {
+    const place = placeOn(trip, dayKey);
+    const hit = `<p class="trip-hit">${esc(tripHitText(trip, dayKey))}</p>`;
+    if (!place) return `<div class="day-trip">${hit}</div>`;
+    return `<div class="day-trip">${hit}${dayPlaceBody(place, dayWxId(dayKey, trip, trips), false)}</div>`;
+  }).join('');
+  return `<article class="day">
+    <div class="date">${esc(label)} · ${esc(pretty(dayKey, casa))}</div>
+    ${blocks}
   </article>`;
 }
 
@@ -489,12 +521,14 @@ async function renderDays() {
   const tomorrow = addDay(today, 1);
   document.querySelector('#days').innerHTML = dayCard('Hoy', today, data.viajes) + dayCard('Mañana', tomorrow, data.viajes);
   for (const key of [today, tomorrow]) {
-    const trip = tripOn(data.viajes, key);
-    const place = trip ? placeOn(trip, key) : null;
-    const el = document.querySelector(`[data-day-wx="${CSS.escape(key)}"]`);
-    if (!el || !place) continue;
-    const w = await forecast(place.latitud, place.longitud, place.timezone);
-    el.textContent = `Tiempo: ${wxText(w)} · Open-Meteo`;
+    const trips = tripsCovering(data.viajes, key);
+    for (const trip of trips) {
+      const place = placeOn(trip, key);
+      const el = document.querySelector(`[data-day-wx="${CSS.escape(dayWxId(key, trip, trips))}"]`);
+      if (!el || !place) continue;
+      const w = await forecast(place.latitud, place.longitud, place.timezone);
+      el.textContent = `Tiempo: ${wxText(w)} · Open-Meteo`;
+    }
   }
 }
 
