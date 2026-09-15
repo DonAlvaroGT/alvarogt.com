@@ -3,7 +3,7 @@ import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
-import { commandFor, applyCommand, awardPoints, createInstanceId, frequencyPeriods, canonicalInstanceStatus, normalizeWeeklyDays, madridWeekday } from './backend.contract.mjs';
+import { commandFor, applyCommand, awardPoints, createInstanceId, frequencyPeriods, canonicalInstanceStatus, resolveCommandPeriod, madridCalendarDate, periodKeyForTask } from './backend.contract.mjs';
 
 if (!getApps().length) initializeApp();
 const auth = getAuth();
@@ -27,25 +27,21 @@ function actorFrom(request) {
 
 function input(data) {
   const taskId = String(data?.taskId || ''), instanceId = String(data?.instanceId || ''), eventId = String(data?.eventId || '');
+  const period = data?.period == null ? '' : String(data.period);
   if (!taskId || !eventId) throw new HttpsError('invalid-argument', 'Faltan taskId o eventId.');
-  return { taskId, instanceId, eventId };
-}
-
-function madridParts(date = new Date()) {
-  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid', year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' }).formatToParts(date);
-  return Object.fromEntries(parts.filter(p => p.type !== 'literal').map(p => [p.type, p.value]));
+  return { taskId, instanceId, eventId, period };
 }
 
 function periodForTask(task, date = new Date()) {
-  const p = madridParts(date), today = `${p.year}-${p.month}-${p.day}`;
-  if (task.frequency !== 'weekly') return today;
-  const day = madridWeekday(date);
-  if (!normalizeWeeklyDays(task.days).includes(day)) throw new HttpsError('failed-precondition', 'La tarea semanal no corresponde a hoy.');
-  return today;
+  try {
+    return periodKeyForTask(task, madridCalendarDate(date));
+  } catch (error) {
+    throw new HttpsError('failed-precondition', error.message);
+  }
 }
 
 async function command(action, request) {
-  const actor = actorFrom(request), { taskId, instanceId: requestedInstanceId, eventId } = input(request.data);
+  const actor = actorFrom(request), { taskId, instanceId: requestedInstanceId, eventId, period: requestedPeriod } = input(request.data);
   const taskRef = db.doc(`tasks/${taskId}`), eventRef = db.doc(`actions/${action}:${eventId}`);
   return db.runTransaction(async tx => {
     const previous = await tx.get(eventRef);
@@ -54,9 +50,15 @@ async function command(action, request) {
     if (!taskSnap.exists) throw new HttpsError('not-found', 'Tarea no encontrada.');
     const task = { id: taskSnap.id, ...taskSnap.data() };
     if (task.status !== 'active') throw new HttpsError('failed-precondition', 'La tarea no está activa.');
-    const period = periodForTask(task);
+    let period;
+    try {
+      const resolved = resolveCommandPeriod({ actor, task, requestedPeriod, requestedInstanceId });
+      period = periodForTask(task, new Date(`${resolved.period}T12:00:00Z`));
+    } catch (error) {
+      const message = error.message || 'Periodo no válido.';
+      throw new HttpsError(/adulto/.test(message) ? 'permission-denied' : 'failed-precondition', message);
+    }
     const expectedInstanceId = createInstanceId(task.id, period);
-    if (requestedInstanceId && requestedInstanceId !== expectedInstanceId) throw new HttpsError('failed-precondition', 'La instancia no corresponde al periodo actual.');
     const instanceRef = db.doc(`taskInstances/${expectedInstanceId}`);
     const [instanceSnap] = await tx.getAll(instanceRef);
     const instance = instanceSnap.exists

@@ -47,6 +47,51 @@ export function createInstanceId(taskId, period) {
   return `${taskId}:${period}`;
 }
 
+export function madridCalendarDate(date = new Date()) {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid' }).format(date);
+}
+
+export function shiftCalendarDate(ymd, days) {
+  const d = new Date(`${String(ymd).slice(0, 10)}T12:00:00Z`);
+  if (Number.isNaN(d.getTime())) throw new Error('Fecha no válida.');
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+export function resolveBoardPeriod(requestedPeriod, now = new Date()) {
+  const today = madridCalendarDate(now);
+  const yesterday = shiftCalendarDate(today, -1);
+  const value = requestedPeriod == null ? '' : String(requestedPeriod).trim();
+  if (!value || value === 'today' || value === today) return { key: today, slot: 'today' };
+  if (value === 'yesterday' || value === yesterday) return { key: yesterday, slot: 'yesterday' };
+  throw new Error('Solo se puede operar sobre hoy o ayer.');
+}
+
+export function periodKeyForTask(task, calendarDate) {
+  const key = String(calendarDate).slice(0, 10);
+  if (!task || task.frequency !== 'weekly') return key;
+  if (!normalizeWeeklyDays(task.days).includes(madridWeekday(new Date(`${key}T12:00:00Z`)))) {
+    throw new Error('La tarea semanal no corresponde a ese día.');
+  }
+  return key;
+}
+
+export function resolveCommandPeriod({ actor, task, requestedPeriod, requestedInstanceId, now = new Date() }) {
+  const adult = actor?.role === 'adult';
+  const rawPeriod = requestedPeriod == null ? '' : String(requestedPeriod).trim();
+  if (!adult && rawPeriod && rawPeriod !== 'today') {
+    const today = madridCalendarDate(now);
+    if (rawPeriod !== today) throw new Error('Solo un adulto puede operar sobre ayer.');
+  }
+  const board = resolveBoardPeriod(adult ? requestedPeriod : 'today', now);
+  const period = periodKeyForTask(task, board.key);
+  const expectedInstanceId = createInstanceId(task.id, period);
+  if (requestedInstanceId && requestedInstanceId !== expectedInstanceId) {
+    throw new Error('La instancia no corresponde al periodo actual.');
+  }
+  return { period, expectedInstanceId, slot: board.slot };
+}
+
 const WEEKDAY_NAMES = new Map([
   ['domingo', 0], ['lunes', 1], ['martes', 2], ['miércoles', 3], ['miercoles', 3],
   ['jueves', 4], ['viernes', 5], ['sábado', 6], ['sabado', 6],
