@@ -4,7 +4,7 @@ import {
   createPeriodicInstances,
   resolveTrustedActor,
 } from '../src/pure.mjs';
-import { normalizeWeeklyDays, madridWeekday, frequencyPeriods } from '../src/backend.contract.mjs';
+import { normalizeWeeklyDays, madridWeekday, frequencyPeriods, resolveBoardPeriod, resolveCommandPeriod, madridCalendarDate, shiftCalendarDate } from '../src/backend.contract.mjs';
 
 const adultAuth = { uid: 'adult-1', token: { email: 'agarciatimon@gmail.com', email_verified: true } };
 const childAuth = { uid: 'child-shared', token: { childRole: 'supervised' } };
@@ -45,5 +45,18 @@ for (const day of [0, 1, 2, 3, 4, 5, 6]) {
 }
 for (const status of ['pending', 'done']) assert.equal(status === 'pending' || status === 'done', true);
 assert.deepEqual(createPeriodicInstances([{ ...task, status: 'archived' }], ['2026-09-07']), []);
+
+const now = new Date('2026-09-15T10:00:00Z');
+assert.equal(madridCalendarDate(now), '2026-09-15');
+assert.equal(shiftCalendarDate('2026-09-15', -1), '2026-09-14');
+assert.equal(resolveBoardPeriod('yesterday', now).key, '2026-09-14');
+const adultActor = resolveTrustedActor(adultAuth);
+const childActor = resolveTrustedActor(childAuth);
+assert.equal(resolveCommandPeriod({ actor: adultActor, task, requestedPeriod: 'yesterday', now }).expectedInstanceId, 'task-1:2026-09-14');
+assert.throws(() => resolveCommandPeriod({ actor: childActor, task, requestedPeriod: 'yesterday', now }), /adulto/);
+const yInst = { id: 'task-1:2026-09-14', taskId: 'task-1', period: '2026-09-14', status: 'adult_done', pointsAwarded: false };
+const yVal = executeCommand({ action: 'validate_task', actor: adultActor, task, instance: yInst, eventId: 'evt-yesterday', store: new Map() });
+assert.equal(yVal.award.awardId, 'task-1:2026-09-14:Nacho');
+assert.notEqual(yVal.award.awardId, 'task-1:2026-09-07:Nacho');
 
 console.log('functions backend tests: ok');

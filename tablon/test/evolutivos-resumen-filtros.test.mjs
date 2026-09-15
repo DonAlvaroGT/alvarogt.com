@@ -25,7 +25,7 @@ assert.match(html, /sharedLabel='⚽ Nacho · 🌸 Luz'/);
 assert.match(html, /frequencyFilter==='all'/);
 assert.match(html, /statusFilter==='all'/);
 assert.match(html, /normalizedSearch.*title/);
-assert.match(html, /weeklyStatus\(t\).*outOfDay\|\|/);
+assert.match(html, /weeklyStatus\(t(?:,boardDate\(\))?\).*outOfDay\|\|/);
 assert.match(html, /status==='waiting'\?actionButtons/);
 
 const start = html.indexOf('const madridDateParts=');
