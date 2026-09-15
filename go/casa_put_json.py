@@ -16,6 +16,7 @@ DOCS = {
     "go/data.json": "go_data",
     "go/sports.json": "go_sports",
     "go/comedor.json": "go_comedor",
+    "go/reglas.json": "go_reglas",
     "viajes/viajes.json": "viajes",
 }
 SA = Path.home() / ".hermes/gabinete/secrets/tablongo-firebase-adminsdk.json"
@@ -23,21 +24,34 @@ PROJECT = "tablongo"
 SCOPES = ("https://www.googleapis.com/auth/datastore", "https://www.googleapis.com/auth/cloud-platform")
 
 
+def _headers(token: str) -> dict:
+    return {"Authorization": "Bearer " + token, "Content-Type": "application/json"}
+
+
 def put(name: str, body: str) -> None:
     doc = DOCS[name]
     creds = service_account.Credentials.from_service_account_file(str(SA), scopes=SCOPES)
     creds.refresh(Request())
-    url = (
-        f"https://firestore.googleapis.com/v1/projects/{PROJECT}/databases/(default)"
-        f"/documents/casa_json/{doc}?updateMask.fieldPaths=body"
-    )
     payload = json.dumps({"fields": {"body": {"stringValue": body}}}).encode("utf-8")
-    req = urllib.request.Request(url, data=payload, method="PATCH", headers={
-        "Authorization": "Bearer " + creds.token,
-        "Content-Type": "application/json",
-    })
+    base = f"https://firestore.googleapis.com/v1/projects/{PROJECT}/databases/(default)/documents/casa_json"
+    patch_url = f"{base}/{doc}?updateMask.fieldPaths=body"
+    req = urllib.request.Request(patch_url, data=payload, method="PATCH", headers=_headers(creds.token))
     try:
         with urllib.request.urlopen(req, timeout=30) as res:
+            if res.status not in (200, 201):
+                raise SystemExit(f"firestore HTTP {res.status}")
+            return
+    except urllib.error.HTTPError as err:
+        if err.code != 404:
+            raise SystemExit(f"firestore HTTP {err.code}: {err.read()[:500]!r}") from err
+    create = urllib.request.Request(
+        f"{base}?documentId={doc}",
+        data=payload,
+        method="POST",
+        headers=_headers(creds.token),
+    )
+    try:
+        with urllib.request.urlopen(create, timeout=30) as res:
             if res.status not in (200, 201):
                 raise SystemExit(f"firestore HTTP {res.status}")
     except urllib.error.HTTPError as err:
