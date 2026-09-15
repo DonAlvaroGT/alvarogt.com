@@ -8,6 +8,8 @@ export const HOSTS = [
   'tablongo.web.app',
   'tablongo.firebaseapp.com'
 ];
+export const HINT_KEY = 'casa.lastAdult';
+const TITLES = { go: 'Go', tablon: 'Tablón', viajes: 'Viajes' };
 
 export function isAdult(email) {
   return ALLOWED.includes(String(email || '').toLowerCase());
@@ -41,18 +43,57 @@ export async function loadFirebaseConfig() {
   }
 }
 
+export function lastAdultHint() {
+  try {
+    const v = String((globalThis.localStorage && localStorage.getItem(HINT_KEY)) || '').toLowerCase();
+    return isAdult(v) ? v : '';
+  } catch {
+    return '';
+  }
+}
+
+export function rememberAdult(email) {
+  const v = String(email || '').toLowerCase();
+  if (!isAdult(v)) return;
+  try { localStorage.setItem(HINT_KEY, v); } catch {}
+}
+
+export function googleParams() {
+  const hint = lastAdultHint();
+  return hint ? { login_hint: hint } : {};
+}
+
+export function isStandaloneDisplay() {
+  try {
+    const w = typeof window !== 'undefined' ? window : globalThis;
+    if (w.navigator && w.navigator.standalone === true) return true;
+    if (typeof w.matchMedia === 'function' && w.matchMedia('(display-mode: standalone)').matches) return true;
+  } catch {}
+  return false;
+}
+
+function scrollerFrames() {
+  const scroller = document.querySelector('#scroller');
+  return scroller ? [...scroller.querySelectorAll('iframe')] : [];
+}
+
+export function hideExpiredOverlay() {
+  const overlay = document.querySelector('#session-overlay');
+  if (overlay) overlay.hidden = true;
+}
+
+export function showExpiredOverlay() {
+  const overlay = document.querySelector('#session-overlay');
+  if (overlay) overlay.hidden = false;
+}
+
 export function showGate(statusText) {
   const gate = document.querySelector('#gate');
   const shell = document.querySelector('#shell');
-  const frame = document.querySelector('#view');
   const status = document.querySelector('#google-status');
+  hideExpiredOverlay();
   if (gate) gate.hidden = false;
   if (shell) shell.hidden = true;
-  if (frame) {
-    frame.removeAttribute('data-casa-view');
-    frame.removeAttribute('src');
-    try { frame.src = 'about:blank'; } catch {}
-  }
   if (status && statusText) status.textContent = statusText;
 }
 
@@ -62,16 +103,40 @@ export function markTab(name) {
   });
 }
 
+function bindFrame(frame) {
+  frame.addEventListener('load', () => {
+    try {
+      const path = frame.contentWindow?.location?.pathname;
+      if (path && path !== 'blank') markTab(tabFromPath(path));
+    } catch {}
+  });
+}
+
 export function showView(name) {
   const src = srcFor(name);
-  const frame = document.querySelector('#view');
-  if (!frame) return src;
-  const current = frame.getAttribute('data-casa-view') || '';
-  if (current !== name) {
-    if (frame.style) frame.style.height = '';
-    frame.setAttribute('data-casa-view', name);
-    frame.src = src;
+  const scroller = document.querySelector('#scroller');
+  if (!scroller) {
+    markTab(name);
+    return src;
   }
+  let frame = scroller.querySelector(`iframe[data-casa-view="${name}"]`);
+  if (!frame) {
+    frame = document.createElement('iframe');
+    frame.setAttribute('data-casa-view', name);
+    frame.setAttribute('title', TITLES[name] || name);
+    frame.src = src;
+    if (frame.style) {
+      frame.style.display = 'none';
+      frame.style.width = '100%';
+      frame.style.height = '100%';
+      frame.style.border = '0';
+    }
+    scroller.appendChild(frame);
+    bindFrame(frame);
+  }
+  scroller.querySelectorAll('iframe').forEach((f) => {
+    if (f.style) f.style.display = f.getAttribute('data-casa-view') === name ? 'block' : 'none';
+  });
   markTab(name);
   return src;
 }
@@ -81,14 +146,63 @@ export function showShell() {
   const shell = document.querySelector('#shell');
   if (gate) gate.hidden = true;
   if (shell) shell.hidden = false;
+  hideExpiredOverlay();
   const selected = document.querySelector('#tabs button[aria-selected="true"]');
   showView((selected && selected.dataset.view) || 'go');
+}
+
+export function isFrameDead(frame) {
+  if (!frame) return true;
+  try {
+    const win = frame.contentWindow;
+    const doc = frame.contentDocument;
+    if (!win || !doc) return true;
+    const href = String((win.location && win.location.href) || '');
+    if (!href || href === 'about:blank') return true;
+    if (!doc.body) return true;
+    return false;
+  } catch {
+    return true;
+  }
+}
+
+export function reloadView(name) {
+  const scroller = document.querySelector('#scroller');
+  const frame = scroller && scroller.querySelector(`iframe[data-casa-view="${name}"]`);
+  if (!frame) return false;
+  try {
+    if (frame.contentWindow && !isFrameDead(frame)) {
+      frame.contentWindow.location.reload();
+      return true;
+    }
+  } catch {}
+  frame.src = srcFor(name);
+  return true;
+}
+
+export function resumeActiveIfDead() {
+  const frame = scrollerFrames().find((f) => f.style.display !== 'none');
+  if (!frame) return false;
+  if (!isFrameDead(frame)) return false;
+  return reloadView(frame.getAttribute('data-casa-view') || 'go');
+}
+
+function liveShell() {
+  const shell = document.querySelector('#shell');
+  return !!(shell && !shell.hidden && scrollerFrames().length);
+}
+
+function shouldRedirect(code) {
+  if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment') return true;
+  if (!isStandaloneDisplay() || !code) return false;
+  const text = String(code);
+  if (text === 'auth/popup-closed-by-user') return false;
+  return text.startsWith('auth/popup-');
 }
 
 export function boot() {
   const status = document.querySelector('#google-status');
   const setStatus = (text) => { if (status) status.textContent = text; };
-  const frame = document.querySelector('#view');
   let loginAttempt = false;
 
   document.querySelector('#tabs')?.addEventListener('click', (e) => {
@@ -97,19 +211,22 @@ export function boot() {
     showView(btn.dataset.view);
   });
 
-  frame?.addEventListener('load', () => {
-    try {
-      const path = frame.contentWindow?.location?.pathname;
-      if (path && path !== 'blank') markTab(tabFromPath(path));
-    } catch {}
-  });
-
   window.addEventListener('message', (ev) => {
     if (ev.origin !== location.origin) return;
     if (!ev.data || ev.data.casa !== 'frame-size') return;
-    if (!frame || ev.source !== frame.contentWindow) return;
+    const target = scrollerFrames().find((f) => {
+      try { return f.contentWindow === ev.source; } catch { return false; }
+    });
+    if (!target) return;
     const h = Number(ev.data.height);
-    if (Number.isFinite(h) && h > 200) frame.style.height = `${Math.ceil(h)}px`;
+    if (Number.isFinite(h) && h > 200) target.style.height = `${Math.ceil(h)}px`;
+  });
+
+  window.addEventListener('pageshow', (ev) => {
+    if (ev.persisted) resumeActiveIfDead();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') resumeActiveIfDead();
   });
 
   showGate('Acceso · comprobando');
@@ -137,11 +254,11 @@ async function setupGoogle(setStatus, markLogin, wasLogin, clearLogin) {
       idToken: async () => (service.currentUser ? service.currentUser.getIdToken() : null)
     };
     const provider = new auth.GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: 'select_account' });
 
     const enter = (user) => {
       if (isAdult(user.email)) {
         clearLogin();
+        rememberAdult(user.email);
         setStatus(user.displayName || user.email);
         showShell();
         return;
@@ -154,24 +271,45 @@ async function setupGoogle(setStatus, markLogin, wasLogin, clearLogin) {
       }
     };
 
+    let expireTimer = 0;
     auth.onAuthStateChanged(service, (user) => {
+      if (expireTimer) {
+        clearTimeout(expireTimer);
+        expireTimer = 0;
+      }
       if (!user) {
+        if (liveShell()) {
+          expireTimer = setTimeout(() => {
+            expireTimer = 0;
+            if (service.currentUser) return;
+            setStatus('Sin sesión');
+            showExpiredOverlay();
+          }, 400);
+          return;
+        }
         setStatus('Sin sesión');
-        showGate();
+        showGate('Sin sesión');
         return;
       }
+      hideExpiredOverlay();
       enter(user);
     });
+
+    try { await auth.getRedirectResult(service); } catch (e) {
+      setStatus('Google · ' + ((e && e.code) || 'error'));
+    }
 
     const login = async () => {
       try {
         markLogin();
         setStatus('Google · entrando…');
+        provider.setCustomParameters(googleParams());
         await auth.signInWithPopup(service, provider);
       } catch (e) {
         const code = e && e.code;
-        if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment') {
+        if (shouldRedirect(code)) {
           try {
+            provider.setCustomParameters(googleParams());
             await auth.signInWithRedirect(service, provider);
             return;
           } catch (redirectErr) {
@@ -184,6 +322,7 @@ async function setupGoogle(setStatus, markLogin, wasLogin, clearLogin) {
     };
 
     document.querySelector('#gate-sign-in')?.addEventListener('click', login);
+    document.querySelector('#session-overlay')?.addEventListener('click', login);
   } catch {
     setStatus('Acceso · configuración no disponible');
     showGate();

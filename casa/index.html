@@ -33,7 +33,7 @@
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
     body { min-height: 100dvh; }
-    #gate[hidden], #shell[hidden] { display: none !important; }
+    #gate[hidden], #shell[hidden], #session-overlay[hidden] { display: none !important; }
     #gate {
       min-height: 100dvh;
       display: grid;
@@ -82,7 +82,7 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
-    #view {
+    #scroller iframe {
       display: block;
       width: 100%;
       min-height: 100%;
@@ -115,6 +115,15 @@
       background: var(--paper);
       color: var(--bg);
     }
+    #session-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: grid;
+      place-items: center;
+      background: rgba(17, 17, 15, 0.55);
+      padding: calc(24px + env(safe-area-inset-top, 0px)) 16px calc(24px + env(safe-area-inset-bottom, 0px));
+    }
   </style>
 </head>
 <body>
@@ -122,20 +131,21 @@
     <div>
       <div class="kicker">Casa · García Olivas</div>
       <h1>Entra con Google</h1>
-      <p>Go, Tablón y Viajes en un icono. Solo Álvaro y Lucita.</p>
+      <p>Entra aquí, dentro del icono. Lo de Safari no vale.</p>
       <button id="gate-sign-in" class="demo" type="button">Continuar con Google</button>
       <p id="google-status" class="access-status">Acceso · comprobando</p>
     </div>
   </section>
   <div id="shell" hidden>
-    <div id="scroller">
-      <iframe id="view" title="Vista de casa"></iframe>
-    </div>
+    <div id="scroller"></div>
     <nav id="tabs" aria-label="Secciones de casa">
       <button type="button" data-view="go" aria-selected="true">Go</button>
       <button type="button" data-view="tablon" aria-selected="false">Tablón</button>
       <button type="button" data-view="viajes" aria-selected="false">Viajes</button>
     </nav>
+  </div>
+  <div id="session-overlay" hidden>
+    <button id="session-reenter" class="demo" type="button">Sesión caducada · Entrar de nuevo</button>
   </div>
   <script type="module" src="./app.js"></script>
 </body>

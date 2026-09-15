@@ -1,5 +1,4 @@
 import json
-import re
 import unittest
 from pathlib import Path
 
@@ -10,16 +9,16 @@ MANIFEST = json.loads((ROOT / "manifest.json").read_text(encoding="utf-8"))
 
 
 class CasaShellTests(unittest.TestCase):
-    def test_gate_hides_shell_and_iframe_has_no_src(self):
+    def test_gate_copy_and_no_iframe_until_touch(self):
         self.assertIn('id="gate"', HTML)
         self.assertRegex(HTML, r'id="shell"[^>]*hidden')
-        iframe = re.search(r"<iframe\b[^>]*>", HTML)
-        self.assertTrue(iframe)
-        self.assertNotIn("src=", iframe.group(0) if iframe else "")
-        self.assertNotIn("sandbox=", iframe.group(0) if iframe else "")
         self.assertIn('id="scroller"', HTML)
+        self.assertNotRegex(HTML, r"<iframe\b")
         self.assertIn("Continuar con Google", HTML)
-        self.assertIn("Solo Álvaro y Lucita", HTML)
+        self.assertIn("Entra aquí, dentro del icono. Lo de Safari no vale.", HTML)
+        self.assertIn('id="session-overlay"', HTML)
+        self.assertIn("Sesión caducada · Entrar de nuevo", HTML)
+        self.assertIn('id="session-reenter"', HTML)
 
     def test_tab_bar_and_viewport(self):
         self.assertIn("Go", HTML)
@@ -34,6 +33,7 @@ class CasaShellTests(unittest.TestCase):
         self.assertIn("/casa/apple-touch-icon.png", HTML)
         self.assertIn("env(safe-area-inset-bottom", HTML)
         self.assertIn("env(safe-area-inset-top", HTML)
+        self.assertIn("aria-selected", HTML)
 
     def test_adult_allowlist_only(self):
         self.assertIn("'agarciatimon@gmail.com'", JS)
@@ -46,6 +46,8 @@ class CasaShellTests(unittest.TestCase):
 
     def test_login_on_parent_not_iframe(self):
         self.assertIn("signInWithPopup", JS)
+        self.assertIn("signInWithRedirect", JS)
+        self.assertIn("getRedirectResult", JS)
         self.assertIn("browserLocalPersistence", JS)
         self.assertIn("showShell", JS)
         self.assertIn("'/go/'", JS)
@@ -56,12 +58,30 @@ class CasaShellTests(unittest.TestCase):
         self.assertIn("-webkit-overflow-scrolling: touch", HTML)
         self.assertNotIn("run.app", JS)
         self.assertNotIn("run.app", HTML)
+        self.assertNotIn("select_account", JS)
+        self.assertIn("login_hint", JS)
+        self.assertIn("navigator.standalone", JS)
+        self.assertNotIn("authDomain", JS)
+
+    def test_lazy_iframes_overlay_resume(self):
+        self.assertIn("createElement('iframe')", JS)
+        self.assertIn("display = 'none'", JS)
+        self.assertIn("pageshow", JS)
+        self.assertIn("visibilitychange", JS)
+        self.assertIn("showExpiredOverlay", JS)
+        self.assertIn("resumeActiveIfDead", JS)
+        self.assertIn("about:blank", JS)
+        self.assertNotIn("frame.src = 'about:blank'", JS)
+        self.assertNotIn('frame.src = "about:blank"', JS)
 
     def test_does_not_copy_the_three_apps(self):
         self.assertNotIn("casaDoc", JS)
         self.assertNotIn("Agenda deportiva", HTML)
         self.assertNotIn("Tablón Familiar", HTML)
         self.assertNotIn("monthOffset", JS)
+        self.assertNotIn("serviceWorker", JS)
+        self.assertNotIn("service-worker", JS)
+        self.assertNotIn("pushManager", JS)
 
     def test_manifest(self):
         self.assertEqual(MANIFEST["name"], "Casa")
