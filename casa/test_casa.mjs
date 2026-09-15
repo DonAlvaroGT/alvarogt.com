@@ -3,7 +3,9 @@ import {
   showGate, showShell, showView,
   showExpiredOverlay, hideExpiredOverlay,
   isFrameDead, resumeActiveIfDead, reloadView,
-  lastAdultHint, rememberAdult, HINT_KEY, googleParams, isStandaloneDisplay
+  lastAdultHint, rememberAdult, HINT_KEY, googleParams, isStandaloneDisplay,
+  lastTab, rememberTab, TAB_KEY, TAB_NAMES,
+  queueHasPending, setTablonQueueDot, readTablonQueueFromFrame, refreshTablonQueueDot
 } from './app.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -34,15 +36,27 @@ test('la barra sigue el path del iframe', () => {
 function el(init = {}) {
   const attrs = { ...(init.attrs || {}) };
   const dataset = { ...(init.dataset || {}) };
+  const classSet = new Set(String(init.className || '').split(/\s+/).filter(Boolean));
   const node = {
     hidden: !!init.hidden,
     src: init.src || '',
     textContent: init.textContent || '',
+    className: init.className || '',
     dataset,
     children: init.children || [],
     style: init.style || { display: '', height: '' },
     contentWindow: init.contentWindow || null,
     contentDocument: init.contentDocument || null,
+    classList: {
+      toggle(name, force) {
+        if (force === true) classSet.add(name);
+        else if (force === false) classSet.delete(name);
+        else if (classSet.has(name)) classSet.delete(name);
+        else classSet.add(name);
+        return classSet.has(name);
+      },
+      contains(name) { return classSet.has(name); }
+    },
     getAttribute(name) { return Object.hasOwn(attrs, name) ? attrs[name] : null; },
     setAttribute(name, value) {
       attrs[name] = String(value);
@@ -64,6 +78,9 @@ function el(init = {}) {
       if (sel === 'button[aria-selected="true"]') {
         return this.children.find((c) => c.getAttribute('aria-selected') === 'true') || null;
       }
+      if (sel === '.tab-dot') {
+        return this.children.find((c) => c.className === 'tab-dot') || null;
+      }
       const view = sel.match(/^iframe\[data-casa-view="([^"]+)"\]$/);
       if (view) {
         return this.children.find((c) => c.getAttribute('data-casa-view') === view[1]) || null;
@@ -73,6 +90,7 @@ function el(init = {}) {
     querySelectorAll(sel) {
       if (sel === 'button' || sel === '#tabs button') return this.children;
       if (sel === 'iframe') return this.children;
+      if (sel === '.queue-item') return this.children.filter((c) => c.className === 'queue-item');
       return [];
     },
     addEventListener() {},
@@ -81,7 +99,14 @@ function el(init = {}) {
   return node;
 }
 
-function mockDom() {
+function mockDom(opts = {}) {
+  if (!opts.keepTab) {
+    const store = {};
+    globalThis.localStorage = {
+      getItem(k) { return Object.hasOwn(store, k) ? store[k] : null; },
+      setItem(k, v) { store[k] = String(v); }
+    };
+  }
   const gate = el();
   const shell = el({ hidden: true });
   const scroller = el({ children: [] });
@@ -89,7 +114,8 @@ function mockDom() {
   const status = el({ textContent: '' });
   const go = el({ dataset: { view: 'go' }, attrs: { 'aria-selected': 'true', 'data-view': 'go' } });
   go.dataset.view = 'go';
-  const tablon = el({ dataset: { view: 'tablon' }, attrs: { 'aria-selected': 'false', 'data-view': 'tablon' } });
+  const tabDot = el({ hidden: true, className: 'tab-dot' });
+  const tablon = el({ dataset: { view: 'tablon' }, attrs: { 'aria-selected': 'false', 'data-view': 'tablon' }, children: [tabDot] });
   tablon.dataset.view = 'tablon';
   const viajes = el({ dataset: { view: 'viajes' }, attrs: { 'aria-selected': 'false', 'data-view': 'viajes' } });
   viajes.dataset.view = 'viajes';
@@ -101,7 +127,8 @@ function mockDom() {
     '#session-overlay': overlay,
     '#google-status': status,
     '#tabs': tabs,
-    '#tabs button[aria-selected="true"]': go
+    '#tabs button[aria-selected="true"]': go,
+    '#tabs button[data-view="tablon"]': tablon
   };
   globalThis.document = {
     createElement(tag) {
@@ -223,6 +250,66 @@ test('resume no recarga si la visible sigue viva', () => {
   assert.equal(isFrameDead(goFrame), false);
   assert.equal(resumeActiveIfDead(), false);
   assert.equal(goFrame.src, '/go/?kept=1');
+});
+
+test('restaura la última pestaña; si no hay valor, Go', () => {
+  assert.equal(TAB_KEY, 'casa.lastTab');
+  assert.deepEqual(TAB_NAMES, ['go', 'tablon', 'viajes']);
+  const d = mockDom();
+  assert.equal(lastTab(), 'go');
+  showShell();
+  assert.equal(d.scroller.children[0].getAttribute('data-casa-view'), 'go');
+  showView('viajes');
+  assert.equal(localStorage.getItem(TAB_KEY), 'viajes');
+  assert.equal(lastTab(), 'viajes');
+  const d2 = mockDom({ keepTab: true });
+  showShell();
+  assert.equal(d2.scroller.children.length, 1);
+  assert.equal(d2.scroller.children[0].getAttribute('data-casa-view'), 'viajes');
+  assert.equal(d2.scroller.children[0].src, '/viajes/');
+  assert.equal(d2.viajes.getAttribute('aria-selected'), 'true');
+  rememberTab('disney');
+  assert.equal(lastTab(), 'viajes');
+  localStorage.setItem(TAB_KEY, 'nope');
+  assert.equal(lastTab(), 'go');
+});
+
+test('punto de Tablón solo si #queue-list ya tiene cola', () => {
+  mockDom();
+  const emptyList = el({ children: [el({ className: 'empty' })] });
+  const emptyDoc = {
+    body: {},
+    querySelector(sel) { return sel === '#queue-list' ? emptyList : null; }
+  };
+  assert.equal(queueHasPending(emptyDoc), false);
+  const item = el({ className: 'queue-item' });
+  const fullList = el({ children: [item] });
+  const fullDoc = {
+    body: {},
+    querySelector(sel) { return sel === '#queue-list' ? fullList : null; }
+  };
+  assert.equal(queueHasPending(fullDoc), true);
+  assert.equal(queueHasPending({ querySelector() { return null; } }), false);
+  setTablonQueueDot(true);
+  const btn = document.querySelector('#tabs button[data-view="tablon"]');
+  assert.equal(btn.classList.contains('has-queue'), true);
+  assert.equal(btn.querySelector('.tab-dot').hidden, false);
+  setTablonQueueDot(false);
+  assert.equal(btn.classList.contains('has-queue'), false);
+  assert.equal(btn.querySelector('.tab-dot').hidden, true);
+
+  const liveFrame = el({
+    attrs: { 'data-casa-view': 'tablon' },
+    contentDocument: fullDoc,
+    contentWindow: { location: { href: 'https://alvarogt.com/tablon/' } }
+  });
+  assert.equal(readTablonQueueFromFrame(liveFrame), true);
+  const deadFrame = el({ attrs: { 'data-casa-view': 'tablon' }, contentWindow: null, contentDocument: null });
+  assert.equal(readTablonQueueFromFrame(deadFrame), null);
+  const d = mockDom();
+  showShell();
+  assert.equal(refreshTablonQueueDot(), false);
+  assert.equal(d.tablon.querySelector('.tab-dot').hidden, true);
 });
 
 test('login_hint del último adulto, sin select_account', () => {
