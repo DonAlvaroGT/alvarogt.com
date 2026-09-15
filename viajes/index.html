@@ -70,7 +70,7 @@
     .flight-card .legs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .flight-card .leg .when { color: var(--gold); font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
     .flight-card .leg .time { color: var(--navy); font-variant-numeric: tabular-nums; font-size: 1.15rem; margin: 4px 0 2px; }
-    .flight-card .hito { color: var(--navy); font-size: .86rem; margin: 10px 0 0; }
+
     .flight-card .links { margin: 8px 0 0; font-size: .82rem; }
     .map-wrap { margin: 16px 0 8px; border: 1px solid var(--line); overflow: hidden; background: #e6edf2; }
     .map-wrap iframe { display: block; width: 100%; height: 180px; border: 0; }
@@ -157,7 +157,7 @@
         <h2>Viajes terminados</h2>
         <div id="past-list"></div>
       </section>
-      <footer>Fuente de datos: viajes.json · Tiempo: Open-Meteo · Mapa: OpenStreetMap · Vuelos: Flightradar24 y FlightAware (enlaces, sin seguimiento en vivo). Antelación al aeropuerto: valor de casa, no de Aena.<br>Creado por Álvaro GT y sus minions</footer>
+      <footer>Fuente de datos: viajes.json · Tiempo: Open-Meteo · Mapa: OpenStreetMap · Vuelos: Flightradar24 y FlightAware (enlaces, sin seguimiento en vivo).<br>Creado por Álvaro GT y sus minions</footer>
     </main>
   </div>
 
@@ -323,11 +323,6 @@ function fmtFlightLocal(iso, tz) {
     return null;
   }
 }
-function fmtHM(date, tz) {
-  const opts = {hour:'2-digit', minute:'2-digit', hour12:false};
-  if (tz) opts.timeZone = tz;
-  return new Intl.DateTimeFormat('es-ES', opts).format(date);
-}
 function flightCountdown(iso, isoLlegada, now = new Date()) {
   const dep = parseISO(iso);
   if (!dep) return '';
@@ -363,14 +358,6 @@ function flightCard(v) {
   const cd = v.salida
     ? `<p class="count" data-salida="${esc(v.salida)}" data-llegada="${esc(v.llegada || '')}">${esc(flightCountdown(v.salida, v.llegada))}</p>`
     : '';
-  let hito = '';
-  const mins = Number(v.antelacion_min);
-  const dep = parseISO(v.salida);
-  if (v.salida && Number.isFinite(mins) && mins > 0 && dep) {
-    const at = new Date(dep.getTime() - mins * 60000);
-    const hm = fmtHM(at, v.tz_origen || undefined);
-    hito = `<p class="hito">Toca estar en el aeropuerto a las ${esc(hm)} · antelación de casa (${esc(String(mins))} min)</p>`;
-  }
   const nota = v.nota && !/^horas locales\.?$/i.test(v.nota.trim())
     ? `<p class="meta">${esc(v.nota)}</p>`
     : '';
@@ -392,7 +379,6 @@ function flightCard(v) {
       </div>
     </div>
     ${cd}
-    ${hito}
     ${nota}
     ${confirm}
     ${links}
