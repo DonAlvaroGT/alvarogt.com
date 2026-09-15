@@ -21,7 +21,7 @@ class GoFlowTests(unittest.TestCase):
         self.assertEqual([e["title"] for e in filter_events(events, {date(2026, 9, 7)})], ["Fútbol Nacho"])
 
     def test_render_escapes_calendar_text(self):
-        html = render_day({"date": "2026-09-06", "min": 10, "max": 20, "rain_probability": 0, "clothes": "largo", "events": [{"title": "<img src=x onerror=alert(1)>", "time": "10:00", "location": "A&B"}]}, "Hoy")
+        html = render_day({"date": "2026-09-06", "min": 10, "max": 20, "rain_probability": 0, "events": [{"title": "<img src=x onerror=alert(1)>", "time": "10:00", "location": "A&B"}]}, "Hoy")
         self.assertNotIn("<img", html)
         self.assertIn("&lt;img", html)
         self.assertIn("A&amp;B", html)
@@ -74,9 +74,9 @@ class GoClientAuthHtmlTests(unittest.TestCase):
         self.assertIn("casaDocOpt('viajes')", self.html)
         self.assertIn("casaDocOpt('go_comedor')", self.html)
         self.assertIn("casaDocOpt('go_reglas')", self.html)
-        self.assertIn("from './trip_line.mjs?v=20260915c'", self.html)
-        self.assertIn("from './comedor.mjs?v=20260915c'", self.html)
-        self.assertIn("from './stamp.mjs?v=20260915c'", self.html)
+        self.assertIn("from './trip_line.mjs?v=20260915d'", self.html)
+        self.assertIn("from './comedor.mjs?v=20260915d'", self.html)
+        self.assertIn("from './stamp.mjs?v=20260915d'", self.html)
         self.assertIn("fetchTiempo()", self.html)
         self.assertIn("formatPublicado", self.html)
         self.assertIn("nachoRopa", self.html)
