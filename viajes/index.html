@@ -580,17 +580,19 @@ function renderMonths() {
       if (key === realToday) cls.push('today');
       let style = '';
       let dots = '';
+      let tip = '';
       if (hits.length === 1) {
         cls.push('marked');
         style = ` style="--mark:${esc(quienColor(hits[0].quien, QUIEN_COLOR))}"`;
       } else if (hits.length > 1) {
         dots = `<span class="cal-dots">${hits.map(h => `<i style="background:${esc(quienColor(h.quien, QUIEN_DOT))}"></i>`).join('')}</span>`;
+        tip = ` title="${esc(hits.map(h => `${h.quien} · ${h.titulo}`).join('\n'))}"`;
       }
-      return `<div class="${cls.join(' ')}" data-day="${esc(key)}"${style}><span>${c.d}</span>${dots}</div>`;
+      return `<div class="${cls.join(' ')}" data-day="${esc(key)}"${style}${tip}><span>${c.d}</span>${dots}</div>`;
     }).join('');
     return `<article class="month-box"><h3>${esc(title)}</h3><div class="cal-grid">${dow}${days}</div></article>`;
   }).join('');
-  box.innerHTML = `<p class="eyebrow">Calendario</p><h2>Este mes y el siguiente</h2><div class="month-legend">${legend}</div><div class="month-grids">${grids}</div>`;
+  box.innerHTML = `<p class="eyebrow">Calendario</p><h2>Este mes y el siguiente</h2><div class="month-legend">${legend}</div><p class="month-legend">Dos puntos = dos viajes ese día</p><div class="month-grids">${grids}</div>`;
 }
 
 let fsApi = null, db = null;
