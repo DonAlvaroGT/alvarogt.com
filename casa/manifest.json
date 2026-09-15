@@ -1,0 +1,24 @@
+{
+  "name": "Casa",
+  "short_name": "Casa",
+  "display": "standalone",
+  "start_url": "/casa/",
+  "scope": "/",
+  "background_color": "#11110f",
+  "theme_color": "#11110f",
+  "lang": "es-ES",
+  "icons": [
+    {
+      "src": "/casa/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/casa/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
