@@ -1,25 +1,28 @@
 # /go/ — agenda de casa
 
-Skinner investiga y publica `data.json`; Frink solo presenta ese fichero. La página no llama a Open-Meteo ni calcula extraescolares y no usa Telegram como API.
+La página pinta Hoy y Mañana al abrir: tiempo (Open-Meteo), ropa de Nacho, extraescolares fijos (`casa_json/go_reglas`), comedor y viaje. `go_data` es opcional (EventKit). El deporte sigue en `go_sports`.
 
 ## Contrato
 
-`data.json` tiene `schema_version: 1`, `generated_at`, `timezone: Europe/Madrid`, `source` y exactamente dos elementos en `days`: hoy y mañana. Cada día contiene `date`, `min`, `max`, `rain_probability`, `clothes`, `events` y `empty_label`. Los eventos son únicamente entradas reales del calendario cuyo título o lugar menciona Nacho, Luz, Molletito o Mollete; se excluye el calendario `Trabajo`. Sin eventos, `empty_label` es exactamente `No hay extraescolares apuntadas`.
+`go_reglas` tiene `schema_version: 1`, `timezone: Europe/Madrid` y `extraescolares` fijos. Fútbol Nacho lun+mié 16:30 desde 2026-09-21; Inglés con Dom jue 16:30 desde 2026-09-24; natación Mollete mié 18:30–19:00. Si `go_data` trae el mismo título, se queda el de EventKit (sin duplicar ni cambiar la hora).
 
-## Generar y subir (sin git)
+Ropa de Nacho en cliente: chándal martes y miércoles; uniforme lunes, jueves y viernes; fin de semana sin esa línea.
+
+El sello `#updated` usa `go_data.generated_at` si es un timestamp ISO (hora Madrid). Si solo hay fecha de calendario (`YYYY-MM-DD`), pinta «Datos del …» sin hora. Nunca `new Date('2026-09-15')`.
+
+`go_comedor` sigue aparte (JSON de mes; la página elige el día). No va en `go_data`.
+
+## Subir JSON (sin git)
 
 ```sh
-python3 go/skinner_go.py --output go/data.json
+/Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name go/reglas.json --file go/reglas.json
 /Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name go/data.json --file go/data.json
 /Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name go/sports.json --file go/sports.json
+/Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name go/comedor.json --file go/comedor.json
 /Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name viajes/viajes.json --file viajes/viajes.json
 ```
 
-Los JSON viven en Firestore `casa_json` (`go_data`, `go_sports`, `go_comedor`, `viajes`). No van a git ni a GitHub Pages. La página en `alvarogt.com/go/` los lee en el cliente tras el login. Hoy y Mañana pintan una línea de viaje solo si ese día cae en un viaje de `casa_json/viajes`. El menú de comedor sale de `casa_json/go_comedor` (JSON de mes; la página elige el día al abrir). No va en `go_data`.
-
-```sh
-/Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name go/comedor.json --file go/comedor.json
-```
+Los JSON viven en Firestore `casa_json`. No van a git ni a GitHub Pages. La página en `alvarogt.com/go/` los lee tras el login.
 
 ## Login (cliente)
 
@@ -30,7 +33,12 @@ Secretos solo en `~/.hermes/gabinete/secrets/` (`tablongo-firebase-adminsdk.json
 ## Probar
 
 ```sh
-python3 -m unittest go/test_go_flow.py
+python3 -m unittest go/test_go_flow.py go/test_go_reglas.py
+node --check go/fechas.mjs go/stamp.mjs go/ropa.mjs go/tiempo.mjs go/reglas.mjs go/comedor.mjs go/trip_line.mjs
+node go/test_stamp.mjs
+node go/test_ropa.mjs
+node go/test_reglas.mjs
+node go/test_tiempo.mjs
 node go/test_comedor.mjs
 /Users/Alvaro/.hermes/hermes-agent/venv/bin/python -m unittest go/test_go_comedor.py
 ```

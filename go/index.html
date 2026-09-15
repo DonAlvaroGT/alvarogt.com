@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>García Olivas</title>
+  <!-- go-build: 20260915c -->
   <style>
     :root {
       color-scheme: light;
@@ -180,15 +181,19 @@
     </main>
   </div>
 <script type="module">
-  import { tripOn, tripLineText } from './trip_line.mjs';
-  import { menuDelDia } from './comedor.mjs';
+  import { tripOn, tripLineText } from './trip_line.mjs?v=20260915c';
+  import { menuDelDia } from './comedor.mjs?v=20260915c';
+  import { formatPublicado } from './stamp.mjs?v=20260915c';
+  import { nachoRopa } from './ropa.mjs?v=20260915c';
+  import { fetchTiempo } from './tiempo.mjs?v=20260915c';
+  import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20260915c';
+  import { ymdInZone, nextYmd } from './fechas.mjs?v=20260915c';
   const allowed=['agarciatimon@gmail.com','luzolivas@gmail.com'];
   const embedded=(()=>{try{return window.parent!==window&&window.parent.location.origin===location.origin}catch{return false}})();
   if(embedded)document.documentElement.classList.add('embedded');
   const zone='Europe/Madrid';
   const dayFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,weekday:'long',day:'numeric',month:'long'});
   const clockFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
-  const updatedFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,dateStyle:'long',timeStyle:'short'});
   const pretty=d=>dayFmt.format(new Date(d+'T12:00:00Z'));
   const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function comedorBlock(payload,date){const platos=menuDelDia(payload,date);if(!platos)return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><p class="copy empty">Sin menú de comedor</p></div>`;return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><ul>${platos.map(p=>`<li>${safe(p)}</li>`).join('')}</ul></div>`}
@@ -252,38 +257,56 @@
   async function loadSports(){
     const payload=await casaDoc('go_sports');
     if(payload.timezone!==zone||payload.window?.start!=='10:00'||payload.window?.end!=='22:30'||!Array.isArray(payload.events))throw Error('sports-schema');
-    sportsData={comprobado:payload.date,eventos:payload.events,sin_evento_en_ventana:{}};
+    sportsData={comprobado:payload.date,eventos:payload.events,sin_evento_en_ventana:{},generated_at:payload.generated_at||payload.published_at||''};
     renderSportsAgenda(sportsData);
+  }
+  async function casaDocOpt(id){try{return await casaDoc(id)}catch{return null}}
+  function calendarEvents(payload){
+    const map={};
+    if(!payload||payload.schema_version!==1||!Array.isArray(payload.days))return map;
+    for(const day of payload.days){
+      if(day&&typeof day.date==='string')map[day.date]=Array.isArray(day.events)?day.events:[];
+    }
+    return map;
   }
   async function startApp(){
     if(started)return;
     started=true;
     document.querySelector('#app').hidden=false;
     document.querySelector('#gate').hidden=true;
-    try{
-      const payload=await casaDoc('go_data');
-      if(payload.schema_version!==1||!Array.isArray(payload.days)||payload.days.length!==2)throw Error('schema');
-      let viajes=[];
-      try{
-        const v=await casaDoc('viajes');
-        if(v.schema_version===1&&Array.isArray(v.viajes))viajes=v.viajes;
-      }catch{}
-      let comedor=null;
-      try{
-        const c=await casaDoc('go_comedor');
-        if(c.schema_version===1&&c.timezone===zone&&c.dias&&typeof c.dias==='object')comedor=c;
-      }catch{}
-      document.querySelector('#days').innerHTML=payload.days.map((day,i)=>card(day,i,tripOn(viajes,day.date),comedor)).join('');
-    }catch{
-      document.querySelector('#days').innerHTML='<p class="error">No hay datos publicados para hoy y mañana. Vuelve a intentarlo más tarde.</p>';
-    }
+    const today=ymdInZone(new Date(),zone);
+    const dates=[today,nextYmd(today)];
+    const [weather,data,reglas,viajesDoc,comedorDoc]=await Promise.all([
+      fetchTiempo(),
+      casaDocOpt('go_data'),
+      casaDocOpt('go_reglas'),
+      casaDocOpt('viajes'),
+      casaDocOpt('go_comedor'),
+    ]);
+    const viajes=(viajesDoc&&viajesDoc.schema_version===1&&Array.isArray(viajesDoc.viajes))?viajesDoc.viajes:[];
+    const comedor=(comedorDoc&&comedorDoc.schema_version===1&&comedorDoc.timezone===zone&&comedorDoc.dias&&typeof comedorDoc.dias==='object')?comedorDoc:null;
+    const fromCal=calendarEvents(data);
+    const days=dates.map(date=>{
+      const w=(weather&&weather[date])||{};
+      return {
+        date,
+        min:w.min??null,
+        max:w.max??null,
+        rain_probability:w.rain_probability??null,
+        clothes:w.clothes||null,
+        nacho_ropa:nachoRopa(date),
+        events:mergeEvents(eventsFromReglas(reglas,date),fromCal[date]||[]),
+      };
+    });
+    document.querySelector('#days').innerHTML=days.map((day,i)=>card(day,i,tripOn(viajes,day.date),comedor)).join('');
     try{
       await loadSports();
     }catch{
       document.querySelector('#sports-agenda').innerHTML='<p class="error">No hay agenda deportiva publicada.</p>';
     }
     try{
-      if(sportsData?.comprobado)document.querySelector('#updated').textContent=`Datos publicados: ${updatedFmt.format(new Date(sportsData.comprobado))}`;
+      const stamp=formatPublicado(data&&data.generated_at)||formatPublicado(sportsData&&sportsData.generated_at)||formatPublicado(sportsData&&sportsData.comprobado);
+      if(stamp)document.querySelector('#updated').textContent=stamp;
     }catch{}
     notifyCasaHeight();
     requestAnimationFrame(notifyCasaHeight);
