@@ -15,7 +15,11 @@ python3 go/skinner_go.py --output go/data.json
 /Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name viajes/viajes.json --file viajes/viajes.json
 ```
 
-Los JSON viven en Firestore `casa_json` (`go_data`, `go_sports`, `viajes`). No van a git ni a GitHub Pages. La página en `alvarogt.com/go/` los lee en el cliente tras el login. Hoy y Mañana pintan una línea de viaje solo si ese día cae en un viaje de `casa_json/viajes`.
+Los JSON viven en Firestore `casa_json` (`go_data`, `go_sports`, `go_comedor`, `viajes`). No van a git ni a GitHub Pages. La página en `alvarogt.com/go/` los lee en el cliente tras el login. Hoy y Mañana pintan una línea de viaje solo si ese día cae en un viaje de `casa_json/viajes`. El menú de comedor sale de `casa_json/go_comedor` (JSON de mes; la página elige el día al abrir). No va en `go_data`.
+
+```sh
+/Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name go/comedor.json --file go/comedor.json
+```
 
 ## Login (cliente)
 
@@ -27,4 +31,6 @@ Secretos solo en `~/.hermes/gabinete/secrets/` (`tablongo-firebase-adminsdk.json
 
 ```sh
 python3 -m unittest go/test_go_flow.py
+node go/test_comedor.mjs
+/Users/Alvaro/.hermes/hermes-agent/venv/bin/python -m unittest go/test_go_comedor.py
 ```

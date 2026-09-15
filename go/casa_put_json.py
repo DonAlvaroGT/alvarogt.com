@@ -15,6 +15,7 @@ from google.oauth2 import service_account
 DOCS = {
     "go/data.json": "go_data",
     "go/sports.json": "go_sports",
+    "go/comedor.json": "go_comedor",
     "viajes/viajes.json": "viajes",
 }
 SA = Path.home() / ".hermes/gabinete/secrets/tablongo-firebase-adminsdk.json"
