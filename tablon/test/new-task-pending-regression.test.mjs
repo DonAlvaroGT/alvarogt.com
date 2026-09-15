@@ -7,7 +7,7 @@ const source = html;
 const backend = await readFile(new URL('../functions/src/index.mjs', import.meta.url), 'utf8');
 assert.match(source, /catalogStatus:'active',instanceStatus:null/, 'crear tarea local separa catálogo e instancia');
 assert.match(source, /const taskUiStatus=task=>task\.instanceStatus\|\|\(task\.catalogStatus\?'open':task\.status\)/, 'render usa instancia, no status de catálogo');
-assert.match(source, /if\(t&&instanceIsForToday\(t,doc\.id,viewDate\)\)/, 'listener aplica solo la instancia del día visible');
+assert.match(source, /instanceIsForToday\(t,id,viewDate\)/, 'listener aplica solo la instancia del día visible');
 assert.match(source, /window\.tablonAdult&&typeof window\.tablonBoardDate/, 'ayer solo se pinta con sesión adulta');
 assert.match(source, /catalogStatus:d\.status==='archived'\?'archived':'active',instanceStatus:null/, 'listener deja active en catálogo y pending implícito');
 assert.match(backend, /if \(next\.status === 'validated' && !instance\.pointsAwarded\)/, 'solo validar concede puntos');

@@ -11,7 +11,7 @@ assert.match(source, /if\s*\(!instanceSnap\.exists\)\s*tx\.create\(instanceRef, 
 // Production data uses the canonical assignee value shared, not the demo label Compartida.
 assert.match(html, /const childIcon=.*sharedLabel='⚽ Nacho · 🌸 Luz'/,
   'el renderer debe tener etiqueta canónica para shared');
-assert.match(html, /d.status==='child_done'\|\|d.status==='adult_done'/,
+assert.match(html, /status==='child_done'\|\|status==='adult_done'/,
   'la UI muestra ambos estados pendientes como pendientes de validación');
 assert.match(html, /n==='Compartida'\|\|n==='shared'\?sharedLabel/,
   'label debe reconocer el contrato shared');
