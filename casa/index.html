@@ -83,23 +83,18 @@
     #scroller {
       flex: 1 1 auto;
       min-height: 0;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: calc(var(--tabs-inner) + env(safe-area-inset-bottom, 0px));
+      overflow: hidden;
+      background: transparent;
     }
     #scroller iframe {
       display: block;
       width: 100%;
-      min-height: 100%;
       height: 100%;
       border: 0;
-      background: var(--bg);
+      background: transparent;
     }
     #tabs {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      flex: 0 0 auto;
       z-index: 20;
       display: flex;
       gap: 0;
