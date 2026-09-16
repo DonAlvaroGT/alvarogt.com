@@ -20,11 +20,11 @@ assert.equal(parseTiempo({ timezone: 'UTC', daily: { time: ['2026-09-15'] } }), 
 
 const live = await fetchTiempo();
 assert.ok(TIEMPO_URL.includes('timezone=Europe%2FMadrid'));
-assert.ok(TIEMPO_URL.includes('forecast_days=7'));
+assert.ok(TIEMPO_URL.includes('forecast_days=14'));
 assert.ok(TIEMPO_URL.includes('past_days=6'));
 if (live) {
   const days = Object.keys(live);
-  assert.ok(days.length >= 7);
+  assert.ok(days.length >= 14);
   const first = live[days[0]];
   if (first.min == null) assert.equal(weatherCopy(first), 'Previsión no disponible.');
   assert.equal(first.clothes, undefined);

@@ -36,3 +36,8 @@ export function weekYmds(ymd) {
   if (!monday) return [];
   return [0, 1, 2, 3, 4, 5, 6].map((i) => addDaysYmd(monday, i));
 }
+
+export function nextWeekYmds(ymd) {
+  const next = addDaysYmd(ymd, 7);
+  return next ? weekYmds(next) : [];
+}

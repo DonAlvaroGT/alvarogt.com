@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>García Olivas</title>
-  <!-- go-build: 20260916f -->
+  <!-- go-build: 20260916g -->
   <style>
     :root {
       color-scheme: light;
@@ -220,6 +220,7 @@
       <div class="row vista-switch" role="group" aria-label="Vista">
         <button type="button" id="vista-hoy" data-vista="hoy" aria-pressed="true">Hoy</button>
         <button type="button" id="vista-semana" data-vista="semana" aria-pressed="false">Semana</button>
+        <button type="button" id="vista-proxima" data-vista="proxima" aria-pressed="false">Próxima</button>
       </div>
     </div>
   </header>
@@ -244,15 +245,15 @@
     </main>
   </div>
 <script type="module">
-  import { tripOn, tripLineText, tripSoon } from './trip_line.mjs?v=20260916f';
-  import { menuDelDia } from './comedor.mjs?v=20260916f';
-  import { formatPublicado } from './stamp.mjs?v=20260916f';
-  import { nachoRopa } from './ropa.mjs?v=20260916f';
-  import { fetchTiempo } from './tiempo.mjs?v=20260916f';
-  import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20260916f';
-  import { ymdInZone, nextYmd, weekYmds } from './fechas.mjs?v=20260916f';
-  import { lastVista, rememberVista, datesForVista, dayLabel } from './vista.mjs?v=20260916f';
-  import { parseFavoritos, isHouseFav as matchHouseFav, DEFAULT_FAVS } from './favoritos.mjs?v=20260916f';
+  import { tripOn, tripLineText, tripSoon } from './trip_line.mjs?v=20260916g';
+  import { menuDelDia } from './comedor.mjs?v=20260916g';
+  import { formatPublicado } from './stamp.mjs?v=20260916g';
+  import { nachoRopa } from './ropa.mjs?v=20260916g';
+  import { fetchTiempo } from './tiempo.mjs?v=20260916g';
+  import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20260916g';
+  import { ymdInZone, nextYmd, weekYmds, nextWeekYmds } from './fechas.mjs?v=20260916g';
+  import { lastVista, rememberVista, datesForVista, dayLabel } from './vista.mjs?v=20260916g';
+  import { parseFavoritos, isHouseFav as matchHouseFav, DEFAULT_FAVS } from './favoritos.mjs?v=20260916g';
   const allowed=['agarciatimon@gmail.com','luzolivas@gmail.com'];
   const embedded=(()=>{try{return window.parent!==window&&window.parent.location.origin===location.origin}catch{return false}})();
   if(embedded)document.documentElement.classList.add('embedded');
@@ -380,7 +381,7 @@
     const dates=datesForVista(vista,todayYmd);
     const days=dates.map(date=>dayMap[date]).filter(Boolean);
     const box=document.querySelector('#days');
-    box.classList.toggle('is-week', vista==='semana');
+    box.classList.toggle('is-week', vista!=='hoy');
     box.innerHTML=days.map(day=>card(day,dayLabel(vista,day.date,todayYmd),tripOn(viajesList,day.date),comedorPayload)).join('');
     notifyCasaHeight();
     requestAnimationFrame(notifyCasaHeight);
@@ -395,7 +396,7 @@
     document.querySelector('#app').hidden=false;
     document.querySelector('#gate').hidden=true;
     todayYmd=ymdInZone(new Date(),zone);
-    const dates=weekYmds(todayYmd);
+    const dates=[...weekYmds(todayYmd),...nextWeekYmds(todayYmd)];
     const [weather,data,reglas,viajesDoc,comedorDoc,favoritosDoc]=await Promise.all([
       fetchTiempo(),
       casaDocOpt('go_data'),
