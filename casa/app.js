@@ -202,6 +202,8 @@ export function showView(name) {
     frame.src = src;
     if (frame.style) {
       frame.style.display = 'none';
+      frame.style.position = 'absolute';
+      frame.style.inset = '0';
       frame.style.width = '100%';
       frame.style.height = '100%';
       frame.style.border = '0';
@@ -210,7 +212,9 @@ export function showView(name) {
     bindFrame(frame);
   }
   scroller.querySelectorAll('iframe').forEach((f) => {
-    if (f.style) f.style.display = f.getAttribute('data-casa-view') === view ? 'block' : 'none';
+    const on = f.getAttribute('data-casa-view') === view;
+    f.classList.toggle('is-active', on);
+    if (f.style) f.style.display = on ? 'block' : 'none';
   });
   markTab(view);
   if (view === 'tablon') refreshTablonQueueDot();
@@ -256,7 +260,7 @@ export function reloadView(name) {
 }
 
 export function resumeActiveIfDead() {
-  const frame = scrollerFrames().find((f) => f.style.display !== 'none');
+  const frame = scrollerFrames().find((f) => f.classList.contains('is-active') || f.style.display !== 'none');
   if (!frame) return false;
   if (!isFrameDead(frame)) return false;
   return reloadView(frame.getAttribute('data-casa-view') || 'go');
