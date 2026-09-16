@@ -96,7 +96,9 @@ class SportsSchemaTests(unittest.TestCase):
         self.assertIn("e.evento", html)
         self.assertIn("sports-schema", html)
         self.assertIn("sports-canal", html)
-        self.assertIn("id=\"sports-intro\"", html)
+        self.assertIn('id="sports-intro"', html)
+        self.assertIn("motivo_interes", html)
+        self.assertIn("Interés ${safe(e.interes)} · ${safe(motivo)}", html)
         self.assertNotIn("Tablón familiar →", html)
         self.assertNotIn('href="/viajes/"', html)
 
