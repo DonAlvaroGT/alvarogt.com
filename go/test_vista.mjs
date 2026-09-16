@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
-import { weekYmds, addDaysYmd, weekdayIso, nextWeekYmds } from './fechas.mjs';
-import { lastVista, rememberVista, datesForVista, dayLabel, VISTA_KEY, VISTAS } from './vista.mjs';
+import { weekYmds, addDaysYmd, weekdayIso, nextWeekYmds, prettyDate } from './fechas.mjs';
+import { lastVista, rememberVista, datesForVista, dayLabel, headingParts, VISTA_KEY, VISTAS } from './vista.mjs';
 
 assert.deepEqual(weekYmds('2026-09-16'), [
   '2026-09-14',
@@ -62,4 +62,29 @@ assert.equal(dayLabel('proxima', '2026-09-21', '2026-09-16'), 'Lunes');
 assert.equal(dayLabel('proxima', '2026-09-27', '2026-09-16'), 'Domingo');
 rememberVista('proxima', storage);
 assert.equal(lastVista(storage), 'proxima');
+
+assert.match(prettyDate('2026-09-14', true), /lunes/i);
+assert.equal(prettyDate('2026-09-14', false), '14 de septiembre');
+assert.doesNotMatch(prettyDate('2026-09-14', false), /lunes/i);
+assert.equal(prettyDate('nope', false), '');
+
+const hoyHead = headingParts('hoy', 'Hoy', '2026-09-16');
+assert.match(hoyHead.dateLine, /^Hoy · /);
+assert.match(hoyHead.dateLine, /miércoles/i);
+assert.equal(hoyHead.title, 'Hoy');
+assert.equal((hoyHead.dateLine + ' ' + hoyHead.title).match(/miércoles/gi).length, 1);
+
+const weekHead = headingParts('semana', 'Lunes', '2026-09-14');
+assert.equal(weekHead.dateLine, '14 de septiembre');
+assert.equal(weekHead.title, 'Lunes');
+assert.doesNotMatch(weekHead.dateLine, /lunes/i);
+const weekBlob = `${weekHead.dateLine} ${weekHead.title}`;
+assert.equal((weekBlob.match(/lunes/gi) || []).length, 1);
+
+const nextHead = headingParts('proxima', 'Lunes', '2026-09-21');
+assert.equal(nextHead.dateLine, '21 de septiembre');
+assert.equal(nextHead.title, 'Lunes');
+assert.doesNotMatch(nextHead.dateLine, /lunes/i);
+assert.equal((`${nextHead.dateLine} ${nextHead.title}`.match(/lunes/gi) || []).length, 1);
+
 console.log('ok vista');

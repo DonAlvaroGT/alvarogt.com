@@ -1,4 +1,4 @@
-import { nextYmd, weekYmds, nextWeekYmds, weekdayIso } from './fechas.mjs';
+import { nextYmd, weekYmds, nextWeekYmds, weekdayIso, prettyDate } from './fechas.mjs';
 
 export const VISTA_KEY = 'go.vista';
 export const VISTAS = ['hoy', 'semana', 'proxima'];
@@ -33,4 +33,11 @@ export function dayLabel(vista, date, todayYmd) {
   if (vista === 'hoy') return date === todayYmd ? 'Hoy' : 'Mañana';
   const wd = weekdayIso(date);
   return wd ? WEEKDAYS[wd - 1] : date;
+}
+
+export function headingParts(vista, label, ymd) {
+  if (vista === 'hoy') {
+    return { dateLine: `${label} · ${prettyDate(ymd, true)}`, title: label };
+  }
+  return { dateLine: prettyDate(ymd, false), title: label };
 }
