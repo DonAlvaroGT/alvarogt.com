@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex,nofollow">
-  <meta name="theme-color" content="#1a1c17">
+  <meta name="theme-color" content="#f4f0e8">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
   <link rel="icon" href="/casa/icons/icon-192.png" sizes="192x192" type="image/png">
   <style>
     :root {
-      color-scheme: dark;
+      color-scheme: light;
       --bg: #11110f;
       --paper: #f4f0e8;
       --muted: #aaa99f;
@@ -29,11 +29,11 @@
       margin: 0;
       height: 100%;
       height: 100dvh;
-      background: var(--card);
-      color: var(--paper);
+      background: var(--paper);
+      color: #1a1c17;
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    body { min-height: 100dvh; min-height: 100svh; }
+    body { min-height: 100%; min-height: 100dvh; }
     #gate[hidden], #shell[hidden], #session-overlay[hidden] { display: none !important; }
     #gate {
       min-height: 100dvh;
@@ -74,33 +74,40 @@
     #shell {
       display: flex;
       flex-direction: column;
+      height: 100%;
       height: 100dvh;
-      height: 100svh;
       padding-top: env(safe-area-inset-top, 0px);
       overflow: hidden;
-      background: var(--card);
+      background: var(--paper);
     }
     #scroller {
-      flex: 1 1 auto;
+      position: relative;
+      flex: 1;
       min-height: 0;
       overflow: hidden;
-      background: transparent;
+      background: var(--paper);
     }
     #scroller iframe {
-      display: block;
+      display: none;
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       border: 0;
-      background: transparent;
+      background: var(--paper);
+    }
+    #scroller iframe.is-active {
+      display: block;
     }
     #tabs {
       flex: 0 0 auto;
       z-index: 20;
+      color-scheme: dark;
       display: flex;
       gap: 0;
       border-top: 1px solid var(--line);
       background: var(--card);
-      padding-top: 2px;
+      padding-top: 0;
       padding-bottom: env(safe-area-inset-bottom, 0px);
       padding-left: max(8px, env(safe-area-inset-left, 0px));
       padding-right: max(8px, env(safe-area-inset-right, 0px));
