@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>García Olivas</title>
-  <!-- go-build: 20260916a -->
+  <!-- go-build: 20260916b -->
   <style>
     :root {
       color-scheme: light;
@@ -107,6 +107,40 @@
     .sports-time { color: var(--gold); font-variant-numeric: tabular-nums; }
     .sports-event p { margin: 0; line-height: 1.45; }
     .sports-meta { color: var(--ink-soft); font-size: .82rem; }
+    .sports-tag {
+      display: inline-block;
+      margin: 0 .35em .15em 0;
+      padding: .12em .55em;
+      border-radius: 999px;
+      font-size: .68rem;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      font-weight: 650;
+      color: #fff;
+      background: #3a6b9e;
+      line-height: 1.35;
+      vertical-align: .12em;
+    }
+    .sports-tag-futbol { background: #1a7a3c; }
+    .sports-tag-beisbol { background: #1e4d8c; }
+    .sports-tag-americano { background: #c45a12; }
+    .sports-tag-f1 { background: #c1121f; }
+    .sports-tag-otro { background: #5b4a8a; }
+    .sports-fav {
+      display: inline-block;
+      margin-left: .35em;
+      padding: .08em .48em;
+      border-radius: 999px;
+      background: #223c5c;
+      color: #fff;
+      font-size: .68rem;
+      letter-spacing: .03em;
+      vertical-align: .15em;
+      line-height: 1.35;
+    }
+    .sports-star { font-size: 1.05rem; margin-left: .2em; vertical-align: -.05em; }
+    .sports-star-4 { color: #8a93a0; }
+    .sports-star-5 { color: #d4a017; }
     .sports-event a { color: var(--navy); text-decoration: underline; text-underline-offset: 3px; }
     .sports-canal {
       display: inline-block;
@@ -199,8 +233,26 @@
   function comedorBlock(payload,date){const platos=menuDelDia(payload,date);if(!platos)return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><p class="copy empty">Sin menú de comedor</p></div>`;return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><ul>${platos.map(p=>`<li>${safe(p)}</li>`).join('')}</ul></div>`}
   function card(day,i,viaje,comedor){const label=i===0?'Hoy':'Mañana';const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');const nacho=day.nacho_ropa?`<p class="copy"><strong>Nacho: ${safe(day.nacho_ropa)}</strong></p>`:'';const trip=viaje?tripLineText(viaje,day.date):'';const tripHtml=trip?`<p class="viaje">${safe(trip)}</p>`:'';return `<article><div class="date">${label} · ${safe(pretty(day.date))}</div><h2 class="day-name">${label}</h2>${tripHtml}<p class="copy">${weather}</p>${nacho}${comedorBlock(comedor,day.date)}<div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
 
-  const sportsOrder=['MLB','NCAA Football AP Top 25','Real Madrid / Barcelona / Atlético','Miami Dolphins','Fórmula 1'];
   const agendaTime=e=>String(e.hora_madrid||'').match(/^(\d{1,2}):(\d{2})$/);
+  function sportKind(e){
+    const blob=`${e.deporte||''} ${e.competicion||''}`.toLowerCase();
+    if(/f[oó]rmula\s*1|\bf1\b/.test(blob))return 'f1';
+    if(/b[eé]isbol|baseball|\bmlb\b/.test(blob))return 'beisbol';
+    if(/f[uú]tbol americano|american football|\bnfl\b|\bncaa\b/.test(blob))return 'americano';
+    if(/f[uú]tbol|soccer|laliga|champions/.test(blob))return 'futbol';
+    return 'otro';
+  }
+  const sportTagLabel={futbol:'Fútbol',beisbol:'Béisbol',americano:'Fútbol americano',f1:'F1',otro:'Deporte'};
+  function isHouseFav(e){
+    const name=String(e.evento||'');
+    return /Real Madrid/i.test(name)||/Miami Dolphins/i.test(name)||/Milwaukee Brewers/i.test(name);
+  }
+  function sportsStar(interes){
+    const n=Number(interes);
+    if(n===5)return ' <span class="sports-star sports-star-5" title="Interés 5" aria-label="Interés 5">★</span>';
+    if(n===4)return ' <span class="sports-star sports-star-4" title="Interés 4" aria-label="Interés 4">★</span>';
+    return '';
+  }
   function sportsLine(e){
     const name=String(e.evento||'').replace(/\s+vs\.?\s+/i,'–');
     const hora=String(e.hora_madrid||'');
@@ -213,11 +265,11 @@
     return `Hoy ${sportsLine(list[0])} y ${sportsLine(list[1])}.`;
   }
   function renderSportsAgenda(payload){
-    const list=(payload.events||payload.eventos||[]).filter(e=>{const m=agendaTime(e);if(!m)return false;const mins=Number(m[1])*60+Number(m[2]);return mins>=600&&mins<=1350}).sort((a,b)=>{const ab=/Brewers/i.test(a.evento)?-1:0,bb=/Brewers/i.test(b.evento)?-1:0;const ao=sportsOrder.indexOf(a.competicion),bo=sportsOrder.indexOf(b.competicion);return ab-bb||(ao<0?99:ao)-(bo<0?99:bo)||String(a.hora_madrid).localeCompare(String(b.hora_madrid))});
+    const list=(payload.events||payload.eventos||[]).filter(e=>{const m=agendaTime(e);if(!m)return false;const mins=Number(m[1])*60+Number(m[2]);return mins>=600&&mins<=1350}).sort((a,b)=>{const ma=agendaTime(a),mb=agendaTime(b);const ia=Number(ma[1])*60+Number(ma[2]),ib=Number(mb[1])*60+Number(mb[2]);return ia-ib});
     const intro=document.querySelector('#sports-intro');
     if(intro)intro.textContent=sportsPrevia(list);
     const target=document.querySelector('#sports-agenda');
-    target.innerHTML=list.length?list.map(e=>{const canal=typeof e.canal==='string'&&e.canal.trim()?` <span class="sports-canal">📺 ${safe(e.canal.trim())}</span>`:'';const motivo=(typeof e.motivo_interes==='string'&&e.motivo_interes.trim())||(typeof e.motivo==='string'&&e.motivo.trim())||'';const interes=motivo?`Interés ${safe(e.interes)} · ${safe(motivo)}`:`Interés ${safe(e.interes)}`;return `<div class="sports-event"><div class="sports-time">${safe(e.hora_madrid)}<br><span class="sports-meta">${safe(e.deporte)}</span></div><p><a href="${safe(e.fuente)}" rel="noopener">${safe(e.evento)}</a>${canal}<br><span class="sports-meta">${safe(e.competicion)} · ${interes}</span></p></div>`}).join(''):`<p class="sports-empty">${safe(payload.motivo||'No hay eventos verificables dentro de la ventana.')}</p>`;
+    target.innerHTML=list.length?list.map(e=>{const kind=sportKind(e);const tag=`<span class="sports-tag sports-tag-${kind}">${safe(sportTagLabel[kind]||e.deporte||'Deporte')}</span>`;const fav=isHouseFav(e)?' <span class="sports-fav">Casa</span>':'';const canal=typeof e.canal==='string'&&e.canal.trim()?` <span class="sports-canal">📺 ${safe(e.canal.trim())}</span>`:'';const motivo=(typeof e.motivo_interes==='string'&&e.motivo_interes.trim())||(typeof e.motivo==='string'&&e.motivo.trim())||'';const interes=motivo?`Interés ${safe(e.interes)} · ${safe(motivo)}`:`Interés ${safe(e.interes)}`;const star=sportsStar(e.interes);return `<div class="sports-event"><div class="sports-time">${safe(e.hora_madrid)}<br>${tag}</div><p><a href="${safe(e.fuente)}" rel="noopener">${safe(e.evento)}</a>${fav}${canal}${star}<br><span class="sports-meta">${safe(e.competicion)} · ${interes}</span></p></div>`}).join(''):`<p class="sports-empty">${safe(payload.motivo||'No hay eventos verificables dentro de la ventana.')}</p>`;
   }
   let fsApi=null, db=null, fsProject='tablongo', sportsData, started=false;
   function parentEmail(){
