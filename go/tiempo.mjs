@@ -1,5 +1,5 @@
 export const MADRID = { latitude: 40.4168, longitude: -3.7038 };
-export const TIEMPO_URL = 'https://api.open-meteo.com/v1/forecast?latitude=40.4168&longitude=-3.7038&daily=temperature_2m_min,temperature_2m_max,precipitation_probability_max&timezone=Europe%2FMadrid&forecast_days=2';
+export const TIEMPO_URL = 'https://api.open-meteo.com/v1/forecast?latitude=40.4168&longitude=-3.7038&daily=temperature_2m_min,temperature_2m_max,precipitation_probability_max&timezone=Europe%2FMadrid&forecast_days=7&past_days=6';
 
 export function parseTiempo(payload) {
   const daily = payload && payload.daily;

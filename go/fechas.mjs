@@ -19,7 +19,20 @@ export function ymdInZone(date = new Date(), zone = ZONE) {
 }
 
 export function nextYmd(ymd) {
+  return addDaysYmd(ymd, 1);
+}
+
+export function addDaysYmd(ymd, n) {
   if (typeof ymd !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return null;
+  if (typeof n !== 'number' || !Number.isInteger(n)) return null;
   const [y, m, d] = ymd.split('-').map(Number);
-  return new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
+  return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
+}
+
+export function weekYmds(ymd) {
+  const wd = weekdayIso(ymd);
+  if (wd == null) return [];
+  const monday = addDaysYmd(ymd, 1 - wd);
+  if (!monday) return [];
+  return [0, 1, 2, 3, 4, 5, 6].map((i) => addDaysYmd(monday, i));
 }

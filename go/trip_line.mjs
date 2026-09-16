@@ -11,6 +11,10 @@ export function tripOn(viajes, day) {
   return viajes.find((v) => coversDay(v, day)) || null;
 }
 
+export function tripSoon(viajes, todayYmd, tomorrowYmd) {
+  return !!(tripOn(viajes, todayYmd) || tripOn(viajes, tomorrowYmd));
+}
+
 function daysBetween(from, to) {
   const [fy, fm, fd] = from.split('-').map(Number);
   const [ty, tm, td] = to.split('-').map(Number);
