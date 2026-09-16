@@ -87,6 +87,7 @@ class CasaShellTests(unittest.TestCase):
         self.assertNotIn("Notification", JS)
         self.assertNotIn("serviceWorker", JS)
         self.assertNotIn("Salir", HTML)
+        self.assertNotIn("google-sign-out", HTML)
         self.assertEqual(HTML.count('data-view="'), 3)
 
     def test_does_not_copy_the_three_apps(self):

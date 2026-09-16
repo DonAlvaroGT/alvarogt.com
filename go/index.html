@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>García Olivas</title>
-  <!-- go-build: 20260916e -->
+  <!-- go-build: 20260916f -->
   <style>
     :root {
       color-scheme: light;
@@ -244,14 +244,15 @@
     </main>
   </div>
 <script type="module">
-  import { tripOn, tripLineText, tripSoon } from './trip_line.mjs?v=20260916e';
-  import { menuDelDia } from './comedor.mjs?v=20260916e';
-  import { formatPublicado } from './stamp.mjs?v=20260916e';
-  import { nachoRopa } from './ropa.mjs?v=20260916e';
-  import { fetchTiempo } from './tiempo.mjs?v=20260916e';
-  import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20260916e';
-  import { ymdInZone, nextYmd, weekYmds } from './fechas.mjs?v=20260916e';
-  import { lastVista, rememberVista, datesForVista, dayLabel } from './vista.mjs?v=20260916e';
+  import { tripOn, tripLineText, tripSoon } from './trip_line.mjs?v=20260916f';
+  import { menuDelDia } from './comedor.mjs?v=20260916f';
+  import { formatPublicado } from './stamp.mjs?v=20260916f';
+  import { nachoRopa } from './ropa.mjs?v=20260916f';
+  import { fetchTiempo } from './tiempo.mjs?v=20260916f';
+  import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20260916f';
+  import { ymdInZone, nextYmd, weekYmds } from './fechas.mjs?v=20260916f';
+  import { lastVista, rememberVista, datesForVista, dayLabel } from './vista.mjs?v=20260916f';
+  import { parseFavoritos, isHouseFav as matchHouseFav, DEFAULT_FAVS } from './favoritos.mjs?v=20260916f';
   const allowed=['agarciatimon@gmail.com','luzolivas@gmail.com'];
   const embedded=(()=>{try{return window.parent!==window&&window.parent.location.origin===location.origin}catch{return false}})();
   if(embedded)document.documentElement.classList.add('embedded');
@@ -273,9 +274,9 @@
     return 'otro';
   }
   const sportTagLabel={futbol:'Fútbol',beisbol:'Béisbol',americano:'Fútbol americano',f1:'F1',otro:'Deporte'};
+  let houseFavs=DEFAULT_FAVS.slice();
   function isHouseFav(e){
-    const name=String(e.evento||'');
-    return /Real Madrid/i.test(name)||/Miami Dolphins/i.test(name)||/Milwaukee Brewers/i.test(name);
+    return matchHouseFav(e.evento,houseFavs);
   }
   function sportsStar(interes){
     const n=Number(interes);
@@ -395,13 +396,15 @@
     document.querySelector('#gate').hidden=true;
     todayYmd=ymdInZone(new Date(),zone);
     const dates=weekYmds(todayYmd);
-    const [weather,data,reglas,viajesDoc,comedorDoc]=await Promise.all([
+    const [weather,data,reglas,viajesDoc,comedorDoc,favoritosDoc]=await Promise.all([
       fetchTiempo(),
       casaDocOpt('go_data'),
       casaDocOpt('go_reglas'),
       casaDocOpt('viajes'),
       casaDocOpt('go_comedor'),
+      casaDocOpt('go_favoritos'),
     ]);
+    houseFavs=parseFavoritos(favoritosDoc);
     viajesList=(viajesDoc&&viajesDoc.schema_version===1&&Array.isArray(viajesDoc.viajes))?viajesDoc.viajes:[];
     comedorPayload=(comedorDoc&&comedorDoc.schema_version===1&&comedorDoc.timezone===zone&&comedorDoc.dias&&typeof comedorDoc.dias==='object')?comedorDoc:null;
     const fromCal=calendarEvents(data);

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Viajes · Álvaro GT</title>
+  <!-- viajes-build: 20260916f -->
   <style>
     :root {
       color-scheme: light;
@@ -108,6 +109,8 @@
       nav { padding-bottom: 28px; }
       .clocks, .days, .trip, .flight-card .legs, .month-grids { grid-template-columns: 1fr; }
     }
+    html.embedded .access-row { display: none; }
+    html.embedded #gate { min-height: 0; padding: 28px 16px; }
   </style>
 </head>
 <body>
@@ -170,6 +173,8 @@ const allowed = [
   'agustingarciayperez@gmail.com',
   'agustingarciatimon@gmail.com'
 ];
+const embedded = (() => { try { return window.parent !== window && window.parent.location.origin === location.origin; } catch { return false; } })();
+if (embedded) document.documentElement.classList.add('embedded');
 const prod = ['alvarogt.com', 'www.alvarogt.com'].includes(location.hostname);
 const casa = 'Europe/Madrid';
 const weatherName = code => ({0:'despejado',1:'casi despejado',2:'parcialmente nuboso',3:'nuboso',45:'niebla',48:'niebla',51:'llovizna',53:'llovizna',55:'llovizna',61:'lluvia',63:'lluvia',65:'lluvia',71:'nieve',73:'nieve',75:'nieve',80:'chubascos',81:'chubascos',82:'chubascos',95:'tormenta',96:'tormenta',99:'tormenta'}[code] || 'tiempo variable');
@@ -667,11 +672,33 @@ function renderMonths() {
   box.innerHTML = `<p class="eyebrow">Calendario</p><div class="month-head"><h2>${esc(heading)}</h2><div class="month-nav"><button type="button" class="demo" id="month-prev" aria-label="Mes anterior">‹</button><button type="button" class="demo" id="month-next" aria-label="Mes siguiente">›</button></div></div><div class="month-legend">${legend}</div><p class="month-legend">Dos puntos = dos viajes ese día</p><div class="month-grids">${grids}</div>`;
 }
 
-let fsApi = null, db = null;
+let fsApi = null, db = null, fsProject = 'tablongo';
+function parentEmail() {
+  if (!embedded) return '';
+  try { return String(window.parent.__casaAuth?.email?.() || '').toLowerCase(); } catch { return ''; }
+}
+async function parentIdToken() {
+  if (!embedded) return null;
+  try { return await window.parent.__casaAuth?.idToken?.() || null; } catch { return null; }
+}
+function parentAdult() { return allowed.includes(parentEmail()); }
 async function casaDoc(id) {
-  const snap = await fsApi.getDoc(fsApi.doc(db, 'casa_json', id));
-  if (!snap.exists()) throw new Error('missing');
-  const body = snap.data().body;
+  if (fsApi && db) {
+    try {
+      const snap = await fsApi.getDoc(fsApi.doc(db, 'casa_json', id));
+      if (!snap.exists()) throw new Error('missing');
+      const body = snap.data().body;
+      if (typeof body !== 'string') throw new Error('body');
+      return JSON.parse(body);
+    } catch (err) {
+      if (!embedded) throw err;
+    }
+  }
+  const token = await parentIdToken();
+  if (!token) throw new Error('missing');
+  const res = await fetch(`https://firestore.googleapis.com/v1/projects/${fsProject}/databases/(default)/documents/casa_json/${encodeURIComponent(id)}`, { headers: { Authorization: 'Bearer ' + token }, cache: 'no-store' });
+  if (!res.ok) throw new Error('missing');
+  const body = (await res.json())?.fields?.body?.stringValue;
   if (typeof body !== 'string') throw new Error('body');
   return JSON.parse(body);
 }
@@ -715,6 +742,7 @@ async function setupGoogle() {
   }
   try {
     const config = await fetch('/tablon/firebase.public.json', {cache: 'no-store'}).then(r => { if (!r.ok) throw new Error('cfg'); return r.json(); });
+    if (typeof config.projectId === 'string' && config.projectId) fsProject = config.projectId;
     const [{initializeApp}, auth, firestore] = await Promise.all([
       import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js'),
       import('https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js'),
@@ -737,30 +765,45 @@ async function setupGoogle() {
       }
       setStatus(user.displayName || user.email);
       signIn.hidden = true;
-      signOut.hidden = false;
+      signOut.hidden = embedded;
       document.querySelector('#gate').hidden = true;
       startApp().catch(failLoad);
     };
+    const enterFromParent = () => {
+      if (!parentAdult()) return false;
+      setStatus(parentEmail());
+      signIn.hidden = true;
+      signOut.hidden = true;
+      document.querySelector('#gate').hidden = true;
+      startApp().catch(failLoad);
+      return true;
+    };
     auth.onAuthStateChanged(service, user => {
       if (!user) {
+        if (enterFromParent()) return;
         setStatus('Sin sesión');
         showGate();
         return;
       }
       enter(user);
     });
+    if (auth.authStateReady) await auth.authStateReady(service);
+    if (!service.currentUser) enterFromParent();
     const login = async () => {
       try {
         setStatus('Google · entrando…');
         await auth.signInWithPopup(service, provider);
       } catch (e) {
-        setStatus('Google · ' + (e.code || 'error'));
+        const code = e && e.code;
+        if (enterFromParent()) return;
+        setStatus('Google · ' + (code || 'error'));
       }
     };
     signIn.addEventListener('click', login);
     document.querySelector('#gate-sign-in').addEventListener('click', login);
     signOut.addEventListener('click', () => auth.signOut(service));
   } catch (e) {
+    if (parentAdult()) { startApp().catch(failLoad); return; }
     setStatus('Acceso · configuración no disponible');
     showGate();
   }
