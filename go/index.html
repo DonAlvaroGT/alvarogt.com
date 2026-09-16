@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>García Olivas</title>
-  <!-- go-build: 20260916b -->
+  <!-- go-build: 20260916e -->
   <style>
     :root {
       color-scheme: light;
@@ -74,7 +74,29 @@
     #gate h2 { color: var(--navy); font: 400 2.4rem/1 Georgia, serif; margin: 0 0 12px; }
     #gate p { color: var(--ink-soft); max-width: 420px; margin: 0 auto 22px; line-height: 1.55; }
     main { padding: 38px 0 70px; }
+    .vista-switch {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+      background: var(--paper);
+    }
+    .vista-switch button {
+      border: 0;
+      background: transparent;
+      color: var(--navy);
+      padding: 8px 16px;
+      font: inherit;
+      font-size: .82rem;
+      cursor: pointer;
+    }
+    .vista-switch button[aria-pressed="true"] {
+      background: var(--navy);
+      color: #fff;
+    }
     .days { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .days.is-week { grid-template-columns: 1fr; }
+    #agenda-deportiva[hidden] { display: none; }
     article {
       background: var(--paper);
       border: 1px solid var(--line);
@@ -168,7 +190,7 @@
     @media (max-width: 650px) {
       .wrap { width: min(100% - 28px, 980px); }
       header { min-height: 42vh; }
-      .days { grid-template-columns: 1fr; }
+      .days, .days.is-week { grid-template-columns: 1fr; }
       article { min-height: 0; }
       .day-name { margin-top: 24px; }
       .sports-event { grid-template-columns: 1fr; gap: 4px; }
@@ -179,6 +201,9 @@
     html.embedded #gate { min-height: 0; padding: 28px 16px; }
     html.embedded .header-actions { margin-top: 14px; }
     html.embedded .header-actions .row:first-of-type { display: none; }
+    @media (min-width: 651px) {
+      .days.is-week { grid-template-columns: repeat(2, 1fr); }
+    }
   </style>
 </head>
 <body>
@@ -191,6 +216,10 @@
         <span id="google-status" class="access-status">Acceso · comprobando</span>
         <button id="google-sign-in" class="demo" type="button">Entrar</button>
         <button id="google-sign-out" class="demo" type="button" hidden>Salir</button>
+      </div>
+      <div class="row vista-switch" role="group" aria-label="Vista">
+        <button type="button" id="vista-hoy" data-vista="hoy" aria-pressed="true">Hoy</button>
+        <button type="button" id="vista-semana" data-vista="semana" aria-pressed="false">Semana</button>
       </div>
     </div>
   </header>
@@ -215,13 +244,14 @@
     </main>
   </div>
 <script type="module">
-  import { tripOn, tripLineText } from './trip_line.mjs?v=20260915d';
-  import { menuDelDia } from './comedor.mjs?v=20260915d';
-  import { formatPublicado } from './stamp.mjs?v=20260915d';
-  import { nachoRopa } from './ropa.mjs?v=20260915d';
-  import { fetchTiempo } from './tiempo.mjs?v=20260915d';
-  import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20260915d';
-  import { ymdInZone, nextYmd } from './fechas.mjs?v=20260915d';
+  import { tripOn, tripLineText, tripSoon } from './trip_line.mjs?v=20260916e';
+  import { menuDelDia } from './comedor.mjs?v=20260916e';
+  import { formatPublicado } from './stamp.mjs?v=20260916e';
+  import { nachoRopa } from './ropa.mjs?v=20260916e';
+  import { fetchTiempo } from './tiempo.mjs?v=20260916e';
+  import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20260916e';
+  import { ymdInZone, nextYmd, weekYmds } from './fechas.mjs?v=20260916e';
+  import { lastVista, rememberVista, datesForVista, dayLabel } from './vista.mjs?v=20260916e';
   const allowed=['agarciatimon@gmail.com','luzolivas@gmail.com'];
   const embedded=(()=>{try{return window.parent!==window&&window.parent.location.origin===location.origin}catch{return false}})();
   if(embedded)document.documentElement.classList.add('embedded');
@@ -231,7 +261,7 @@
   const pretty=d=>dayFmt.format(new Date(d+'T12:00:00Z'));
   const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function comedorBlock(payload,date){const platos=menuDelDia(payload,date);if(!platos)return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><p class="copy empty">Sin menú de comedor</p></div>`;return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><ul>${platos.map(p=>`<li>${safe(p)}</li>`).join('')}</ul></div>`}
-  function card(day,i,viaje,comedor){const label=i===0?'Hoy':'Mañana';const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');const nacho=day.nacho_ropa?`<p class="copy"><strong>Nacho: ${safe(day.nacho_ropa)}</strong></p>`:'';const trip=viaje?tripLineText(viaje,day.date):'';const tripHtml=trip?`<p class="viaje">${safe(trip)}</p>`:'';return `<article><div class="date">${label} · ${safe(pretty(day.date))}</div><h2 class="day-name">${label}</h2>${tripHtml}<p class="copy">${weather}</p>${nacho}${comedorBlock(comedor,day.date)}<div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
+  function card(day,label,viaje,comedor){const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');const nacho=day.nacho_ropa?`<p class="copy"><strong>Nacho: ${safe(day.nacho_ropa)}</strong></p>`:'';const trip=viaje?tripLineText(viaje,day.date):'';const tripHtml=trip?`<p class="viaje">${safe(trip)}</p>`:'';return `<article data-date="${safe(day.date)}"><div class="date">${safe(label)} · ${safe(pretty(day.date))}</div><h2 class="day-name">${safe(label)}</h2>${tripHtml}<p class="copy">${weather}</p>${nacho}${comedorBlock(comedor,day.date)}<div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
 
   const agendaTime=e=>String(e.hora_madrid||'').match(/^(\d{1,2}):(\d{2})$/);
   function sportKind(e){
@@ -253,6 +283,21 @@
     if(n===4)return ' <span class="sports-star sports-star-4" title="Interés 4" aria-label="Interés 4">★</span>';
     return '';
   }
+  function canalHomeUrl(e){
+    const canal=String(e.canal||'').toLowerCase();
+    const blob=`${e.deporte||''} ${e.competicion||''}`.toLowerCase();
+    if(canal.includes('dazn'))return 'https://www.dazn.com';
+    if(canal.includes('disney'))return 'https://www.disneyplus.com';
+    if(canal.includes('mlb')||blob.includes('mlb'))return 'https://www.mlb.com';
+    return '';
+  }
+  function canalMark(e){
+    const txt=typeof e.canal==='string'&&e.canal.trim()?e.canal.trim():'';
+    if(!txt)return '';
+    const home=canalHomeUrl(e);
+    const tv=home?`<a href="${safe(home)}" target="_top" rel="noopener">📺</a>`:'📺';
+    return ` <span class="sports-canal">${tv} ${safe(txt)}</span>`;
+  }
   function sportsLine(e){
     const name=String(e.evento||'').replace(/\s+vs\.?\s+/i,'–');
     const hora=String(e.hora_madrid||'');
@@ -269,9 +314,9 @@
     const intro=document.querySelector('#sports-intro');
     if(intro)intro.textContent=sportsPrevia(list);
     const target=document.querySelector('#sports-agenda');
-    target.innerHTML=list.length?list.map(e=>{const kind=sportKind(e);const tag=`<span class="sports-tag sports-tag-${kind}">${safe(sportTagLabel[kind]||e.deporte||'Deporte')}</span>`;const fav=isHouseFav(e)?' <span class="sports-fav">Casa</span>':'';const canal=typeof e.canal==='string'&&e.canal.trim()?` <span class="sports-canal">📺 ${safe(e.canal.trim())}</span>`:'';const motivo=(typeof e.motivo_interes==='string'&&e.motivo_interes.trim())||(typeof e.motivo==='string'&&e.motivo.trim())||'';const interes=motivo?`Interés ${safe(e.interes)} · ${safe(motivo)}`:`Interés ${safe(e.interes)}`;const star=sportsStar(e.interes);return `<div class="sports-event"><div class="sports-time">${safe(e.hora_madrid)}<br>${tag}</div><p><a href="${safe(e.fuente)}" rel="noopener">${safe(e.evento)}</a>${fav}${canal}${star}<br><span class="sports-meta">${safe(e.competicion)} · ${interes}</span></p></div>`}).join(''):`<p class="sports-empty">${safe(payload.motivo||'No hay eventos verificables dentro de la ventana.')}</p>`;
+    target.innerHTML=list.length?list.map(e=>{const kind=sportKind(e);const tag=`<span class="sports-tag sports-tag-${kind}">${safe(sportTagLabel[kind]||e.deporte||'Deporte')}</span>`;const fav=isHouseFav(e)?' <span class="sports-fav">Casa</span>':'';const canal=canalMark(e);const motivo=(typeof e.motivo_interes==='string'&&e.motivo_interes.trim())||(typeof e.motivo==='string'&&e.motivo.trim())||'';const interes=motivo?`Interés ${safe(e.interes)} · ${safe(motivo)}`:`Interés ${safe(e.interes)}`;const star=sportsStar(e.interes);return `<div class="sports-event"><div class="sports-time">${safe(e.hora_madrid)}<br>${tag}</div><p><a href="${safe(e.fuente)}" rel="noopener">${safe(e.evento)}</a>${fav}${canal}${star}<br><span class="sports-meta">${safe(e.competicion)} · ${interes}</span></p></div>`}).join(''):`<p class="sports-empty">${safe(payload.motivo||'No hay eventos verificables dentro de la ventana.')}</p>`;
   }
-  let fsApi=null, db=null, fsProject='tablongo', sportsData, started=false;
+  let fsApi=null, db=null, fsProject='tablongo', sportsData, started=false, dayMap={}, viajesList=[], comedorPayload=null, todayYmd='';
   function parentEmail(){
     if(!embedded)return '';
     try{return String(window.parent.__casaAuth?.email?.()||'').toLowerCase()}catch{return ''}
@@ -321,13 +366,35 @@
     }
     return map;
   }
+  function markVista(vista){
+    document.querySelectorAll('.vista-switch [data-vista]').forEach(btn=>{
+      btn.setAttribute('aria-pressed', btn.dataset.vista===vista ? 'true' : 'false');
+    });
+    const sports=document.querySelector('#agenda-deportiva');
+    if(sports)sports.hidden=vista!=='hoy';
+  }
+  function renderDays(){
+    const vista=lastVista();
+    markVista(vista);
+    const dates=datesForVista(vista,todayYmd);
+    const days=dates.map(date=>dayMap[date]).filter(Boolean);
+    const box=document.querySelector('#days');
+    box.classList.toggle('is-week', vista==='semana');
+    box.innerHTML=days.map(day=>card(day,dayLabel(vista,day.date,todayYmd),tripOn(viajesList,day.date),comedorPayload)).join('');
+    notifyCasaHeight();
+    requestAnimationFrame(notifyCasaHeight);
+    setTimeout(notifyCasaHeight,400);
+  }
+  function setTripSoonFlag(on){
+    document.documentElement.setAttribute('data-trip-soon', on ? '1' : '0');
+  }
   async function startApp(){
     if(started)return;
     started=true;
     document.querySelector('#app').hidden=false;
     document.querySelector('#gate').hidden=true;
-    const today=ymdInZone(new Date(),zone);
-    const dates=[today,nextYmd(today)];
+    todayYmd=ymdInZone(new Date(),zone);
+    const dates=weekYmds(todayYmd);
     const [weather,data,reglas,viajesDoc,comedorDoc]=await Promise.all([
       fetchTiempo(),
       casaDocOpt('go_data'),
@@ -335,12 +402,13 @@
       casaDocOpt('viajes'),
       casaDocOpt('go_comedor'),
     ]);
-    const viajes=(viajesDoc&&viajesDoc.schema_version===1&&Array.isArray(viajesDoc.viajes))?viajesDoc.viajes:[];
-    const comedor=(comedorDoc&&comedorDoc.schema_version===1&&comedorDoc.timezone===zone&&comedorDoc.dias&&typeof comedorDoc.dias==='object')?comedorDoc:null;
+    viajesList=(viajesDoc&&viajesDoc.schema_version===1&&Array.isArray(viajesDoc.viajes))?viajesDoc.viajes:[];
+    comedorPayload=(comedorDoc&&comedorDoc.schema_version===1&&comedorDoc.timezone===zone&&comedorDoc.dias&&typeof comedorDoc.dias==='object')?comedorDoc:null;
     const fromCal=calendarEvents(data);
-    const days=dates.map(date=>{
+    dayMap={};
+    for(const date of dates){
       const w=(weather&&weather[date])||{};
-      return {
+      dayMap[date]={
         date,
         min:w.min??null,
         max:w.max??null,
@@ -348,8 +416,9 @@
         nacho_ropa:nachoRopa(date),
         events:mergeEvents(eventsFromReglas(reglas,date),fromCal[date]||[]),
       };
-    });
-    document.querySelector('#days').innerHTML=days.map((day,i)=>card(day,i,tripOn(viajes,day.date),comedor)).join('');
+    }
+    setTripSoonFlag(tripSoon(viajesList,todayYmd,nextYmd(todayYmd)));
+    renderDays();
     try{
       await loadSports();
     }catch{
@@ -365,6 +434,14 @@
     requestAnimationFrame(notifyCasaHeight);
     setTimeout(notifyCasaHeight,400);
   }
+  document.querySelector('.vista-switch')?.addEventListener('click',e=>{
+    const btn=e.target.closest('[data-vista]');
+    if(!btn)return;
+    rememberVista(btn.dataset.vista);
+    if(started)renderDays();
+    else markVista(btn.dataset.vista);
+  });
+  markVista(lastVista());
   const tick=()=>document.querySelector('#clock').textContent=clockFmt.format(new Date());
   tick();setInterval(tick,1000);
 

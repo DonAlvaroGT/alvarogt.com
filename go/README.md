@@ -1,6 +1,6 @@
 # /go/ — agenda de casa
 
-La página pinta Hoy y Mañana al abrir: tiempo (Open-Meteo), ropa de Nacho, extraescolares fijos (`casa_json/go_reglas`), comedor y viaje. `go_data` es opcional (EventKit). El deporte sigue en `go_sports`.
+La página pinta Hoy y Mañana al abrir: tiempo (Open-Meteo), ropa de Nacho, extraescolares fijos (`casa_json/go_reglas`), comedor y viaje. Interruptor **Hoy | Semana** dentro de Go (no es otra pestaña): Semana son lun–dom de la semana en curso (Europe/Madrid). Recuerda la vista en `localStorage` (`go.vista`). `go_data` es opcional (EventKit). El deporte sigue en `go_sports` y solo en la vista Hoy.
 
 ## Contrato
 
@@ -34,11 +34,13 @@ Secretos solo en `~/.hermes/gabinete/secrets/` (`tablongo-firebase-adminsdk.json
 
 ```sh
 python3 -m unittest go/test_go_flow.py go/test_go_reglas.py
-node --check go/fechas.mjs go/stamp.mjs go/ropa.mjs go/tiempo.mjs go/reglas.mjs go/comedor.mjs go/trip_line.mjs
+node --check go/fechas.mjs go/stamp.mjs go/ropa.mjs go/tiempo.mjs go/reglas.mjs go/comedor.mjs go/trip_line.mjs go/vista.mjs
 node go/test_stamp.mjs
 node go/test_ropa.mjs
 node go/test_reglas.mjs
 node go/test_tiempo.mjs
 node go/test_comedor.mjs
+node go/test_vista.mjs
+node go/test_trip_line.mjs
 /Users/Alvaro/.hermes/hermes-agent/venv/bin/python -m unittest go/test_go_comedor.py
 ```
