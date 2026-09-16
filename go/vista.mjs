@@ -1,7 +1,7 @@
-import { nextYmd, weekYmds, weekdayIso } from './fechas.mjs';
+import { nextYmd, weekYmds, nextWeekYmds, weekdayIso } from './fechas.mjs';
 
 export const VISTA_KEY = 'go.vista';
-export const VISTAS = ['hoy', 'semana'];
+export const VISTAS = ['hoy', 'semana', 'proxima'];
 const WEEKDAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
 export function lastVista(storage) {
@@ -24,12 +24,13 @@ export function rememberVista(name, storage) {
 
 export function datesForVista(vista, todayYmd) {
   if (vista === 'semana') return weekYmds(todayYmd);
+  if (vista === 'proxima') return nextWeekYmds(todayYmd);
   const tom = nextYmd(todayYmd);
   return tom ? [todayYmd, tom] : [todayYmd];
 }
 
 export function dayLabel(vista, date, todayYmd) {
-  if (vista !== 'semana') return date === todayYmd ? 'Hoy' : 'Mañana';
+  if (vista === 'hoy') return date === todayYmd ? 'Hoy' : 'Mañana';
   const wd = weekdayIso(date);
   return wd ? WEEKDAYS[wd - 1] : date;
 }
