@@ -115,6 +115,37 @@ export function refreshTablonQueueDot() {
   return setTablonQueueDot(pending);
 }
 
+export function setViajesTripDot(on) {
+  const btn = document.querySelector('#tabs button[data-view="viajes"]');
+  if (!btn) return false;
+  btn.classList.toggle('has-trip', !!on);
+  const dot = btn.querySelector('.tab-dot');
+  if (dot) dot.hidden = !on;
+  return !!on;
+}
+
+export function readTripSoonFromGoFrame(frame) {
+  try {
+    if (!frame || isFrameDead(frame)) return null;
+    const html = frame.contentDocument && frame.contentDocument.documentElement;
+    if (!html || typeof html.getAttribute !== 'function') return null;
+    return html.getAttribute('data-trip-soon') === '1';
+  } catch {
+    return null;
+  }
+}
+
+export function refreshViajesTripDot() {
+  const scroller = document.querySelector('#scroller');
+  const frame = scroller && scroller.querySelector('iframe[data-casa-view="go"]');
+  const soon = readTripSoonFromGoFrame(frame);
+  if (soon === null) {
+    setViajesTripDot(false);
+    return false;
+  }
+  return setViajesTripDot(soon);
+}
+
 export function googleParams() {
   const hint = lastAdultHint();
   return hint ? { login_hint: hint } : {};
@@ -167,6 +198,7 @@ function bindFrame(frame) {
       if (path && path !== 'blank') markTab(tabFromPath(path));
     } catch {}
     if (frame.getAttribute('data-casa-view') === 'tablon') watchTablonQueue(frame);
+    if (frame.getAttribute('data-casa-view') === 'go') watchGoTripSoon(frame);
   });
 }
 
@@ -183,6 +215,44 @@ function watchTablonQueue(frame) {
     obs.observe(list, { childList: true, subtree: true });
     frame.__casaQueueObs = obs;
   } catch {}
+}
+
+function watchGoTripSoon(frame) {
+  refreshViajesTripDot();
+  try {
+    const html = frame && frame.contentDocument && frame.contentDocument.documentElement;
+    if (!html || typeof MutationObserver === 'undefined') return;
+    if (frame.__casaTripObs) {
+      try { frame.__casaTripObs.disconnect(); } catch {}
+    }
+    const obs = new MutationObserver(() => { refreshViajesTripDot(); });
+    obs.observe(html, { attributes: true, attributeFilter: ['data-trip-soon'] });
+    frame.__casaTripObs = obs;
+  } catch {}
+}
+
+function ensureGoFrame() {
+  const scroller = document.querySelector('#scroller');
+  if (!scroller) return null;
+  if (scroller.querySelector('iframe[data-casa-view="go"]')) {
+    refreshViajesTripDot();
+    return scroller.querySelector('iframe[data-casa-view="go"]');
+  }
+  const frame = document.createElement('iframe');
+  frame.setAttribute('data-casa-view', 'go');
+  frame.setAttribute('title', TITLES.go);
+  frame.src = srcFor('go');
+  if (frame.style) {
+    frame.style.display = 'none';
+    frame.style.position = 'absolute';
+    frame.style.inset = '0';
+    frame.style.width = '100%';
+    frame.style.height = '100%';
+    frame.style.border = '0';
+  }
+  scroller.appendChild(frame);
+  bindFrame(frame);
+  return frame;
 }
 
 export function showView(name) {
@@ -218,6 +288,7 @@ export function showView(name) {
   });
   markTab(view);
   if (view === 'tablon') refreshTablonQueueDot();
+  refreshViajesTripDot();
   return src;
 }
 
@@ -228,6 +299,7 @@ export function showShell() {
   if (shell) shell.hidden = false;
   hideExpiredOverlay();
   showView(lastTab());
+  ensureGoFrame();
 }
 
 export function isFrameDead(frame) {

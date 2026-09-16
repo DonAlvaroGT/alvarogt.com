@@ -5,7 +5,8 @@ import {
   isFrameDead, resumeActiveIfDead, reloadView,
   lastAdultHint, rememberAdult, HINT_KEY, googleParams, isStandaloneDisplay,
   lastTab, rememberTab, TAB_KEY, TAB_NAMES,
-  queueHasPending, setTablonQueueDot, readTablonQueueFromFrame, refreshTablonQueueDot
+  queueHasPending, setTablonQueueDot, readTablonQueueFromFrame, refreshTablonQueueDot,
+  setViajesTripDot, readTripSoonFromGoFrame, refreshViajesTripDot
 } from './app.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -117,7 +118,8 @@ function mockDom(opts = {}) {
   const tabDot = el({ hidden: true, className: 'tab-dot' });
   const tablon = el({ dataset: { view: 'tablon' }, attrs: { 'aria-selected': 'false', 'data-view': 'tablon' }, children: [tabDot] });
   tablon.dataset.view = 'tablon';
-  const viajes = el({ dataset: { view: 'viajes' }, attrs: { 'aria-selected': 'false', 'data-view': 'viajes' } });
+  const viajesDot = el({ hidden: true, className: 'tab-dot' });
+  const viajes = el({ dataset: { view: 'viajes' }, attrs: { 'aria-selected': 'false', 'data-view': 'viajes' }, children: [viajesDot] });
   viajes.dataset.view = 'viajes';
   const tabs = el({ children: [go, tablon, viajes] });
   const nodes = {
@@ -128,7 +130,8 @@ function mockDom(opts = {}) {
     '#google-status': status,
     '#tabs': tabs,
     '#tabs button[aria-selected="true"]': go,
-    '#tabs button[data-view="tablon"]': tablon
+    '#tabs button[data-view="tablon"]': tablon,
+    '#tabs button[data-view="viajes"]': viajes
   };
   globalThis.document = {
     createElement(tag) {
@@ -264,9 +267,11 @@ test('restaura la última pestaña; si no hay valor, Go', () => {
   assert.equal(lastTab(), 'viajes');
   const d2 = mockDom({ keepTab: true });
   showShell();
-  assert.equal(d2.scroller.children.length, 1);
+  assert.equal(d2.scroller.children.length, 2);
   assert.equal(d2.scroller.children[0].getAttribute('data-casa-view'), 'viajes');
   assert.equal(d2.scroller.children[0].src, '/viajes/');
+  assert.equal(d2.scroller.children[1].getAttribute('data-casa-view'), 'go');
+  assert.equal(d2.scroller.children[1].style.display, 'none');
   assert.equal(d2.viajes.getAttribute('aria-selected'), 'true');
   rememberTab('disney');
   assert.equal(lastTab(), 'viajes');
@@ -310,6 +315,34 @@ test('punto de Tablón solo si #queue-list ya tiene cola', () => {
   showShell();
   assert.equal(refreshTablonQueueDot(), false);
   assert.equal(d.tablon.querySelector('.tab-dot').hidden, true);
+});
+
+test('punto de Viajes si Go marca viaje hoy o mañana (Gugus Madrid)', () => {
+  const d = mockDom();
+  showShell();
+  assert.equal(d.viajes.querySelector('.tab-dot').hidden, true);
+  const goFrame = d.scroller.children[0];
+  const htmlOff = {
+    getAttribute(name) { return name === 'data-trip-soon' ? '0' : null; }
+  };
+  const htmlOn = {
+    getAttribute(name) { return name === 'data-trip-soon' ? '1' : null; }
+  };
+  goFrame.contentDocument = { body: {}, documentElement: htmlOff };
+  goFrame.contentWindow = { location: { href: 'https://alvarogt.com/go/' } };
+  assert.equal(readTripSoonFromGoFrame(goFrame), false);
+  assert.equal(refreshViajesTripDot(), false);
+  assert.equal(d.viajes.querySelector('.tab-dot').hidden, true);
+  goFrame.contentDocument = { body: {}, documentElement: htmlOn };
+  assert.equal(readTripSoonFromGoFrame(goFrame), true);
+  assert.equal(refreshViajesTripDot(), true);
+  assert.equal(d.viajes.classList.contains('has-trip'), true);
+  assert.equal(d.viajes.querySelector('.tab-dot').hidden, false);
+  setViajesTripDot(false);
+  assert.equal(d.viajes.classList.contains('has-trip'), false);
+  assert.equal(d.viajes.querySelector('.tab-dot').hidden, true);
+  const dead = el({ attrs: { 'data-casa-view': 'go' }, contentWindow: null, contentDocument: null });
+  assert.equal(readTripSoonFromGoFrame(dead), null);
 });
 
 test('login_hint del último adulto, sin select_account', () => {
