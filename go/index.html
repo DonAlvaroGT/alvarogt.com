@@ -251,19 +251,17 @@
   import { nachoRopa } from './ropa.mjs?v=20260916g';
   import { fetchTiempo } from './tiempo.mjs?v=20260916g';
   import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20260916g';
-  import { ymdInZone, nextYmd, weekYmds, nextWeekYmds } from './fechas.mjs?v=20260916g';
-  import { lastVista, rememberVista, datesForVista, dayLabel } from './vista.mjs?v=20260916g';
+  import { ymdInZone, nextYmd, weekYmds, nextWeekYmds } from './fechas.mjs?v=20260916h';
+  import { lastVista, rememberVista, datesForVista, dayLabel, headingParts } from './vista.mjs?v=20260916h';
   import { parseFavoritos, isHouseFav as matchHouseFav, DEFAULT_FAVS } from './favoritos.mjs?v=20260916g';
   const allowed=['agarciatimon@gmail.com','luzolivas@gmail.com'];
   const embedded=(()=>{try{return window.parent!==window&&window.parent.location.origin===location.origin}catch{return false}})();
   if(embedded)document.documentElement.classList.add('embedded');
   const zone='Europe/Madrid';
-  const dayFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,weekday:'long',day:'numeric',month:'long'});
   const clockFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
-  const pretty=d=>dayFmt.format(new Date(d+'T12:00:00Z'));
   const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function comedorBlock(payload,date){const platos=menuDelDia(payload,date);if(!platos)return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><p class="copy empty">Sin menú de comedor</p></div>`;return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><ul>${platos.map(p=>`<li>${safe(p)}</li>`).join('')}</ul></div>`}
-  function card(day,label,viaje,comedor){const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');const nacho=day.nacho_ropa?`<p class="copy"><strong>Nacho: ${safe(day.nacho_ropa)}</strong></p>`:'';const trip=viaje?tripLineText(viaje,day.date):'';const tripHtml=trip?`<p class="viaje">${safe(trip)}</p>`:'';return `<article data-date="${safe(day.date)}"><div class="date">${safe(label)} · ${safe(pretty(day.date))}</div><h2 class="day-name">${safe(label)}</h2>${tripHtml}<p class="copy">${weather}</p>${nacho}${comedorBlock(comedor,day.date)}<div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
+  function card(day,label,viaje,comedor,vista){const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');const nacho=day.nacho_ropa?`<p class="copy"><strong>Nacho: ${safe(day.nacho_ropa)}</strong></p>`:'';const trip=viaje?tripLineText(viaje,day.date):'';const tripHtml=trip?`<p class="viaje">${safe(trip)}</p>`:'';const head=headingParts(vista,label,day.date);return `<article data-date="${safe(day.date)}"><div class="date">${safe(head.dateLine)}</div><h2 class="day-name">${safe(head.title)}</h2>${tripHtml}<p class="copy">${weather}</p>${nacho}${comedorBlock(comedor,day.date)}<div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
 
   const agendaTime=e=>String(e.hora_madrid||'').match(/^(\d{1,2}):(\d{2})$/);
   function sportKind(e){
@@ -382,7 +380,7 @@
     const days=dates.map(date=>dayMap[date]).filter(Boolean);
     const box=document.querySelector('#days');
     box.classList.toggle('is-week', vista!=='hoy');
-    box.innerHTML=days.map(day=>card(day,dayLabel(vista,day.date,todayYmd),tripOn(viajesList,day.date),comedorPayload)).join('');
+    box.innerHTML=days.map(day=>card(day,dayLabel(vista,day.date,todayYmd),tripOn(viajesList,day.date),comedorPayload,vista)).join('');
     notifyCasaHeight();
     requestAnimationFrame(notifyCasaHeight);
     setTimeout(notifyCasaHeight,400);

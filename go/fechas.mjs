@@ -41,3 +41,10 @@ export function nextWeekYmds(ymd) {
   const next = addDaysYmd(ymd, 7);
   return next ? weekYmds(next) : [];
 }
+
+export function prettyDate(ymd, withWeekday = true, zone = ZONE) {
+  if (typeof ymd !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return '';
+  const opts = { timeZone: zone, day: 'numeric', month: 'long' };
+  if (withWeekday) opts.weekday = 'long';
+  return new Intl.DateTimeFormat('es-ES', opts).format(new Date(`${ymd}T12:00:00Z`));
+}
