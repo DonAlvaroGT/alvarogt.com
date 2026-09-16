@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>García Olivas</title>
-  <!-- go-build: 20260915c -->
+  <!-- go-build: 20260916a -->
   <style>
     :root {
       color-scheme: light;
@@ -93,7 +93,7 @@
     .empty { color: var(--ink-soft); }
     .sports { margin-top: 44px; padding-top: 30px; border-top: 1px solid var(--line); }
     .sports h2 { color: var(--navy); font: 400 clamp(2rem, 7vw, 3.7rem)/1 Georgia, serif; letter-spacing: -.04em; margin: 10px 0 12px; }
-    .sports-intro { color: var(--ink-soft); line-height: 1.55; max-width: 620px; }
+    .sports-intro { color: var(--ink); line-height: 1.55; max-width: 620px; font-size: 1.02rem; font-weight: 500; }
     .sports-list { display: grid; gap: 14px; margin-top: 24px; }
     .sports-event {
       background: var(--paper);
@@ -217,7 +217,7 @@
     const intro=document.querySelector('#sports-intro');
     if(intro)intro.textContent=sportsPrevia(list);
     const target=document.querySelector('#sports-agenda');
-    target.innerHTML=list.length?list.map(e=>{const canal=typeof e.canal==='string'&&e.canal.trim()?` <span class="sports-canal">📺 ${safe(e.canal.trim())}</span>`:'';return `<div class="sports-event"><div class="sports-time">${safe(e.hora_madrid)}<br><span class="sports-meta">${safe(e.deporte)}</span></div><p><a href="${safe(e.fuente)}" rel="noopener">${safe(e.evento)}</a>${canal}<br><span class="sports-meta">${safe(e.competicion)} · Interés ${safe(e.interes)}</span></p></div>`}).join(''):`<p class="sports-empty">${safe(payload.motivo||'No hay eventos verificables dentro de la ventana.')}</p>`;
+    target.innerHTML=list.length?list.map(e=>{const canal=typeof e.canal==='string'&&e.canal.trim()?` <span class="sports-canal">📺 ${safe(e.canal.trim())}</span>`:'';const motivo=(typeof e.motivo_interes==='string'&&e.motivo_interes.trim())||(typeof e.motivo==='string'&&e.motivo.trim())||'';const interes=motivo?`Interés ${safe(e.interes)} · ${safe(motivo)}`:`Interés ${safe(e.interes)}`;return `<div class="sports-event"><div class="sports-time">${safe(e.hora_madrid)}<br><span class="sports-meta">${safe(e.deporte)}</span></div><p><a href="${safe(e.fuente)}" rel="noopener">${safe(e.evento)}</a>${canal}<br><span class="sports-meta">${safe(e.competicion)} · ${interes}</span></p></div>`}).join(''):`<p class="sports-empty">${safe(payload.motivo||'No hay eventos verificables dentro de la ventana.')}</p>`;
   }
   let fsApi=null, db=null, fsProject='tablongo', sportsData, started=false;
   function parentEmail(){
@@ -301,6 +301,8 @@
     try{
       await loadSports();
     }catch{
+      const intro=document.querySelector('#sports-intro');
+      if(intro)intro.textContent='Sin partidos de la lista hoy.';
       document.querySelector('#sports-agenda').innerHTML='<p class="error">No hay agenda deportiva publicada.</p>';
     }
     try{
