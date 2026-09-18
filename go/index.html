@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>García Olivas</title>
-  <!-- go-build: 20260918b -->
+  <!-- go-build: 20260918c -->
   <style>
     :root {
       color-scheme: light;
@@ -149,7 +149,7 @@
     .sports-tag-f1 { background: #c1121f; }
     .sports-tag-hockey { background: #0f6a8a; }
     .sports-tag-otro { background: #5b4a8a; }
-    .deporte-dia { color: var(--navy); font-size: .86rem; line-height: 1.45; margin: 0 0 12px; }
+    .deporte-dia { color: var(--navy); font-size: .86rem; line-height: 1.45; margin: 12px 0 0; }
     .sports-fav {
       display: inline-block;
       margin-left: .35em;
@@ -264,7 +264,7 @@
   const clockFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
   const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function comedorBlock(payload,date){const platos=menuDelDia(payload,date);if(!platos)return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><p class="copy empty">Sin menú de comedor</p></div>`;return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><ul>${platos.map(p=>`<li>${safe(p)}</li>`).join('')}</ul></div>`}
-  function card(day,label,viaje,comedor,vista){const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');const nacho=day.nacho_ropa?`<p class="copy"><strong>Nacho: ${safe(day.nacho_ropa)}</strong></p>`:'';const trip=viaje?tripLineText(viaje,day.date):'';const tripHtml=trip?`<p class="viaje">${safe(trip)}</p>`:'';const sportTxt=vista==='hoy'?'':sportsCardLine(sportsOnDay(sportsWeekData,day.date));const sportHtml=sportTxt?`<p class="deporte-dia">${safe(sportTxt)}</p>`:'';const head=headingParts(vista,label,day.date);return `<article data-date="${safe(day.date)}"><div class="date">${safe(head.dateLine)}</div><h2 class="day-name">${safe(head.title)}</h2>${tripHtml}${sportHtml}<p class="copy">${weather}</p>${nacho}${comedorBlock(comedor,day.date)}<div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
+  function card(day,label,viaje,comedor,vista){const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');const nacho=day.nacho_ropa?`<p class="copy"><strong>Nacho: ${safe(day.nacho_ropa)}</strong></p>`:'';const trip=viaje?tripLineText(viaje,day.date):'';const tripHtml=trip?`<p class="viaje">${safe(trip)}</p>`:'';const sportTxt=vista==='hoy'?'':sportsCardLine(sportsOnDay(sportsWeekData,day.date));const sportHtml=sportTxt?`<p class="deporte-dia">${safe(sportTxt)}</p>`:'';const head=headingParts(vista,label,day.date);return `<article data-date="${safe(day.date)}"><div class="date">${safe(head.dateLine)}</div><h2 class="day-name">${safe(head.title)}</h2>${tripHtml}<p class="copy">${weather}</p>${nacho}${comedorBlock(comedor,day.date)}<div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div>${sportHtml}</article>`}
 
   const agendaTime=e=>String(e.hora_madrid||'').match(/^(\d{1,2}):(\d{2})$/);
   let houseFavs=DEFAULT_FAVS.slice();
