@@ -41,7 +41,11 @@ export function sportsOnDay(payload, ymd) {
   const docDate = payload.comprobado || payload.date || '';
   const list = payload.eventos || payload.events || [];
   if (!Array.isArray(list)) return [];
-  return list.filter((e) => eventDay(e, docDate) === ymd).sort((a, b) => {
+  return list.filter((e) => {
+    if (eventDay(e, docDate) !== ymd) return false;
+    const mins = agendaMinutes(e);
+    return mins != null && mins >= 600 && mins <= 1350;
+  }).sort((a, b) => {
     const ia = agendaMinutes(a);
     const ib = agendaMinutes(b);
     if (ia == null && ib == null) return 0;
