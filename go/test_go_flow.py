@@ -132,7 +132,10 @@ class GoClientAuthHtmlTests(unittest.TestCase):
         self.assertNotIn("sportsOnDay(sportsData,day.date)", self.html)
         self.assertIn("from './sports.mjs?v=", self.html)
         self.assertIn("vista==='hoy'?'':sportsCardLine", self.html)
-        self.assertNotIn("sports-event", self.html.split("function card")[1].split("const agendaTime")[0])
+        card_fn = self.html.split("function card")[1].split("const agendaTime")[0]
+        self.assertIn("</div>${sportHtml}</article>", card_fn)
+        self.assertNotIn("${tripHtml}${sportHtml}", card_fn)
+        self.assertNotIn("sports-event", card_fn)
         self.assertIn("Sin menú de comedor", self.html)
         self.assertNotIn('data-view="semana"', self.html)
         self.assertEqual(self.html.count('data-vista="'), 3)
