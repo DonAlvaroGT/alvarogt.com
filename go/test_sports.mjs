@@ -44,4 +44,19 @@ const two = {
 };
 assert.equal(sportsCardLine(sportsOnDay(two, '2026-09-21')), 'C–D a las 18:30 y A–B a las 21:00');
 
+const night = {
+  date: '2026-09-22',
+  events: [
+    { evento: 'Late A', hora_madrid: '01:05' },
+    { evento: 'Dawn B', hora_madrid: '04:30' },
+    { evento: 'Ok C', hora_madrid: '10:00' },
+    { evento: 'Ok D', hora_madrid: '22:30' },
+    { evento: 'Too late', hora_madrid: '22:31' },
+    { evento: 'Too early', hora_madrid: '09:59' },
+    { evento: 'No hora' },
+  ],
+};
+assert.deepEqual(sportsOnDay(night, '2026-09-22').map((e) => e.evento), ['Ok C', 'Ok D']);
+assert.doesNotMatch(sportsCardLine(sportsOnDay(night, '2026-09-22')), /01:05|04:30|22:31|09:59/);
+
 console.log('ok sports');
