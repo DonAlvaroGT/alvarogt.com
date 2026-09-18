@@ -50,7 +50,7 @@ class FavoritosTests(unittest.TestCase):
         payload = json.loads((ROOT / "favoritos.json").read_text(encoding="utf-8"))
         self.assertEqual(payload["schema_version"], 1)
         self.assertEqual(payload["timezone"], ZONE)
-        self.assertEqual(parse_favoritos(payload), DEFAULT)
+        self.assertEqual(parse_favoritos(payload), DEFAULT + ["Detroit Red Wings"])
 
     def test_fallback_if_missing(self):
         self.assertEqual(parse_favoritos(None), DEFAULT)

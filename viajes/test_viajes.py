@@ -18,6 +18,12 @@ class ViajesEmbeddedTests(unittest.TestCase):
         self.assertIn("'isabelgarciatimon@gmail.com'", HTML)
         self.assertIn("'agarciatimon@gmail.com'", HTML)
         self.assertIn("viajes-build:", HTML)
+        self.assertIn('html[data-viajes-vista="hoy"]', HTML)
+        self.assertIn("#clocks", HTML)
+        self.assertIn("#month-view", HTML)
+        self.assertIn("#days", HTML)
+        self.assertNotIn("Notification", HTML)
+        self.assertNotIn("setAppBadge", HTML)
 
     def test_standalone_google_still_there(self):
         self.assertIn("signInWithPopup", HTML)

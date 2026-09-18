@@ -6,7 +6,7 @@ import {
   lastAdultHint, rememberAdult, HINT_KEY, googleParams, isStandaloneDisplay,
   lastTab, rememberTab, TAB_KEY, TAB_NAMES,
   queueHasPending, setTablonQueueDot, readTablonQueueFromFrame, refreshTablonQueueDot,
-  setViajesTripDot, readTripSoonFromGoFrame, refreshViajesTripDot
+  setViajesTripDot, readTripSoonFromGoFrame, refreshViajesTripDot, applyViajesHoy
 } from './app.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -343,6 +343,32 @@ test('punto de Viajes si Go marca viaje hoy o mañana (Gugus Madrid)', () => {
   assert.equal(d.viajes.querySelector('.tab-dot').hidden, true);
   const dead = el({ attrs: { 'data-casa-view': 'go' }, contentWindow: null, contentDocument: null });
   assert.equal(readTripSoonFromGoFrame(dead), null);
+});
+
+test('Viajes con punto abre Hoy; sin punto no fuerza Hoy', () => {
+  const d = mockDom();
+  showShell();
+  const goFrame = d.scroller.children[0];
+  const htmlOn = {
+    getAttribute(name) { return name === 'data-trip-soon' ? '1' : null; }
+  };
+  const htmlOff = {
+    getAttribute(name) { return name === 'data-trip-soon' ? '0' : null; }
+  };
+  goFrame.contentDocument = { body: {}, documentElement: htmlOn };
+  goFrame.contentWindow = { location: { href: 'https://alvarogt.com/go/' } };
+  const viajesHtml = { attrs: {}, setAttribute(name, value) { this.attrs[name] = String(value); }, getAttribute(name) { return this.attrs[name] || null; } };
+  showView('viajes');
+  const viajesFrame = d.scroller.children.find((f) => f.getAttribute('data-casa-view') === 'viajes');
+  viajesFrame.contentDocument = { body: {}, documentElement: viajesHtml };
+  viajesFrame.contentWindow = { location: { href: 'https://alvarogt.com/viajes/' } };
+  assert.equal(applyViajesHoy(viajesFrame), true);
+  assert.equal(viajesHtml.getAttribute('data-viajes-vista'), 'hoy');
+  goFrame.contentDocument = { body: {}, documentElement: htmlOff };
+  const other = { attrs: {}, setAttribute(name, value) { this.attrs[name] = String(value); }, getAttribute(name) { return this.attrs[name] || null; } };
+  viajesFrame.contentDocument = { body: {}, documentElement: other };
+  assert.equal(applyViajesHoy(viajesFrame), false);
+  assert.equal(other.getAttribute('data-viajes-vista'), null);
 });
 
 test('login_hint del último adulto, sin select_account', () => {

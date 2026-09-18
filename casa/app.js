@@ -146,6 +146,18 @@ export function refreshViajesTripDot() {
   return setViajesTripDot(soon);
 }
 
+export function applyViajesHoy(frame) {
+  if (!refreshViajesTripDot()) return false;
+  try {
+    const html = frame && frame.contentDocument && frame.contentDocument.documentElement;
+    if (!html || typeof html.setAttribute !== 'function') return false;
+    html.setAttribute('data-viajes-vista', 'hoy');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function googleParams() {
   const hint = lastAdultHint();
   return hint ? { login_hint: hint } : {};
@@ -199,6 +211,7 @@ function bindFrame(frame) {
     } catch {}
     if (frame.getAttribute('data-casa-view') === 'tablon') watchTablonQueue(frame);
     if (frame.getAttribute('data-casa-view') === 'go') watchGoTripSoon(frame);
+    if (frame.getAttribute('data-casa-view') === 'viajes') applyViajesHoy(frame);
   });
 }
 
@@ -289,6 +302,7 @@ export function showView(name) {
   markTab(view);
   if (view === 'tablon') refreshTablonQueueDot();
   refreshViajesTripDot();
+  if (view === 'viajes') applyViajesHoy(frame);
   return src;
 }
 
