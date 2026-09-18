@@ -15,6 +15,7 @@ from google.oauth2 import service_account
 DOCS = {
     "go/data.json": "go_data",
     "go/sports.json": "go_sports",
+    "go/sports_week.json": "go_sports_week",
     "go/comedor.json": "go_comedor",
     "go/reglas.json": "go_reglas",
     "go/favoritos.json": "go_favoritos",

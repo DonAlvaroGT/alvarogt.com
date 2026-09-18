@@ -7,6 +7,7 @@ go/.env
 go/server/go-server
 go/data.json
 go/sports.json
+go/sports_week.json
 go/comedor.json
 viajes/viajes.json
 **/tablongo-firebase-adminsdk.json
