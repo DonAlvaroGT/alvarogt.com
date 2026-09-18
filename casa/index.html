@@ -23,6 +23,7 @@
       --card: #1a1c17;
       --accent: #ffb86b;
       --tabs-inner: 32px;
+      --tabs-hit: 44px;
     }
     * { box-sizing: border-box; }
     html, body {
@@ -105,6 +106,7 @@
       color-scheme: dark;
       display: flex;
       gap: 0;
+      overflow: visible;
       border-top: 1px solid var(--line);
       background: var(--card);
       padding-top: 0;
@@ -124,6 +126,14 @@
       color: var(--muted);
       font: 600 .78rem/1.15 ui-sans-serif, system-ui, sans-serif;
       cursor: pointer;
+    }
+    #tabs button::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: var(--tabs-hit);
     }
     #tabs button[aria-selected="true"] {
       background: var(--paper);

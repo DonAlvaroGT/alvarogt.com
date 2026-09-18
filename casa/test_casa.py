@@ -34,6 +34,14 @@ class CasaShellTests(unittest.TestCase):
         self.assertIn("env(safe-area-inset-bottom", HTML)
         self.assertIn("env(safe-area-inset-top", HTML)
         self.assertIn("aria-selected", HTML)
+        self.assertIn("--tabs-inner: 32px", HTML)
+        self.assertIn("--tabs-hit: 44px", HTML)
+        self.assertIn("min-height: var(--tabs-inner)", HTML)
+        self.assertIn("height: var(--tabs-hit)", HTML)
+        self.assertEqual(HTML.count("padding-bottom: env(safe-area-inset-bottom"), 1)
+        self.assertNotIn("Otra cuenta", HTML)
+        self.assertNotIn("<svg", HTML)
+        self.assertNotIn("material-icons", HTML)
 
     def test_adult_allowlist_only(self):
         self.assertIn("'agarciatimon@gmail.com'", JS)
