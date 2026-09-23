@@ -28,6 +28,8 @@ export function eventsFromReglas(payload, ymd) {
     if (typeof item.time !== 'string' || !item.time.trim()) continue;
     if (!Array.isArray(item.weekdays) || !item.weekdays.includes(wd)) continue;
     if (!inRange(ymd, item.from, item.until)) continue;
+    const skip = item.skip;
+    if (Array.isArray(skip) && skip.includes(ymd)) continue;
     const event = {
       time: item.end ? `${item.time}–${item.end}` : item.time,
       title: item.title.trim(),
