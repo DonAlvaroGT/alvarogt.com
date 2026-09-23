@@ -4,7 +4,7 @@ import vm from 'node:vm';
 
 const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 
-assert.match(html, /tablon-build: 20260923a-pending-validate/, 'marcador de cache-bust del cambio');
+assert.match(html, /tablon-build: 20260923b-validate-all/, 'marcador de cache-bust vigente');
 assert.match(html, /\.task\.pending-validate\{[^}]*grid-column:1\/-1/, 'la ficha pendiente ocupa toda la fila');
 assert.match(html, /\.task\.pending-validate\{[^}]*background:#6c4dff/, 'el estado pendiente usa otro color, no naranja/rosa');
 assert.match(html, /status==='waiting'\?' pending-validate':'/, 'solo el estado pendiente de validar agranda la ficha');
