@@ -6,7 +6,7 @@ Login en la propia página (mismas dos cuentas que GO). La puerta dice «Casa ·
 
 Sin movilidad, sin localizadores, sin precios, sin «sin nombre en el PDF». Si falta el hotel, se omite. Horas locales.
 
-Vista de mes (detrás del login, entre Hoy/Mañana y el resumen): este mes y el siguiente en Europe/Madrid, semana de lunes, 6 filas. El día se colorea si cae entre `inicio` y `fin` (no usa `dias[]`). Color por `quien`. Si coinciden dos viajes, dos puntos.
+Vista de mes (detrás del login, entre Hoy/Mañana y el resumen): este mes y el siguiente en Europe/Madrid, semana de lunes, 6 filas. Se pinta siempre al cargar, también en vista Hoy de Casa (solo se ocultan los relojes). El día se colorea si cae entre `inicio` y `fin` (no usa `dias[]`). Color por `quien`. Si coinciden dos viajes, dos puntos.
 
 Hoy/mañana: OpenStreetMap del sitio del día. Vuelos en tarjeta (código, horas locales con huso, cuenta atrás, hito de aeropuerto si hay `antelacion_min`). Enlaces a Flightradar24 y FlightAware; sin tracking en vivo. `antelacion_min` es valor de casa, no de Aena. Si falta llegada o huso, la tarjeta dice «Confirmar en la app». No inventar horas, puertas ni terminales.
 
