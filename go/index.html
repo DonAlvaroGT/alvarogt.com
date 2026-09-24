@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>García Olivas</title>
-  <!-- go-build: 20260918c -->
+  <!-- go-build: 20260924a -->
   <style>
     :root {
       color-scheme: light;
@@ -256,7 +256,7 @@
   import { ymdInZone, nextYmd, weekYmds, nextWeekYmds } from './fechas.mjs?v=20260918a';
   import { lastVista, rememberVista, datesForVista, dayLabel, headingParts } from './vista.mjs?v=20260918a';
   import { parseFavoritos, isHouseFav as matchHouseFav, DEFAULT_FAVS } from './favoritos.mjs?v=20260918a';
-  import { sportKind, sportTagLabel, sportsOnDay, sportsCardLine, sportsLine } from './sports.mjs?v=20260918b';
+  import { sportKind, sportTagLabel, sportsOnDay, sportsCardLine, sportsLine, sportTitle, sportText, sportFuente } from './sports.mjs?v=20260924a';
   const allowed=['agarciatimon@gmail.com','luzolivas@gmail.com'];
   const embedded=(()=>{try{return window.parent!==window&&window.parent.location.origin===location.origin}catch{return false}})();
   if(embedded)document.documentElement.classList.add('embedded');
@@ -269,7 +269,7 @@
   const agendaTime=e=>String(e.hora_madrid||'').match(/^(\d{1,2}):(\d{2})$/);
   let houseFavs=DEFAULT_FAVS.slice();
   function isHouseFav(e){
-    return matchHouseFav(e.evento,houseFavs);
+    return matchHouseFav(sportTitle(e),houseFavs);
   }
   function sportsStar(interes){
     const n=Number(interes);
@@ -302,7 +302,7 @@
     const intro=document.querySelector('#sports-intro');
     if(intro)intro.textContent=sportsPrevia(list);
     const target=document.querySelector('#sports-agenda');
-    target.innerHTML=list.length?list.map(e=>{const kind=sportKind(e);const tag=`<span class="sports-tag sports-tag-${kind}">${safe(sportTagLabel(kind))}</span>`;const fav=isHouseFav(e)?' <span class="sports-fav">Casa</span>':'';const canal=canalMark(e);const motivo=(typeof e.motivo_interes==='string'&&e.motivo_interes.trim())||(typeof e.motivo==='string'&&e.motivo.trim())||'';const interes=motivo?`Interés ${safe(e.interes)} · ${safe(motivo)}`:`Interés ${safe(e.interes)}`;const star=sportsStar(e.interes);return `<div class="sports-event"><div class="sports-time">${safe(e.hora_madrid)}<br>${tag}</div><p><a href="${safe(e.fuente)}" rel="noopener">${safe(e.evento)}</a>${fav}${canal}${star}<br><span class="sports-meta">${safe(e.competicion)} · ${interes}</span></p></div>`}).join(''):`<p class="sports-empty">${safe(payload.motivo||'No hay eventos verificables dentro de la ventana.')}</p>`;
+    target.innerHTML=list.length?list.map(e=>{const kind=sportKind(e);const tag=`<span class="sports-tag sports-tag-${kind}">${safe(sportTagLabel(kind))}</span>`;const fav=isHouseFav(e)?' <span class="sports-fav">Casa</span>':'';const canal=canalMark(e);const motivo=sportText(e.motivo_interes)||sportText(e.motivo);const interesN=sportText(String(e.interes??''));const interes=interesN?(motivo?`Interés ${safe(interesN)} · ${safe(motivo)}`:`Interés ${safe(interesN)}`):(motivo?safe(motivo):'');const star=sportsStar(e.interes);const title=sportTitle(e);const fuente=sportFuente(e);const titleHtml=fuente?`<a href="${safe(fuente)}" rel="noopener">${safe(title)}</a>`:safe(title);const comp=sportText(e.competicion);const meta=[comp,interes].filter(Boolean).join(' · ');return `<div class="sports-event"><div class="sports-time">${safe(e.hora_madrid)}<br>${tag}</div><p>${titleHtml}${fav}${canal}${star}${meta?`<br><span class="sports-meta">${meta}</span>`:''}</p></div>`}).join(''):`<p class="sports-empty">${safe(payload.motivo||'No hay eventos verificables dentro de la ventana.')}</p>`;
   }
   let fsApi=null, db=null, fsProject='tablongo', sportsData, sportsWeekData=null, started=false, dayMap={}, viajesList=[], comedorPayload=null, todayYmd='';
   function parentEmail(){

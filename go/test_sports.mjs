@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import {
   sportKind, sportTagLabel, sportsOnDay, sportsCardLine, eventDay, SPORT_TAG_LABEL,
+  sportText, sportTitle, sportFuente, sportsLine, sportsPaint,
 } from './sports.mjs';
+import { DEFAULT_FAVS, isHouseFav } from './favoritos.mjs';
 
 assert.equal(sportKind({ deporte: 'hockey', competicion: 'NHL' }), 'hockey');
 assert.equal(sportKind({ competicion: 'NHL' }), 'hockey');
@@ -58,5 +60,52 @@ const night = {
 };
 assert.deepEqual(sportsOnDay(night, '2026-09-22').map((e) => e.evento), ['Ok C', 'Ok D']);
 assert.doesNotMatch(sportsCardLine(sportsOnDay(night, '2026-09-22')), /01:05|04:30|22:31|09:59/);
+
+assert.equal(sportText(undefined), '');
+assert.equal(sportText(null), '');
+assert.equal(sportText(''), '');
+assert.equal(sportText('  '), '');
+assert.equal(sportText('undefined'), '');
+assert.equal(sportText('null'), '');
+assert.equal(sportText('LALIGA'), 'LALIGA');
+assert.equal(sportTitle({ partido: 'Brewers vs Cubs' }), 'Brewers vs Cubs');
+assert.equal(sportTitle({ evento: 'GP Bakú' }), 'GP Bakú');
+assert.equal(sportTitle({ partido: 'A vs B', evento: 'otro' }), 'A vs B');
+assert.equal(sportTitle({ evento: undefined, partido: 'Miami Dolphins vs Bills' }), 'Miami Dolphins vs Bills');
+assert.equal(sportTitle({}), '');
+assert.equal(sportTitle({ evento: undefined, competicion: undefined, fuente: undefined }), '');
+assert.equal(sportFuente({ fuente: undefined }), '');
+assert.equal(sportFuente({ fuente: 'undefined' }), '');
+assert.equal(sportFuente({ fuente: 'https://www.mlb.com' }), 'https://www.mlb.com');
+assert.equal(sportFuente({ fuente: 'dazn://live' }), '');
+assert.equal(sportsLine({ partido: 'Brewers vs Cubs', hora_madrid: '21:10' }), 'Brewers–Cubs a las 21:10');
+assert.equal(sportsLine({ evento: undefined, hora_madrid: '21:10' }), '');
+assert.equal(sportKind({ partido: 'Detroit Red Wings vs Maple Leafs' }), 'hockey');
+assert.equal(sportKind({ partido: 'Milwaukee Brewers vs Cubs' }), 'otro');
+assert.equal(sportKind({ deporte: 'MLB', partido: 'Brewers vs Cubs' }), 'beisbol');
+
+const paint = sportsPaint({ partido: 'Elche CF vs Real Madrid', hora_madrid: '21:30' });
+assert.equal(paint.title, 'Elche CF vs Real Madrid');
+assert.equal(paint.fuente, '');
+assert.equal(paint.competicion, '');
+assert.doesNotMatch(JSON.stringify(paint), /undefined/);
+const paintOld = sportsPaint({
+  evento: 'Elche CF vs Real Madrid',
+  competicion: 'LALIGA EA SPORTS',
+  fuente: 'https://www.laliga.com/',
+});
+assert.equal(paintOld.title, 'Elche CF vs Real Madrid');
+assert.equal(paintOld.competicion, 'LALIGA EA SPORTS');
+assert.equal(paintOld.fuente, 'https://www.laliga.com/');
+
+const weekPartido = {
+  date: '2026-09-24',
+  events: [{ partido: 'Brewers vs Cubs', hora_madrid: '21:10', date: '2026-09-24' }],
+};
+assert.match(sportsCardLine(sportsOnDay(weekPartido, '2026-09-24')), /Brewers–Cubs/);
+assert.doesNotMatch(sportsCardLine(sportsOnDay(weekPartido, '2026-09-24')), /undefined/);
+assert.equal(isHouseFav(sportTitle({ partido: 'Elche CF vs Real Madrid' }), DEFAULT_FAVS), true);
+assert.equal(isHouseFav(sportTitle({ evento: undefined, partido: 'Milwaukee Brewers at Cubs' }), DEFAULT_FAVS), true);
+assert.equal(isHouseFav(sportTitle({ evento: undefined }), DEFAULT_FAVS), false);
 
 console.log('ok sports');
