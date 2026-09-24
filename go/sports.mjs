@@ -10,8 +10,24 @@ export const SPORT_TAG_LABEL = {
   otro: 'Deporte',
 };
 
+export function sportText(v) {
+  if (typeof v !== 'string') return '';
+  const t = v.trim();
+  if (!t || t === 'undefined' || t === 'null') return '';
+  return t;
+}
+
+export function sportTitle(e) {
+  return sportText(e?.partido) || sportText(e?.evento);
+}
+
+export function sportFuente(e) {
+  const u = sportText(e?.fuente);
+  return /^https?:\/\//i.test(u) ? u : '';
+}
+
 export function sportKind(e) {
-  const blob = `${e?.deporte || ''} ${e?.competicion || ''} ${e?.evento || ''}`.toLowerCase();
+  const blob = `${sportText(e?.deporte)} ${sportText(e?.competicion)} ${sportTitle(e)}`.toLowerCase();
   if (/f[oó]rmula\s*1|\bf1\b/.test(blob)) return 'f1';
   if (/b[eé]isbol|baseball|\bmlb\b/.test(blob)) return 'beisbol';
   if (/\bnhl\b|hockey|red\s*wings/.test(blob)) return 'hockey';
@@ -56,9 +72,9 @@ export function sportsOnDay(payload, ymd) {
 }
 
 export function sportsLine(e) {
-  const name = String(e?.evento || '').replace(/\s+vs\.?\s+/i, '–');
+  const name = sportTitle(e).replace(/\s+vs\.?\s+/i, '–');
   const hora = String(e?.hora_madrid || '');
-  const canal = typeof e?.canal === 'string' && e.canal.trim() ? e.canal.trim() : '';
+  const canal = sportText(e?.canal);
   if (!name) return '';
   if (!hora) return name;
   return canal ? `${name} a las ${hora} en ${canal}` : `${name} a las ${hora}`;
@@ -70,4 +86,12 @@ export function sportsCardLine(list) {
   if (items.length === 1) return items[0];
   if (items.length === 2) return `${items[0]} y ${items[1]}`;
   return items.join(' · ');
+}
+
+export function sportsPaint(e) {
+  return {
+    title: sportTitle(e),
+    fuente: sportFuente(e),
+    competicion: sportText(e?.competicion),
+  };
 }
