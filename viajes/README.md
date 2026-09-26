@@ -14,4 +14,4 @@ Campos opcionales del vuelo (schema_version 1; `ruta` se conserva): origen, dest
 
 Resumen: ciudades cortas (`ciudades`). Disney enlaza a `/disney/` en alvarogt.com; no tocar esa carpeta.
 
-Ir a día debajo del login: mueve Hoy y Mañana. Botón Hoy vuelve al día real. `?fecha=YYYY-MM-DD` también vale.
+Ir a día debajo del login: mueve Hoy y Mañana. Botón Hoy vuelve al día real. `?fecha=YYYY-MM-DD` también vale. Tocar un día del mes con viaje abre la vista Hoy de esa fecha (como `?fecha=`); un día sin viaje no cambia la fecha.

@@ -71,15 +71,26 @@ class ViajesEmbeddedTests(unittest.TestCase):
         self.assertIn("while (cells.length < 42)", HTML)
         self.assertIn("covers(v.inicio, v.fin, key)", HTML)
         self.assertNotIn("dias[]", HTML)
-        self.assertIn("class=\"cal-dots\"", HTML)
+        self.assertIn('class="cal-dots"', HTML)
         self.assertIn("Dos puntos = dos viajes ese día", HTML)
-        self.assertIn("class=\"month-legend\"", HTML)
-        self.assertIn("id=\"month-prev\"", HTML)
-        self.assertIn("id=\"month-next\"", HTML)
+        self.assertIn('class="month-legend"', HTML)
+        self.assertIn('id="month-prev"', HTML)
+        self.assertIn('id="month-next"', HTML)
         self.assertIn("›", HTML)
         self.assertIn("‹", HTML)
         self.assertIn("Este mes y el siguiente", HTML)
         self.assertIn('id="month-view"', HTML)
+
+    def test_tap_trip_day_opens_hoy_of_that_date(self):
+        self.assertIn("closest('.cal-day')", HTML)
+        self.assertIn("getAttribute('data-day')", HTML)
+        self.assertIn("if (!hits.length) return;", HTML)
+        self.assertIn("setAttribute('data-viajes-vista', 'hoy')", HTML)
+        self.assertIn("goToDay(key)", HTML)
+        self.assertIn("cls.push('trip')", HTML)
+        self.assertIn(".cal-day.trip { cursor: pointer; }", HTML)
+        self.assertIn("scrollIntoView", HTML)
+        self.assertLess(HTML.index("if (btn)"), HTML.index("closest('.cal-day')"))
 
 
 if __name__ == "__main__":
