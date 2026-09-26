@@ -32,10 +32,18 @@ Proyecto Firebase `tablongo`. Google Sign-In en la propia página. Allowlist exa
 
 Secretos solo en `~/.hermes/gabinete/secrets/` (`tablongo-firebase-adminsdk.json`). Nunca a git.
 
+## CrowPanel (e-ink)
+
+JSON `hoy` en Firestore `epaper/{token}` (token en `~/.hermes/gabinete/secrets/epaper-token.txt`, no git). GET REST sin Google. Tiempo: grados enteros + sol/nubes; bajo los grados `lluvia` (`lluvia 40 %` o `sin lluvia`) desde Open-Meteo `rain_probability`. Si `go_reglas` `skip[]` quita un extraescolar que tocaba, línea `hoy no hay inglés` (o fútbol/natación), no un hueco. Calendario Familia y Casa (abuelos no son viaje). Mela: comida (<16:00) o cena, sin inventar. Mañana laborable: menú de niños de `go_comedor` si hay fecha; si no, sin línea. Ropa Nacho en laborable mañana y tarde (uniforme lun/jue/vie, chándal mar/mié); finde sin esa ficha. Viaje solo de esta casa (`quien` García Timón), título · lugar; `viaje_texto` añade el `plan` del día si está en viajes.json (no se inventa). `deportes` es la lista de la ventana 10:00–22:30. `actualizado` es la hora Madrid del JSON. El panel pinta solo ese JSON (NTP para la hora del aparato). Se regenera al final de publicar deporte (~6:50) y deporte semana (~6:55). Regenerar ahora:
+
+```sh
+/Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/epaper_hoy.py
+```
+
 ## Probar
 
 ```sh
-python3 -m unittest go/test_go_flow.py go/test_go_reglas.py go/test_go_favoritos.py
+python3 -m unittest go/test_go_flow.py go/test_go_reglas.py go/test_go_favoritos.py go/test_epaper_hoy.py
 node --check go/fechas.mjs go/stamp.mjs go/ropa.mjs go/tiempo.mjs go/reglas.mjs go/comedor.mjs go/trip_line.mjs go/vista.mjs go/favoritos.mjs go/sports.mjs
 node go/test_stamp.mjs
 node go/test_ropa.mjs

@@ -39,6 +39,26 @@ class ViajesEmbeddedTests(unittest.TestCase):
             r'html\[data-viajes-vista="hoy"\][^{}]*#month-view[^{]*\{\s*display:\s*none',
         )
 
+    def test_hoy_manana_cajas_letra_panel(self):
+        self.assertIn("grid-template-columns: 1.65fr .9fr", HTML)
+        self.assertIn("article.day.hoy", HTML)
+        self.assertIn("article.day.manana", HTML)
+        self.assertIn("function compactDayCard", HTML)
+        self.assertIn("function panelLetter", HTML)
+        self.assertIn("function stripUrlPrecio", HTML)
+        self.assertIn("data-viajes-vista') === 'hoy'", HTML)
+        self.assertIn("attributeFilter: ['data-viajes-vista']", HTML)
+        self.assertIn("https?:\\/\\/\\S+", HTML)
+        self.assertNotIn("run.app", HTML)
+
+    def test_paleta_lucita_distinta_garcia_timon(self):
+        self.assertIn("'Lucita y Álvaro': '#f7d3b0'", HTML)
+        self.assertIn("'Lucita y Álvaro': '#c45c26'", HTML)
+        self.assertIn("'García Timón': '#e4d0dc'", HTML)
+        self.assertIn("'García Timón': '#8b4a6b'", HTML)
+        self.assertNotEqual("#f7d3b0", "#e4d0dc")
+        self.assertIn("'Lucita y Álvaro', 'García Timón'", HTML)
+
     def test_render_months_after_load(self):
         start = HTML.index("async function startApp()")
         end = HTML.index("}", start)
