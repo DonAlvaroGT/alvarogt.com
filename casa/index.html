@@ -100,6 +100,17 @@
     #scroller iframe.is-active {
       display: block;
     }
+    #scroller iframe[data-casa-view="go"] {
+      display: block;
+      visibility: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+    #scroller iframe[data-casa-view="go"].is-active {
+      visibility: visible;
+      pointer-events: auto;
+      z-index: 1;
+    }
     #tabs {
       flex: 0 0 auto;
       z-index: 20;
@@ -173,7 +184,7 @@
   <div id="shell" hidden>
     <div id="scroller"></div>
     <nav id="tabs" aria-label="Secciones de casa">
-      <button type="button" data-view="go" aria-selected="true">Go</button>
+      <button type="button" data-view="go" aria-selected="true">Go<span class="tab-dot" hidden aria-hidden="true"></span></button>
       <button type="button" data-view="tablon" aria-selected="false">Tablón<span class="tab-dot" hidden aria-hidden="true"></span></button>
       <button type="button" data-view="viajes" aria-selected="false">Viajes<span class="tab-dot" hidden aria-hidden="true"></span></button>
     </nav>
@@ -181,6 +192,6 @@
   <div id="session-overlay" hidden>
     <button id="session-reenter" class="demo" type="button">Sesión caducada · Entrar de nuevo</button>
   </div>
-  <script type="module" src="./app.js?v=20260918a"></script>
+  <script type="module" src="./app.js?v=20260926a"></script>
 </body>
 </html>
