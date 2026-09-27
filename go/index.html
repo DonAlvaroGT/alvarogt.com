@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>García Olivas</title>
-  <!-- go-build: 20260924a -->
+  <!-- go-build: 20260927a -->
   <style>
     :root {
       color-scheme: light;
@@ -18,7 +18,6 @@
       --paper: #ffffff;
       --line: #dbe3eb;
       --gold: #ad7b27;
-      --live: #197a45;
       --shadow: 0 18px 50px rgba(31, 54, 78, .08);
     }
     * { box-sizing: border-box; }
@@ -96,7 +95,6 @@
     }
     .days { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
     .days.is-week { grid-template-columns: 1fr; }
-    #agenda-deportiva[hidden] { display: none; }
     article {
       background: var(--paper);
       border: 1px solid var(--line);
@@ -113,80 +111,6 @@
     .comedor { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
     .comedor ul { margin: 8px 0 0; padding-left: 1.15em; color: var(--ink); line-height: 1.55; }
     .empty { color: var(--ink-soft); }
-    .sports { margin-top: 44px; padding-top: 30px; border-top: 1px solid var(--line); }
-    .sports h2 { color: var(--navy); font: 400 clamp(2rem, 7vw, 3.7rem)/1 Georgia, serif; letter-spacing: -.04em; margin: 10px 0 12px; }
-    .sports-intro { color: var(--ink); line-height: 1.55; max-width: 620px; font-size: 1.02rem; font-weight: 500; }
-    .sports-list { display: grid; gap: 14px; margin-top: 24px; }
-    .sports-event {
-      background: var(--paper);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      padding: 16px 18px;
-      display: grid;
-      grid-template-columns: 110px 1fr;
-      gap: 12px;
-    }
-    .sports-time { color: var(--gold); font-variant-numeric: tabular-nums; }
-    .sports-event p { margin: 0; line-height: 1.45; }
-    .sports-meta { color: var(--ink-soft); font-size: .82rem; }
-    .sports-tag {
-      display: inline-block;
-      margin: 0 .35em .15em 0;
-      padding: .12em .55em;
-      border-radius: 999px;
-      font-size: .68rem;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-      font-weight: 650;
-      color: #fff;
-      background: #3a6b9e;
-      line-height: 1.35;
-      vertical-align: .12em;
-    }
-    .sports-tag-futbol { background: #1a7a3c; }
-    .sports-tag-beisbol { background: #1e4d8c; }
-    .sports-tag-americano { background: #c45a12; }
-    .sports-tag-f1 { background: #c1121f; }
-    .sports-tag-hockey { background: #0f6a8a; }
-    .sports-tag-otro { background: #5b4a8a; }
-    .deporte-dia { color: var(--navy); font-size: .86rem; line-height: 1.45; margin: 12px 0 0; }
-    .sports-fav {
-      display: inline-block;
-      margin-left: .35em;
-      padding: .08em .48em;
-      border-radius: 999px;
-      background: #223c5c;
-      color: #fff;
-      font-size: .68rem;
-      letter-spacing: .03em;
-      vertical-align: .15em;
-      line-height: 1.35;
-    }
-    .sports-star { font-size: 1.05rem; margin-left: .2em; vertical-align: -.05em; }
-    .sports-star-4 { color: #8a93a0; }
-    .sports-star-5 { color: #d4a017; }
-    .sports-event a { color: var(--navy); text-decoration: underline; text-underline-offset: 3px; }
-    .sports-canal {
-      display: inline-block;
-      margin-left: .4em;
-      padding: .08em .48em;
-      border: 1px solid var(--live);
-      border-radius: 999px;
-      color: var(--live);
-      font-size: .68rem;
-      letter-spacing: .03em;
-      vertical-align: .15em;
-      line-height: 1.35;
-      white-space: nowrap;
-    }
-    .sports-empty {
-      background: var(--paper);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      padding: 20px;
-      color: var(--ink-soft);
-      line-height: 1.55;
-    }
     footer { margin-top: 26px; color: var(--ink-soft); font-size: .73rem; line-height: 1.5; border-top: 1px solid var(--line); padding: 18px 0 0; }
     .error { padding: 24px; border: 1px solid #e3c4c4; color: #8a3030; background: #fff6f6; }
     @media (max-width: 650px) {
@@ -195,7 +119,6 @@
       .days, .days.is-week { grid-template-columns: 1fr; }
       article { min-height: 0; }
       .day-name { margin-top: 24px; }
-      .sports-event { grid-template-columns: 1fr; gap: 4px; }
     }
     html.embedded header { min-height: 0; padding: 16px 0 18px; }
     html.embedded h1 { font-size: clamp(2.1rem, 9vw, 3.4rem); }
@@ -237,12 +160,6 @@
   <div id="app" hidden>
     <main class="wrap">
       <section class="days" id="days" aria-live="polite"><p style="padding:24px">Cargando…</p></section>
-      <section class="sports" id="agenda-deportiva" aria-labelledby="agenda-title">
-        <div class="kicker">Hoy · Madrid</div>
-        <h2 id="agenda-title">Agenda deportiva</h2>
-        <p class="sports-intro" id="sports-intro">La agenda de hoy se carga al abrir.</p>
-        <div class="sports-list" id="sports-agenda" aria-live="polite"><p class="sports-empty">La agenda de hoy se carga al abrir; si no hay evento en la ventana, no aparece.</p></div>
-      </section>
       <footer><span class="source">Fuente del tiempo: Open-Meteo</span><br>La página se actualiza sola al abrirla.<br>Creado por Álvaro GT y sus minions</footer>
     </main>
   </div>
@@ -255,8 +172,6 @@
   import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20260923a';
   import { ymdInZone, nextYmd, weekYmds, nextWeekYmds } from './fechas.mjs?v=20260918a';
   import { lastVista, rememberVista, datesForVista, dayLabel, headingParts } from './vista.mjs?v=20260918a';
-  import { parseFavoritos, isHouseFav as matchHouseFav, DEFAULT_FAVS } from './favoritos.mjs?v=20260918a';
-  import { sportKind, sportTagLabel, sportsOnDay, sportsCardLine, sportsLine, sportTitle, sportText, sportFuente } from './sports.mjs?v=20260924a';
   const allowed=['agarciatimon@gmail.com','luzolivas@gmail.com'];
   const embedded=(()=>{try{return window.parent!==window&&window.parent.location.origin===location.origin}catch{return false}})();
   if(embedded)document.documentElement.classList.add('embedded');
@@ -264,47 +179,8 @@
   const clockFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
   const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function comedorBlock(payload,date){const platos=menuDelDia(payload,date);if(!platos)return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><p class="copy empty">Sin menú de comedor</p></div>`;return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><ul>${platos.map(p=>`<li>${safe(p)}</li>`).join('')}</ul></div>`}
-  function card(day,label,viaje,comedor,vista){const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');const nacho=day.nacho_ropa?`<p class="copy"><strong>Nacho: ${safe(day.nacho_ropa)}</strong></p>`:'';const trip=viaje?tripLineText(viaje,day.date):'';const tripHtml=trip?`<p class="viaje">${safe(trip)}</p>`:'';const sportTxt=vista==='hoy'?'':sportsCardLine(sportsOnDay(sportsWeekData,day.date));const sportHtml=sportTxt?`<p class="deporte-dia">${safe(sportTxt)}</p>`:'';const head=headingParts(vista,label,day.date);return `<article data-date="${safe(day.date)}"><div class="date">${safe(head.dateLine)}</div><h2 class="day-name">${safe(head.title)}</h2>${tripHtml}<p class="copy">${weather}</p>${nacho}${comedorBlock(comedor,day.date)}<div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div>${sportHtml}</article>`}
-
-  const agendaTime=e=>String(e.hora_madrid||'').match(/^(\d{1,2}):(\d{2})$/);
-  let houseFavs=DEFAULT_FAVS.slice();
-  function isHouseFav(e){
-    return matchHouseFav(sportTitle(e),houseFavs);
-  }
-  function sportsStar(interes){
-    const n=Number(interes);
-    if(n===5)return ' <span class="sports-star sports-star-5" title="Interés 5" aria-label="Interés 5">★</span>';
-    if(n===4)return ' <span class="sports-star sports-star-4" title="Interés 4" aria-label="Interés 4">★</span>';
-    return '';
-  }
-  function canalHomeUrl(e){
-    const canal=String(e.canal||'').toLowerCase();
-    const blob=`${e.deporte||''} ${e.competicion||''}`.toLowerCase();
-    if(canal.includes('dazn'))return 'https://www.dazn.com';
-    if(canal.includes('disney'))return 'https://www.disneyplus.com';
-    if(canal.includes('mlb')||blob.includes('mlb'))return 'https://www.mlb.com';
-    return '';
-  }
-  function canalMark(e){
-    const txt=typeof e.canal==='string'&&e.canal.trim()?e.canal.trim():'';
-    if(!txt)return '';
-    const home=canalHomeUrl(e);
-    const tv=home?`<a href="${safe(home)}" target="_top" rel="noopener">📺</a>`:'📺';
-    return ` <span class="sports-canal">${tv} ${safe(txt)}</span>`;
-  }
-  function sportsPrevia(list){
-    if(!list.length)return 'Sin partidos de la lista hoy.';
-    if(list.length===1)return `Hoy ${sportsLine(list[0])}.`;
-    return `Hoy ${sportsLine(list[0])} y ${sportsLine(list[1])}.`;
-  }
-  function renderSportsAgenda(payload){
-    const list=(payload.events||payload.eventos||[]).filter(e=>{const m=agendaTime(e);if(!m)return false;const mins=Number(m[1])*60+Number(m[2]);return mins>=600&&mins<=1350}).sort((a,b)=>{const ma=agendaTime(a),mb=agendaTime(b);const ia=Number(ma[1])*60+Number(ma[2]),ib=Number(mb[1])*60+Number(mb[2]);return ia-ib});
-    const intro=document.querySelector('#sports-intro');
-    if(intro)intro.textContent=sportsPrevia(list);
-    const target=document.querySelector('#sports-agenda');
-    target.innerHTML=list.length?list.map(e=>{const kind=sportKind(e);const tag=`<span class="sports-tag sports-tag-${kind}">${safe(sportTagLabel(kind))}</span>`;const fav=isHouseFav(e)?' <span class="sports-fav">Casa</span>':'';const canal=canalMark(e);const motivo=sportText(e.motivo_interes)||sportText(e.motivo);const interesN=sportText(String(e.interes??''));const interes=interesN?(motivo?`Interés ${safe(interesN)} · ${safe(motivo)}`:`Interés ${safe(interesN)}`):(motivo?safe(motivo):'');const star=sportsStar(e.interes);const title=sportTitle(e);const fuente=sportFuente(e);const titleHtml=fuente?`<a href="${safe(fuente)}" rel="noopener">${safe(title)}</a>`:safe(title);const comp=sportText(e.competicion);const meta=[comp,interes].filter(Boolean).join(' · ');return `<div class="sports-event"><div class="sports-time">${safe(e.hora_madrid)}<br>${tag}</div><p>${titleHtml}${fav}${canal}${star}${meta?`<br><span class="sports-meta">${meta}</span>`:''}</p></div>`}).join(''):`<p class="sports-empty">${safe(payload.motivo||'No hay eventos verificables dentro de la ventana.')}</p>`;
-  }
-  let fsApi=null, db=null, fsProject='tablongo', sportsData, sportsWeekData=null, started=false, dayMap={}, viajesList=[], comedorPayload=null, todayYmd='';
+  function card(day,label,viaje,comedor,vista){const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C${rain}.`;const events=(day.events||[]).map(e=>`<li><strong>${safe(e.time)}</strong> ${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`).join('');const nacho=day.nacho_ropa?`<p class="copy"><strong>Nacho: ${safe(day.nacho_ropa)}</strong></p>`:'';const trip=viaje?tripLineText(viaje,day.date):'';const tripHtml=trip?`<p class="viaje">${safe(trip)}</p>`:'';const head=headingParts(vista,label,day.date);return `<article data-date="${safe(day.date)}"><div class="date">${safe(head.dateLine)}</div><h2 class="day-name">${safe(head.title)}</h2>${tripHtml}<p class="copy">${weather}</p>${nacho}${comedorBlock(comedor,day.date)}<div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
+  let fsApi=null, db=null, fsProject='tablongo', started=false, dayMap={}, viajesList=[], comedorPayload=null, todayYmd='';
   function parentEmail(){
     if(!embedded)return '';
     try{return String(window.parent.__casaAuth?.email?.()||'').toLowerCase()}catch{return ''}
@@ -339,13 +215,6 @@
     if(typeof body!=='string')throw Error('body');
     return JSON.parse(body);
   }
-  async function loadSports(){
-    const payload=await casaDoc('go_sports');
-    if(payload.timezone!==zone||payload.window?.start!=='10:00'||payload.window?.end!=='22:30'||!Array.isArray(payload.events))throw Error('sports-schema');
-    sportsData={comprobado:payload.date,date:payload.date,eventos:payload.events,events:payload.events,sin_evento_en_ventana:{},generated_at:payload.generated_at||payload.published_at||''};
-    renderSportsAgenda(sportsData);
-    if(started)renderDays();
-  }
   async function casaDocOpt(id){try{return await casaDoc(id)}catch{return null}}
   function calendarEvents(payload){
     const map={};
@@ -359,8 +228,6 @@
     document.querySelectorAll('.vista-switch [data-vista]').forEach(btn=>{
       btn.setAttribute('aria-pressed', btn.dataset.vista===vista ? 'true' : 'false');
     });
-    const sports=document.querySelector('#agenda-deportiva');
-    if(sports)sports.hidden=vista!=='hoy';
   }
   function renderDays(){
     const vista=lastVista();
@@ -384,15 +251,13 @@
     document.querySelector('#gate').hidden=true;
     todayYmd=ymdInZone(new Date(),zone);
     const dates=[...weekYmds(todayYmd),...nextWeekYmds(todayYmd)];
-    const [weather,data,reglas,viajesDoc,comedorDoc,favoritosDoc]=await Promise.all([
+    const [weather,data,reglas,viajesDoc,comedorDoc]=await Promise.all([
       fetchTiempo(),
       casaDocOpt('go_data'),
       casaDocOpt('go_reglas'),
       casaDocOpt('viajes'),
       casaDocOpt('go_comedor'),
-      casaDocOpt('go_favoritos'),
     ]);
-    houseFavs=parseFavoritos(favoritosDoc);
     viajesList=(viajesDoc&&viajesDoc.schema_version===1&&Array.isArray(viajesDoc.viajes))?viajesDoc.viajes:[];
     comedorPayload=(comedorDoc&&comedorDoc.schema_version===1&&comedorDoc.timezone===zone&&comedorDoc.dias&&typeof comedorDoc.dias==='object')?comedorDoc:null;
     const fromCal=calendarEvents(data);
@@ -411,16 +276,7 @@
     setTripSoonFlag(tripSoon(viajesList,todayYmd,nextYmd(todayYmd)));
     renderDays();
     try{
-      await loadSports();
-    }catch{
-      const intro=document.querySelector('#sports-intro');
-      if(intro)intro.textContent='Sin partidos de la lista hoy.';
-      document.querySelector('#sports-agenda').innerHTML='<p class="error">No hay agenda deportiva publicada.</p>';
-    }
-    sportsWeekData=await casaDocOpt('go_sports_week');
-    renderDays();
-    try{
-      const stamp=formatPublicado(data&&data.generated_at)||formatPublicado(sportsData&&sportsData.generated_at)||formatPublicado(sportsData&&sportsData.comprobado);
+      const stamp=formatPublicado(data&&data.generated_at);
       if(stamp)document.querySelector('#updated').textContent=stamp;
     }catch{}
     notifyCasaHeight();

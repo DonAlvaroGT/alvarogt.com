@@ -1,6 +1,6 @@
 # /go/ — agenda de casa
 
-La página pinta Hoy y Mañana al abrir: tiempo (Open-Meteo), ropa de Nacho, extraescolares fijos (`casa_json/go_reglas`), comedor y viaje. Interruptor **Hoy | Semana | Próxima** dentro de Go (no es otra pestaña): Semana son lun–dom de la semana en curso; Próxima, lun–dom de la siguiente (Europe/Madrid). Recuerda la vista en `localStorage` (`go.vista`). `go_data` es opcional (EventKit). El bloque gordo de deporte (`#agenda-deportiva`) sigue en `go_sports` y **solo en la vista Hoy**. En Semana/Próxima, la línea de partido sale de `go_sports_week` filtrado por `day.date` (`fecha`/`date` del evento, YYYY-MM-DD Madrid). Si falta ese JSON, no se inventa (sin línea). No se clona la agenda diaria a lun–dom. Hockey (NHL / hockey / Red Wings) lleva etiqueta propia, no «Deporte» morado. Los favoritos de Casa (etiqueta Casa) viven en `casa_json/go_favoritos`, no en `sports.json`. Si falta el JSON, Go usa Real Madrid, Miami Dolphins y Milwaukee Brewers.
+La página pinta Hoy y Mañana al abrir: tiempo (Open-Meteo), ropa de Nacho, extraescolares fijos (`casa_json/go_reglas`), comedor y viaje. Interruptor **Hoy | Semana | Próxima** dentro de Go (no es otra pestaña): Semana son lun–dom de la semana en curso; Próxima, lun–dom de la siguiente (Europe/Madrid). Recuerda la vista en `localStorage` (`go.vista`). `go_data` es opcional (EventKit). Sin agenda deportiva en la página (ni bloque de Hoy ni línea en Semana/Próxima).
 
 ## Contrato
 

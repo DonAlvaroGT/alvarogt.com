@@ -57,20 +57,16 @@ class FavoritosTests(unittest.TestCase):
         self.assertEqual(parse_favoritos({}), DEFAULT)
         self.assertEqual(parse_favoritos({"favoritos": []}), DEFAULT)
 
-    def test_html_reads_json_not_hardcoded_only(self):
+    def test_html_does_not_paint_favoritos(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         put = (ROOT / "casa_put_json.py").read_text(encoding="utf-8")
-        self.assertIn("from './favoritos.mjs?v=", html)
-        self.assertIn("parseFavoritos", html)
-        self.assertIn("casaDocOpt('go_favoritos')", html)
-        self.assertIn("houseFavs", html)
-        self.assertIn("isHouseFav", html)
-        self.assertIn("sports-fav", html)
-        self.assertNotIn("/Real Madrid/i.test(name)", html)
-        self.assertNotIn("/Miami Dolphins/i.test(name)", html)
-        self.assertNotIn("/Milwaukee Brewers/i.test(name)", html)
+        self.assertNotIn("from './favoritos.mjs?v=", html)
+        self.assertNotIn("parseFavoritos", html)
+        self.assertNotIn("casaDocOpt('go_favoritos')", html)
+        self.assertNotIn("houseFavs", html)
+        self.assertNotIn("isHouseFav", html)
+        self.assertNotIn("sports-fav", html)
         self.assertIn('"go/favoritos.json": "go_favoritos"', put)
-        self.assertNotIn("go_favoritos", (ROOT / "sports.json").read_text(encoding="utf-8") if (ROOT / "sports.json").is_file() else "")
 
     def test_firestore_go_favoritos_real(self):
         body, updated = fetch_go_favoritos()
