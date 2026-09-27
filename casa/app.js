@@ -158,46 +158,6 @@ export function applyViajesHoy(frame) {
   }
 }
 
-export function goHasInteres5(doc) {
-  try {
-    return !!(doc && doc.querySelector('.sports-star-5'));
-  } catch {
-    return false;
-  }
-}
-
-export function setGoHotDot(on) {
-  const btn = document.querySelector('#tabs button[data-view="go"]');
-  if (!btn) return false;
-  btn.classList.toggle('has-hot', !!on);
-  const dot = btn.querySelector('.tab-dot');
-  if (dot) dot.hidden = !on;
-  return !!on;
-}
-
-export function readGoHotFromFrame(frame) {
-  try {
-    if (!frame || isFrameDead(frame)) return null;
-    const doc = frame.contentDocument;
-    if (!doc) return null;
-    if (!doc.querySelector('#sports-agenda') && !doc.querySelector('#agenda-deportiva')) return null;
-    return goHasInteres5(doc);
-  } catch {
-    return null;
-  }
-}
-
-export function refreshGoHotDot() {
-  const scroller = document.querySelector('#scroller');
-  const frame = scroller && scroller.querySelector('iframe[data-casa-view="go"]');
-  const hot = readGoHotFromFrame(frame);
-  if (hot === null) {
-    setGoHotDot(false);
-    return false;
-  }
-  return setGoHotDot(hot);
-}
-
 export function googleParams() {
   const hint = lastAdultHint();
   return hint ? { login_hint: hint } : {};
@@ -252,7 +212,6 @@ function bindFrame(frame) {
     if (frame.getAttribute('data-casa-view') === 'tablon') watchTablonQueue(frame);
     if (frame.getAttribute('data-casa-view') === 'go') {
       watchGoTripSoon(frame);
-      watchGoHot(frame);
     }
     if (frame.getAttribute('data-casa-view') === 'viajes') applyViajesHoy(frame);
   });
@@ -287,21 +246,6 @@ function watchGoTripSoon(frame) {
   } catch {}
 }
 
-function watchGoHot(frame) {
-  refreshGoHotDot();
-  try {
-    const doc = frame && frame.contentDocument;
-    const box = doc && (doc.querySelector('#sports-agenda') || doc.querySelector('#agenda-deportiva'));
-    if (!box || typeof MutationObserver === 'undefined') return;
-    if (frame.__casaHotObs) {
-      try { frame.__casaHotObs.disconnect(); } catch {}
-    }
-    const obs = new MutationObserver(() => { refreshGoHotDot(); });
-    obs.observe(box, { childList: true, subtree: true });
-    frame.__casaHotObs = obs;
-  } catch {}
-}
-
 function paintFrame(frame, on) {
   const go = frame.getAttribute('data-casa-view') === 'go';
   frame.classList.toggle('is-active', on);
@@ -322,7 +266,6 @@ function ensureGoFrame() {
   const existing = scroller.querySelector('iframe[data-casa-view="go"]');
   if (existing) {
     refreshViajesTripDot();
-    refreshGoHotDot();
     return existing;
   }
   const frame = document.createElement('iframe');
@@ -373,7 +316,6 @@ export function showView(name) {
   markTab(view);
   if (view === 'tablon') refreshTablonQueueDot();
   refreshViajesTripDot();
-  refreshGoHotDot();
   if (view === 'viajes') applyViajesHoy(frame);
   return src;
 }

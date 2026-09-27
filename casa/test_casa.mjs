@@ -6,8 +6,7 @@ import {
   lastAdultHint, rememberAdult, HINT_KEY, googleParams, isStandaloneDisplay,
   lastTab, rememberTab, TAB_KEY, TAB_NAMES,
   queueHasPending, setTablonQueueDot, readTablonQueueFromFrame, refreshTablonQueueDot,
-  setViajesTripDot, readTripSoonFromGoFrame, refreshViajesTripDot, applyViajesHoy,
-  goHasInteres5, setGoHotDot, readGoHotFromFrame, refreshGoHotDot
+  setViajesTripDot, readTripSoonFromGoFrame, refreshViajesTripDot, applyViajesHoy
 } from './app.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -379,14 +378,15 @@ test('Viajes con punto abre Hoy; sin punto no fuerza Hoy', () => {
   assert.equal(other.getAttribute('data-viajes-vista'), null);
 });
 
-test('punto de Go si hay interés 5 hoy en el iframe', () => {
+test('Go no pone punto por interés 5', () => {
   const d = mockDom();
   showShell();
   assert.equal(d.go.querySelector('.tab-dot').hidden, true);
+  assert.equal(d.go.classList.contains('has-hot'), false);
   const goFrame = d.scroller.children[0];
   const star = el({ className: 'sports-star-5' });
   const agenda = el({ children: [star] });
-  const fullDoc = {
+  goFrame.contentDocument = {
     body: {},
     querySelector(sel) {
       if (sel === '#sports-agenda' || sel === '#agenda-deportiva') return agenda;
@@ -394,32 +394,10 @@ test('punto de Go si hay interés 5 hoy en el iframe', () => {
       return null;
     }
   };
-  const emptyAgenda = el({ children: [] });
-  const emptyDoc = {
-    body: {},
-    querySelector(sel) {
-      if (sel === '#sports-agenda' || sel === '#agenda-deportiva') return emptyAgenda;
-      if (sel === '.sports-star-5') return null;
-      return null;
-    }
-  };
-  goFrame.contentDocument = emptyDoc;
   goFrame.contentWindow = { location: { href: 'https://alvarogt.com/go/' } };
-  assert.equal(goHasInteres5(emptyDoc), false);
-  assert.equal(readGoHotFromFrame(goFrame), false);
-  assert.equal(refreshGoHotDot(), false);
+  showView('go');
   assert.equal(d.go.querySelector('.tab-dot').hidden, true);
-  goFrame.contentDocument = fullDoc;
-  assert.equal(goHasInteres5(fullDoc), true);
-  assert.equal(readGoHotFromFrame(goFrame), true);
-  assert.equal(refreshGoHotDot(), true);
-  assert.equal(d.go.classList.contains('has-hot'), true);
-  assert.equal(d.go.querySelector('.tab-dot').hidden, false);
-  setGoHotDot(false);
   assert.equal(d.go.classList.contains('has-hot'), false);
-  assert.equal(d.go.querySelector('.tab-dot').hidden, true);
-  const dead = el({ attrs: { 'data-casa-view': 'go' }, contentWindow: null, contentDocument: null });
-  assert.equal(readGoHotFromFrame(dead), null);
 });
 
 test('login_hint del último adulto, sin select_account', () => {
