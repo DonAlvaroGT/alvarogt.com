@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { html } from './source.mjs';
 import { awardPoints, commandFor, ADULT_EMAILS } from '../functions/src/backend.contract.mjs';
 
-const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 const adult = { uid: 'adult-1', role: 'adult', email: ADULT_EMAILS[0], emailVerified: true };
 const task = { id: 'task-1', status: 'active', assignee: 'Nacho', points: 10 };
 const pending = { id: 'task-1:2026-09-07', taskId: 'task-1', status: 'pending', pointsAwarded: false };

@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { html } from './source.mjs';
 import vm from 'node:vm';
 
-const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 
-assert.match(html, /tablon-build: 20260923b-validate-all/, 'marcador de cache-bust del cambio');
+assert.match(html, /tablon-build: 20260928e-priv/, 'marcador de cache-bust del cambio');
 assert.match(html, /id="validate-all-queue"/, 'el botón Validar todo está en el HTML');
 assert.match(html, />✅ Validar todo</, 'el texto del botón es Validar todo');
 assert.match(html, /data-action="validate-all-queue"/, 'un toque dispara validate-all-queue');

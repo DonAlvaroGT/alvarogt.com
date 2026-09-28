@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { html } from './source.mjs';
 import vm from 'node:vm';
 
-const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 
 assert.doesNotMatch(html, /id="today-summary"/, 'el resumen de hoy no debe estar en el HTML');
 assert.doesNotMatch(html, /Resumen de hoy/, 'no debe mostrarse el bloque Resumen de hoy');

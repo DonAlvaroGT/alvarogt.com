@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { html } from './source.mjs';
 import vm from 'node:vm';
 import {
   awardPoints,
@@ -15,7 +16,6 @@ import {
 } from '../functions/src/backend.contract.mjs';
 import { createPeriodicInstances as createFromPure } from '../functions/src/pure.mjs';
 
-const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 const backend = await readFile(new URL('../functions/src/index.mjs', import.meta.url), 'utf8');
 
 assert.match(html, /data-board-day="today"/);
@@ -24,12 +24,12 @@ assert.match(html, /id="mark-all-board"/);
 assert.match(html, /id="board-day-banner"/);
 assert.match(html, /data-adult-only aria-label="Ver hoy o ayer"/, 'el selector Hoy/Ayer es solo de adultos');
 assert.match(html, /Estás viendo las tareas de ayer/);
-assert.match(html, /period:'yesterday'/, 'la callable de ayer manda period y no instanceId');
+assert.match(html, /period:\s*'yesterday'/, 'la callable de ayer manda period y no instanceId');
 assert.doesNotMatch(html, /instanceId:item\.instanceId/, 'el payload no depende de instanceId');
 assert.match(html, /data-action="mark-all-board"/);
 assert.match(html, /tablonRemoteCall\('adultDone',item\)/, 'marcar todas llama adultDone por tarea');
-assert.match(html, /if\(role!=='adult'&&typeof window\.tablonSetBoardDay/, 'los niños vuelven a hoy');
-assert.match(html, /window\.tablonAdult&&typeof window\.tablonBoardDate/, 'el listener de ayer exige adulto');
+assert.match(html, /if\s*\(role\s*!==\s*'adult'\s*&&\s*typeof window\.tablonSetBoardDay/, 'los niños vuelven a hoy');
+assert.match(html, /window\.tablonAdult\s*&&\s*typeof window\.tablonBoardDate/, 'el listener de ayer exige adulto');
 assert.match(backend, /requestedPeriod/, 'el backend lee period del payload');
 assert.match(backend, /resolveCommandPeriod/);
 assert.match(backend, /if \(!instanceSnap\.exists\) tx\.create\(instanceRef, \{ \.\.\.instance, \.\.\.instanceWrite \}\);/);

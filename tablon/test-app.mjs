@@ -2,24 +2,39 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { validateRuntimeConfig, readRuntimeConfig, allowedBackendKeys, PUBLIC_FIREBASE_CONFIG } from './config.mjs';
 import { ADULT_ALLOWLIST, CHILD_ROLE } from './domain.mjs';
+import { gate, html, premios, board } from './test/source.mjs';
 
-const html = fs.readFileSync(new URL('./index.html', import.meta.url), 'utf8');
 const js = fs.readFileSync(new URL('./frontend-alternative/app.js', import.meta.url), 'utf8');
 const read = (path) => fs.readFileSync(new URL(path, import.meta.url), 'utf8');
-assert.match(html, /id="child-sign-in"/);
-assert.match(html, /signInWithEmailAndPassword/);
-assert.match(html, /html\.embedded/);
-assert.match(html, /parentOk/);
-assert.match(html, /__casaAuth/);
-assert.match(html, /tablon-build:/);
-assert.match(html, /if\(embedded\)return/);
+assert.match(gate, /id="child-sign-in"/);
+assert.match(gate, /signInWithEmailAndPassword/);
+assert.match(gate, /html\.embedded/);
+assert.match(gate, /parentOk/);
+assert.match(gate, /__casaAuth/);
+assert.match(gate, /tablon-build:/);
+assert.match(gate, /if \(embedded\) return/);
+assert.match(gate, /id="board-root"/);
+assert.match(gate, /<title>Tablón</);
+assert.match(gate, />Adultos</);
+assert.match(gate, />Niños</);
+assert.match(gate, /import\('\.\/board\.js\?v=' \+ BUILD\)/);
+assert.doesNotMatch(gate, /Nacho/);
+assert.doesNotMatch(gate, /Luz/);
+assert.doesNotMatch(gate, /García Olivas/);
+assert.doesNotMatch(gate, /initial\{/);
+assert.doesNotMatch(gate, /id="task-form"/);
+assert.doesNotMatch(gate, /id="reward-form"/);
+assert.doesNotMatch(gate, /id="shell"/);
+assert.doesNotMatch(gate, /@gmail\.com/);
+assert.doesNotMatch(gate, /alvarogt@alvarogt\.com/);
+assert.doesNotMatch(gate, /value="[^"]+@/);
+assert.doesNotMatch(premios, /Nacho/);
+assert.doesNotMatch(premios, /Luz/);
+assert.match(premios, /Entra desde el tablón/);
+assert.doesNotMatch(premios, /data-filter="Nacho"/);
+assert.doesNotMatch(premios, /Historial de premios validados/);
 assert.match(html, /id="shell"/);
-assert.match(html, /<title>Tablón</);
-assert.doesNotMatch(html, /García Olivas/);
 assert.match(html, /houseName/);
-assert.doesNotMatch(html, /@gmail\.com/);
-assert.doesNotMatch(html, /alvarogt@alvarogt\.com/);
-assert.doesNotMatch(html, /value="[^"]+@/);
 assert.doesNotMatch(js, /@gmail\.com/);
 assert.match(js, /no sincroniza dispositivos/);
 assert.match(js, /credentials: 'include'/);
@@ -29,7 +44,7 @@ assert.deepEqual(allowedBackendKeys, ['backendConfigured', 'apiBase', 'authProvi
 assert.deepEqual(PUBLIC_FIREBASE_CONFIG, {
   projectId: 'tablongo',
   authDomain: 'tablongo.firebaseapp.com',
-  apiKey: JSON.parse(read('firebase.local.json')).apiKey,
+  apiKey: JSON.parse(fs.readFileSync(new URL('./firebase.public.json', import.meta.url), 'utf8')).apiKey,
   storageBucket: 'tablongo.firebasestorage.app',
   messagingSenderId: '639440141487',
   appId: '1:639440141487:web:76132e8c01c030b4e1e85a',
@@ -50,4 +65,5 @@ assert.equal((html.match(/aria-label="Filtrar por responsable"/g) || []).length,
 assert.equal((html.match(/aria-label="Filtrar por estado"/g) || []).length, 1);
 assert.equal((html.match(/id="task-search"/g) || []).length, 1);
 assert.equal((html.match(/data-frequency-filter=/g) || []).length, 3);
+assert.match(board, /startDataListeners/);
 console.log('tablon smoke, configuration, and DOM order tests: ok');
