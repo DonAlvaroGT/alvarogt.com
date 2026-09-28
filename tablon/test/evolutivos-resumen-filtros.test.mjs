@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { html } from './source.mjs';
 
-const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 assert.doesNotMatch(html, /id="today-summary"/, 'el resumen de hoy ya no está en la página');
 assert.match(html, /id="task-search"/);
 const main = html.slice(html.indexOf('<main'), html.indexOf('</main>') + 7);

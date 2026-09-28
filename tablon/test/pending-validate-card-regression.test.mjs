@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { html } from './source.mjs';
 import vm from 'node:vm';
 
-const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 
-assert.match(html, /tablon-build: 20260923b-validate-all/, 'marcador de cache-bust vigente');
+assert.match(html, /tablon-build: 20260928e-priv/, 'marcador de cache-bust vigente');
 assert.match(html, /\.task\.pending-validate\{[^}]*grid-column:1\/-1/, 'la ficha pendiente ocupa toda la fila');
 assert.match(html, /\.task\.pending-validate\{[^}]*background:#6c4dff/, 'el estado pendiente usa otro color, no naranja/rosa');
 assert.match(html, /status==='waiting'\?' pending-validate':'/, 'solo el estado pendiente de validar agranda la ficha');
@@ -17,7 +17,7 @@ assert.match(html, /--luz:#d85c9b/, 'el rosa de Luz no se toca');
 assert.doesNotMatch(html, /Marcada el/, 'no se pinta «Marcada el»');
 assert.doesNotMatch(html, /Molletito/, 'Molletito no entra en el tablón');
 assert.doesNotMatch(html, /data-filter="Molletito"/, 'no hay filtro de Molletito');
-assert.match(html, /assignee','in',\[\'Nacho','Luz','shared'\]/, 'el listener no pide a Molletito');
+assert.match(html, /assignee'\s*,\s*'in'\s*,\s*\[\s*'Nacho'\s*,\s*'Luz'\s*,\s*'shared'\s*\]/, 'el listener no pide a Molletito');
 assert.equal((html.match(/data-view="/g) || []).length, 2, 'no hay pestaña nueva');
 assert.match(html, /data-view="tasks"/);
 assert.match(html, /data-view="rewards"/);

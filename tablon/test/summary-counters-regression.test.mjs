@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { html } from './source.mjs';
 
-const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 
 assert.doesNotMatch(html, /tareas validadas/i, 'no debe aparecer el contador de tareas validadas');
 assert.doesNotMatch(html, /cosas por validar/i, 'no debe aparecer el contador de cosas por validar');

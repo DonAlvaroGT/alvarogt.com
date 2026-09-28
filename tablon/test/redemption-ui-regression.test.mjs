@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { html } from './source.mjs';
 
-const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 
 assert.match(html, /data-action="redeem" data-id="\$\{r\.id\}/, 'el botón infantil conserva rewardId');
 assert.match(html, /if\(action==='redeem'\)\{/, 'el listener delegado atiende canjes');
 assert.match(html, /tablonRemoteCall\('requestRedemption',item\)/, 'el botón llama requestRedemption');
-assert.match(html, /httpsCallable\(functionsClient,name\)\(\{rewardId:item\.id,eventId\}\)/, 'la callable usa rewardId y eventId');
-assert.match(html, /functions\.getFunctions\(app,'europe-west1'\)/, 'la callable usa europe-west1');
+assert.match(html, /httpsCallable\(functionsClient,\s*name\)\(\{\s*rewardId:\s*item\.id,\s*eventId\s*\}\)/, 'la callable usa rewardId y eventId');
+assert.match(html, /functions\.getFunctions\(app,\s*'europe-west1'\)/, 'la callable usa europe-west1');
 assert.match(html, /redeemBusy\(b,true\)/, 'el botón muestra estado de carga');
 assert.match(html, /redeemBusy\(b,false\)/, 'el botón se restaura tras acabar');
 assert.match(html, /No se ha encontrado el premio|Este premio no tiene identificador/, 'rewardId ausente muestra error');

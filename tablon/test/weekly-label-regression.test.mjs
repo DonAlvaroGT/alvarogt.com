@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { html } from './source.mjs';
 import vm from 'node:vm';
 
-const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 const start = html.indexOf('const madridDateParts=');
 const end = html.indexOf("const initial=", start);
 assert.ok(start >= 0 && end > start, 'helpers semanales presentes');

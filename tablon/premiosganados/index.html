@@ -2,15 +2,20 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow">
-<title>Premios ganados · Tablón familiar</title>
+<title>Tablón</title>
+<!-- tablon-build: 20260928e-priv -->
+<meta http-equiv="refresh" content="0;url=/tablon/">
 <style>
-:root{--ink:#17324d;--muted:#64748b;--line:#e5dfd1;--nacho:#f47b20;--luz:#d85c9b;--shadow:0 12px 30px #17324d14}*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#f7efe1,#e9f3f4);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}.shell{width:min(900px,calc(100% - 28px));margin:auto}.top{padding:30px 0 24px}.eyebrow{font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:#e76f51;font-weight:800}.top h1{font:400 clamp(2.6rem,8vw,5.6rem)/.9 Georgia,serif;letter-spacing:-.065em;margin:12px 0}.intro{color:var(--muted);line-height:1.5;max-width:620px}.back{display:inline-block;color:var(--ink);font-weight:800;text-decoration:none;margin:8px 0 24px}.panel{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:20px}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}.toolbar h2{margin:0;font-size:1.15rem}.filters{display:flex;gap:7px;flex-wrap:wrap}.filter{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:8px 12px;cursor:pointer;font:inherit;font-size:.8rem}.filter.active{background:var(--ink);color:#fff}.history{display:grid;gap:10px}.item{display:flex;align-items:center;justify-content:space-between;gap:16px;border:1px solid var(--line);border-left:6px solid #bbb;border-radius:15px;padding:16px;background:#fffdf9}.item.nacho{border-left-color:var(--nacho);background:#fff8f0}.item.luz{border-left-color:var(--luz);background:#fff5fa}.who{font-weight:800}.who.nacho{color:#c6530b}.who.luz{color:#a63170}.title{font-size:1rem;margin-top:5px}.date{color:var(--muted);font-size:.78rem;margin-top:5px}.cost{white-space:nowrap;font-weight:800;color:var(--muted)}.empty{color:var(--muted);padding:25px 0;text-align:center}@media(max-width:520px){.item{align-items:flex-start}.cost{font-size:.82rem}}
+:root{color-scheme:light;--ink:#17324d;--muted:#64748b}body{margin:0;background:linear-gradient(145deg,#f7efe1,#e9f3f4);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.shell{width:min(720px,calc(100% - 28px));margin:auto;padding:48px 0}
+.eyebrow{font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:#e76f51;font-weight:800}
+h1{font:400 clamp(2.4rem,8vw,4.4rem)/.9 Georgia,serif;letter-spacing:-.065em;margin:12px 0}
+p{color:var(--muted);line-height:1.5}
+a{color:var(--ink);font-weight:800}
 </style>
 </head>
 <body>
-<header class="shell top"><div class="eyebrow">Casa · Tablón familiar</div><h1>Premios ganados</h1><p class="intro">Solo aparecen canjes validados. Los canjes pendientes o rechazados no entran aquí.</p><a class="back" href="../">← Volver al tablón</a></header>
-<main class="shell"><section class="panel"><div class="toolbar"><h2>📚 Historial de premios validados</h2><div class="filters" aria-label="Filtrar por niño"><button class="filter active" data-filter="all">Todos</button><button class="filter" data-filter="Nacho">⚽ Nacho</button><button class="filter" data-filter="Luz">🌸 Luz</button></div></div><div id="history" class="history"></div></section></main><footer class="shell" style="padding:28px 0 36px;color:var(--muted);font-size:.8rem">Creado por Álvaro GT y sus minions</footer>
-<script type="module">
-const icons={Nacho:'⚽',Luz:'🌸'};let filter='all',history=[];const render=()=>{const items=history.filter(h=>filter==='all'||h.childId===filter||h.child===filter);document.querySelector('#history').innerHTML=items.map(h=>`<article class="item ${(h.childId||h.child||'').toLowerCase()}"><div><div class="who ${(h.childId||h.child||'').toLowerCase()}">${icons[h.childId||h.child]||'🎁'} ${h.childId||h.child}</div><div class="title">🎁 ${h.title||h.rewardTitle||'Premio'}</div><div class="date">📅 ${h.createdAt?.toDate?.()?.toLocaleString('es-ES',{timeZone:'Europe/Madrid',hourCycle:'h23'})||h.date||'—'}</div></div><div class="cost">−${h.cost} ⭐</div></article>`).join('')||'<p class="empty">📭 Aún no hay canjes validados para este filtro.</p>'};
-(async()=>{try{const c=await fetch('../firebase.public.json').then(x=>x.json());const [app,auth,fs]=await Promise.all([import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js'),import('https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js'),import('https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js')]);const a=app.initializeApp(c),s=auth.getAuth(a);auth.onAuthStateChanged(s,u=>{if(!u){history=[];render();return}fs.onSnapshot(fs.collection(fs.getFirestore(a),'history'),snap=>{history=snap.docs.map(d=>({id:d.id,...d.data()}));render()},()=>{history=[];render()})})}catch{history=[];render()}})();document.addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;filter=b.dataset.filter;document.querySelectorAll('.filter').forEach(x=>x.classList.toggle('active',x===b));render()});render();
-</script></body></html>
+<header class="shell"><div class="eyebrow">Casa · Tablón</div><h1>Tablón</h1><p>Entra desde el tablón.</p><p><a href="/tablon/">Ir al tablón</a></p></header>
+<footer class="shell" style="padding:28px 0 36px;color:var(--muted);font-size:.8rem">Creado por Álvaro GT y sus minions</footer>
+<script>location.replace('/tablon/');</script>
+</body></html>

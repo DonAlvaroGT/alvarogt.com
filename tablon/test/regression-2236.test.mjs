@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { html } from './source.mjs';
 
 const source = await readFile(new URL('../functions/src/index.mjs', import.meta.url), 'utf8');
-const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 
 // Firestore transactions cannot create and then update the same document in one attempt.
 assert.match(source, /if\s*\(!instanceSnap\.exists\)\s*tx\.create\(instanceRef, \{ \.\.\.instance, \.\.\.instanceWrite \}\);\s*else\s*tx\.update\(instanceRef, instanceWrite\);/,
