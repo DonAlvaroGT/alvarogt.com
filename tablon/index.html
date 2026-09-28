@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow">
 <title>Tablón</title>
-<!-- tablon-build: 20260928e-priv -->
+<!-- tablon-build: 20260928f-priv -->
 <style>:root{color-scheme:light;--ink:#17324d;--muted:#64748b;--card:#fff;--line:#e5dfd1;--ok:#16834b;--ok-bg:#e9f8ef;--no:#c62828;--no-bg:#fff0f0;--shadow:0 12px 30px #17324d14}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#f7efe1,#e9f3f4);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 .shell{width:min(1160px,calc(100% - 28px));margin:auto}.top{padding:28px 0 24px;display:flex;justify-content:space-between;gap:18px;align-items:end}
@@ -27,11 +27,17 @@ html.embedded #google-sign-out,html.embedded #google-sign-in,html.embedded #chil
 <footer class="shell" style="padding:28px 0 36px;color:var(--muted);font-size:.8rem">Creado por Álvaro GT y sus minions</footer>
 <div id="toast" class="toast" role="status"></div>
 <script type="module">
-const BUILD = '20260928e-priv';
+const BOARD_URL = 'https://europe-west1-tablongo.cloudfunctions.net/board';
 const embedded = (() => { try { return window.parent !== window && window.parent.location.origin === location.origin; } catch { return false; } })();
 if (embedded) document.documentElement.classList.add('embedded');
 function parentEmail() { if (!embedded) return ''; try { return String(window.parent.__casaAuth?.email?.() || '').toLowerCase(); } catch { return ''; } }
 function parentOk() { if (!embedded) return false; try { return !!window.parent.__casaAuth?.ok?.(); } catch { return false; } }
+async function loadBoardModule(token) {
+  const res = await fetch(BOARD_URL, { headers: { Authorization: 'Bearer ' + token }, cache: 'no-store' });
+  if (!res.ok) throw new Error('board');
+  const url = URL.createObjectURL(new Blob([await res.text()], { type: 'text/javascript' }));
+  try { return await import(url); } finally { URL.revokeObjectURL(url); }
+}
 let authApi, authService, functionsApi, functionsClient, boardMod = null;
 const status = document.querySelector('#google-status'), signIn = document.querySelector('#google-sign-in'), childSignIn = document.querySelector('#child-sign-in'), childLogin = document.querySelector('#child-login'), childEmail = document.querySelector('#child-email'), childPassword = document.querySelector('#child-password'), signOut = document.querySelector('#google-sign-out');
 const hideEmbeddedChrome = () => { if (!embedded) return; signIn.hidden = true; signOut.hidden = true; childSignIn.hidden = true; childLogin.hidden = true; };
@@ -107,9 +113,10 @@ async function setupGoogle() {
     const enterFromParent = () => { if (!parentOk()) return false; hideEmbeddedChrome(); setStatus(parentEmail()); return true; };
     const applyUser = async user => {
       try {
-        const { claims } = await user.getIdTokenResult(true);
+        const tokenResult = await user.getIdTokenResult(true);
+        const claims = tokenResult.claims;
         const isChild = claims.childRole === 'supervised';
-        boardMod = await import('./board.js?v=' + BUILD);
+        boardMod = await loadBoardModule(tokenResult.token);
         await boardMod.mount({ user, claims, setStatus });
         setSignedIn(user, isChild ? 'child' : 'adult');
       } catch (error) {

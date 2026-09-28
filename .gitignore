@@ -2,6 +2,8 @@ ACTUALIZAR.md
 .DS_Store
 firebase.local.json
 tablon/firebase.local.json
+tablon/board.js
+tablon/functions/src/board.js
 .env
 go/.env
 go/server/go-server
@@ -10,6 +12,11 @@ go/data.json
 go/sports.json
 go/sports_week.json
 go/comedor.json
+go/reglas.json
+go/condiciones.json
 viajes/viajes.json
 **/tablongo-firebase-adminsdk.json
 go.env
+**/__pycache__/
+tablon/functions/node_modules/
+tablon/functions/package-lock.json

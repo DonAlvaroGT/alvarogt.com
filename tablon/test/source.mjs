@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const dir = dirname(fileURLToPath(import.meta.url));
 export const gate = readFileSync(join(dir, '../index.html'), 'utf8');
-export const board = readFileSync(join(dir, '../board.js'), 'utf8');
+export const board = readFileSync(join(dir, '../_private/board.js'), 'utf8');
 export const premios = readFileSync(join(dir, '../premiosganados/index.html'), 'utf8');
 
 function extractConstString(src, name) {

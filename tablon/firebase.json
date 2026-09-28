@@ -2,7 +2,10 @@
   "functions": {
     "source": "functions",
     "runtime": "nodejs22",
-    "region": "europe-west1"
+    "region": "europe-west1",
+    "predeploy": [
+      "cp _private/board.js functions/src/board.js"
+    ]
   },
   "firestore": {
     "rules": "firestore.rules",
