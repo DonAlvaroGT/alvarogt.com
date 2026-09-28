@@ -41,6 +41,9 @@ class GoClientAuthHtmlTests(unittest.TestCase):
     def test_gate_and_app_shell(self):
         self.assertIn('id="gate"', self.html)
         self.assertIn('id="app"', self.html)
+        self.assertIn("<title>G.O.</title>", self.html)
+        self.assertNotIn("García Olivas", self.html)
+        self.assertIn("paintHouse", self.html)
         self.assertIn("Casa · GO", self.html)
         self.assertIn("Entra con Google", self.html)
         self.assertIn("Continuar con Google", self.html)

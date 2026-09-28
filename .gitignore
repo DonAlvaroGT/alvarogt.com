@@ -5,6 +5,7 @@ tablon/firebase.local.json
 .env
 go/.env
 go/server/go-server
+go/server/web/login.html
 go/data.json
 go/sports.json
 go/sports_week.json

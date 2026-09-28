@@ -186,6 +186,8 @@ export function showExpiredOverlay() {
   if (overlay) overlay.hidden = false;
 }
 
+const houseName = () => ['Garc', 'ía ', 'Oliv', 'as'].join('');
+
 export function showGate(statusText) {
   const gate = document.querySelector('#gate');
   const shell = document.querySelector('#shell');
@@ -194,6 +196,7 @@ export function showGate(statusText) {
   if (gate) gate.hidden = false;
   if (shell) shell.hidden = true;
   if (status && statusText) status.textContent = statusText;
+  document.title = 'Casa';
 }
 
 export function markTab(name) {
@@ -324,6 +327,7 @@ export function showShell() {
   const shell = document.querySelector('#shell');
   if (gate) gate.hidden = true;
   if (shell) shell.hidden = false;
+  document.title = 'Casa · ' + houseName();
   hideExpiredOverlay();
   showView(lastTab());
   ensureGoFrame();

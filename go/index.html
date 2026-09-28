@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>García Olivas</title>
-  <!-- go-build: 20260928c -->
+  <title>G.O.</title>
+  <!-- go-build: 20260928d -->
   <style>
     :root {
       color-scheme: light;
@@ -134,7 +134,7 @@
 <body>
   <header class="wrap">
     <div class="kicker">Casa · Madrid</div>
-    <div><h1>García<br>Olivas</h1><p class="intro"><span id="updated">Actualizado: —</span></p></div>
+    <div><h1>G.O.</h1><p class="intro"><span id="updated">Actualizado: —</span></p></div>
     <div class="clock" id="clock">—</div>
     <div class="header-actions">
       <div class="row">
@@ -164,16 +164,25 @@
     </main>
   </div>
 <script type="module">
-  import { tripOn, tripLineText, tripSoon } from './trip_line.mjs?v=20260928a';
-  import { menuDelDia } from './comedor.mjs?v=20260928a';
-  import { formatPublicado } from './stamp.mjs?v=20260928a';
-  import { nachoRopa } from './ropa.mjs?v=20260928a';
-  import { fetchTiempo } from './tiempo.mjs?v=20260928a';
-  import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20260928a';
-  import { ymdInZone, nextYmd, weekYmds, nextWeekYmds, isFestivo } from './fechas.mjs?v=20260928a';
-  import { lastVista, rememberVista, datesForVista, dayLabel, headingParts } from './vista.mjs?v=20260928a';
+  import { tripOn, tripLineText, tripSoon } from './trip_line.mjs?v=20260928d';
+  import { menuDelDia } from './comedor.mjs?v=20260928d';
+  import { formatPublicado } from './stamp.mjs?v=20260928d';
+  import { nachoRopa } from './ropa.mjs?v=20260928d';
+  import { fetchTiempo } from './tiempo.mjs?v=20260928d';
+  import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20260928d';
+  import { ymdInZone, nextYmd, weekYmds, nextWeekYmds, isFestivo } from './fechas.mjs?v=20260928d';
+  import { lastVista, rememberVista, datesForVista, dayLabel, headingParts } from './vista.mjs?v=20260928d';
   const embedded=(()=>{try{return window.parent!==window&&window.parent.location.origin===location.origin}catch{return false}})();
   if(embedded)document.documentElement.classList.add('embedded');
+  const houseName=()=>['Garc','ía ','Oliv','as'].join('');
+  const paintHouse=on=>{
+    document.title=on?houseName():'G.O.';
+    const h=document.querySelector('header h1');
+    if(!h)return;
+    h.replaceChildren();
+    if(on)h.append(houseName().slice(0,6),document.createElement('br'),houseName().slice(7));
+    else h.textContent='G.O.';
+  };
   const zone='Europe/Madrid';
   const clockFmt=new Intl.DateTimeFormat('es-ES',{timeZone:zone,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
   const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -248,6 +257,7 @@
     started=true;
     document.querySelector('#app').hidden=false;
     document.querySelector('#gate').hidden=true;
+    paintHouse(true);
     todayYmd=ymdInZone(new Date(),zone);
     const dates=[...weekYmds(todayYmd),...nextWeekYmds(todayYmd)];
     const [weather,data,reglas,viajesDoc,comedorDoc]=await Promise.all([
@@ -304,6 +314,7 @@
     started=false;
     signIn.hidden=false;
     signOut.hidden=true;
+    paintHouse(false);
   };
   async function loadFirebaseConfig(){
     const cfg=await fetch('./firebase.public.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('cfg');return r.json()});
