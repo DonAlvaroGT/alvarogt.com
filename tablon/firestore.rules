@@ -115,5 +115,11 @@ service cloud.firestore {
             ]);
       allow write: if false;
     }
+
+    // CrowPanel: GET de un documento (id = token). Sin listar la colección. Sin Google en el ESP.
+    match /epaper/{id} {
+      allow get: if true;
+      allow list, write: if false;
+    }
   }
 }

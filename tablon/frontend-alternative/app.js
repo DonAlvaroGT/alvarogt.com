@@ -66,7 +66,7 @@ async function initGoogleAuth() {
     authModule.onAuthStateChanged(firebaseAuth, (user) => {
       if (!user) return;
       const email = (user.email || '').toLowerCase();
-      if (!['', ''].includes(email)) {
+      if (!email) {
         authModule.signOut(firebaseAuth);
         toast('Esta cuenta no está autorizada para el tablón.');
         return;

@@ -43,14 +43,12 @@ class CasaShellTests(unittest.TestCase):
         self.assertNotIn("<svg", HTML)
         self.assertNotIn("material-icons", HTML)
 
-    def test_adult_allowlist_only(self):
-        self.assertIn("''", JS)
-        self.assertIn("''", JS)
-        self.assertNotIn("''", JS)
-        self.assertNotIn("''", JS)
-        self.assertNotIn("''", JS)
-        self.assertNotIn("''", JS)
-        self.assertNotIn("'alvarogt@alvarogt.com'", JS)
+    def test_no_client_email_allowlist(self):
+        self.assertNotIn("@gmail.com", JS)
+        self.assertNotIn("@alvarogt.com", JS)
+        self.assertIn("houseAllowed", JS)
+        self.assertIn("casa_json", JS)
+        self.assertIn("ok: () => casaOk", JS)
 
     def test_login_on_parent_not_iframe(self):
         self.assertIn("signInWithPopup", JS)

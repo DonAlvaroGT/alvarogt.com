@@ -1,5 +1,5 @@
 import {
-  isAdult, srcFor, tabFromPath, VIEWS, ALLOWED,
+  isAdult, srcFor, tabFromPath, VIEWS,
   showGate, showShell, showView,
   showExpiredOverlay, hideExpiredOverlay,
   isFrameDead, resumeActiveIfDead, reloadView,
@@ -11,13 +11,9 @@ import {
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-test('solo adultos de casa', () => {
-  assert.equal(isAdult(''), true);
-  assert.equal(isAdult(''), true);
-  assert.equal(isAdult('alvarogt@alvarogt.com'), false);
+test('pista de adulto es un correo, no una allowlist', () => {
+  assert.equal(isAdult('adulto@example.com'), true);
   assert.equal(isAdult(''), false);
-  assert.equal(isAdult(''), false);
-  assert.deepEqual(ALLOWED, ['', '']);
 });
 
 test('tres destinos, sin precarga', () => {
@@ -410,13 +406,13 @@ test('login_hint del último adulto, sin select_account', () => {
   assert.equal(HINT_KEY, 'casa.lastAdult');
   assert.equal(lastAdultHint(), '');
   assert.deepEqual(googleParams(), {});
-  rememberAdult('');
-  assert.equal(lastAdultHint(), '');
-  assert.deepEqual(googleParams(), { login_hint: '' });
-  rememberAdult('');
-  assert.equal(lastAdultHint(), '');
-  rememberAdult('');
-  assert.equal(lastAdultHint(), '');
+  rememberAdult('adulto@example.com');
+  assert.equal(lastAdultHint(), 'adulto@example.com');
+  assert.deepEqual(googleParams(), { login_hint: 'adulto@example.com' });
+  rememberAdult('otro@example.com');
+  assert.equal(lastAdultHint(), 'otro@example.com');
+  rememberAdult('no-es-correo');
+  assert.equal(lastAdultHint(), 'otro@example.com');
   assert.equal(Object.prototype.hasOwnProperty.call(googleParams(), 'prompt'), false);
   globalThis.window.navigator.standalone = true;
   assert.equal(isStandaloneDisplay(), true);
