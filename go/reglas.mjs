@@ -1,12 +1,14 @@
-import { weekdayIso } from './fechas.mjs';
+import { weekdayIso, isFestivo } from './fechas.mjs';
 
-function normTitle(value) {
-  return String(value || '')
+function fold(text) {
+  return String(text || '')
     .toLowerCase()
     .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+    .replace(/\p{Diacritic}/gu, '');
+}
+
+function normTitle(value) {
+  return fold(value).replace(/\s+/g, ' ').trim();
 }
 
 function inRange(ymd, from, until) {
@@ -15,24 +17,51 @@ function inRange(ymd, from, until) {
   return true;
 }
 
+function timeSinHora(time) {
+  return fold(time).trim() === '' || fold(time).trim() === 'sin hora';
+}
+
+export function skipAviso(title) {
+  const folded = fold(title);
+  let name = '';
+  if (folded.includes('ingles')) name = 'inglés';
+  else if (folded.includes('futbol')) name = 'fútbol';
+  else if (folded.includes('natacion')) name = 'natación';
+  else {
+    const word = String(title || '').trim().split(/\s+/)[0];
+    name = word ? word.toLowerCase() : '';
+  }
+  return name ? `hoy no hay ${name}` : '';
+}
+
 export function eventsFromReglas(payload, ymd) {
   if (!payload || payload.schema_version !== 1 || payload.timezone !== 'Europe/Madrid') return [];
   if (typeof ymd !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return [];
   const wd = weekdayIso(ymd);
   const list = payload.extraescolares;
   if (!Array.isArray(list) || wd == null) return [];
+  if (isFestivo(ymd)) return [];
   const out = [];
   for (const item of list) {
     if (!item || typeof item !== 'object') continue;
     if (typeof item.title !== 'string' || !item.title.trim()) continue;
-    if (typeof item.time !== 'string' || !item.time.trim()) continue;
+    if (item.time != null && typeof item.time !== 'string') continue;
     if (!Array.isArray(item.weekdays) || !item.weekdays.includes(wd)) continue;
     if (!inRange(ymd, item.from, item.until)) continue;
+    const title = item.title.trim();
+    const timeRaw = typeof item.time === 'string' ? item.time.trim() : '';
     const skip = item.skip;
-    if (Array.isArray(skip) && skip.includes(ymd)) continue;
+    if (Array.isArray(skip) && skip.includes(ymd)) {
+      const aviso = skipAviso(title);
+      if (aviso) {
+        out.push({ time: '', title: aviso, location: '', skipOf: title });
+      }
+      continue;
+    }
+    const noClock = timeSinHora(timeRaw);
     const event = {
-      time: item.end ? `${item.time}–${item.end}` : item.time,
-      title: item.title.trim(),
+      time: noClock ? '' : (item.end ? `${timeRaw}–${item.end}` : timeRaw),
+      title,
       location: typeof item.location === 'string' ? item.location : '',
     };
     out.push(event);
@@ -41,12 +70,17 @@ export function eventsFromReglas(payload, ymd) {
 }
 
 export function mergeEvents(fixed, calendar) {
+  const skipOf = new Set();
+  for (const event of fixed || []) {
+    if (event && event.skipOf) skipOf.add(normTitle(event.skipOf));
+  }
   const out = [];
   const seen = new Set();
   for (const event of [...(calendar || []), ...(fixed || [])]) {
     if (!event || typeof event.title !== 'string') continue;
     const key = normTitle(event.title);
     if (!key || seen.has(key)) continue;
+    if (skipOf.has(key) && !event.skipOf) continue;
     seen.add(key);
     out.push({
       time: event.time || '',

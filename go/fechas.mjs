@@ -1,4 +1,14 @@
 export const ZONE = 'Europe/Madrid';
+export const FESTIVOS = new Set(['2026-10-12']);
+
+export function isFestivo(ymd) {
+  return typeof ymd === 'string' && FESTIVOS.has(ymd);
+}
+
+export function isLaborable(ymd) {
+  const wd = weekdayIso(ymd);
+  return wd != null && wd <= 5 && !isFestivo(ymd);
+}
 
 export function weekdayIso(ymd) {
   if (typeof ymd !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return null;

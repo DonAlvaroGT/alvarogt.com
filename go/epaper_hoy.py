@@ -29,6 +29,7 @@ TIEMPO_URL = (
 TIEMPO_FALTA = "Previsión no disponible."
 HHMM = re.compile(r"^(\d{1,2}):(\d{2})")
 YMD = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+FESTIVOS = frozenset({"2026-10-12"})
 SCOPES = ("https://www.googleapis.com/auth/datastore", "https://www.googleapis.com/auth/cloud-platform")
 SPORT_MIN = 10 * 60
 SPORT_MAX = 22 * 60 + 30
@@ -56,14 +57,18 @@ def weekday_iso(ymd: str) -> int | None:
     return datetime(y, m, d).isoweekday()
 
 
+def festivo(ymd: str) -> bool:
+    return bool(ymd) and ymd in FESTIVOS
+
+
 def laborable(ymd: str) -> bool:
     wd = weekday_iso(ymd)
-    return wd is not None and wd <= 5
+    return wd is not None and wd <= 5 and not festivo(ymd)
 
 
 def nacho_ropa(ymd: str) -> str:
     wd = weekday_iso(ymd)
-    if wd is None or wd >= 6:
+    if wd is None or wd >= 6 or festivo(ymd):
         return ""
     if wd in (2, 3):
         return "chándal"
@@ -84,6 +89,10 @@ def fold(text: str) -> str:
 
 def norm_title(text: str) -> str:
     return re.sub(r"\s+", " ", fold(text).strip())
+
+
+def time_sin_hora(time: str) -> bool:
+    return fold(str(time or "")).strip() in ("", "sin hora")
 
 
 def skip_aviso(title: str) -> str:
@@ -109,6 +118,8 @@ def events_from_reglas(payload: dict | None, ymd: str) -> list[dict]:
     items = payload.get("extraescolares")
     if not isinstance(items, list) or wd is None:
         return []
+    if festivo(ymd):
+        return []
     out: list[dict] = []
     for item in items:
         if not isinstance(item, dict):
@@ -116,7 +127,7 @@ def events_from_reglas(payload: dict | None, ymd: str) -> list[dict]:
         title = str(item.get("title") or "").strip()
         time = str(item.get("time") or "").strip()
         days = item.get("weekdays")
-        if not title or not time or not isinstance(days, list) or wd not in days:
+        if not title or not isinstance(days, list) or wd not in days:
             continue
         start = item.get("from")
         until = item.get("until")
@@ -130,11 +141,18 @@ def events_from_reglas(payload: dict | None, ymd: str) -> list[dict]:
             if aviso:
                 out.append({"title": aviso, "_start": time, "_skip_aviso": True, "_skip_of": title})
             continue
+        loc = item.get("location")
+        loc_s = loc.strip() if isinstance(loc, str) and loc.strip() else ""
+        if time_sin_hora(time):
+            row = {"title": title, "_start": ""}
+            if loc_s:
+                row["location"] = loc_s
+            out.append(row)
+            continue
         end = str(item.get("end") or "").strip()
         row = {"time": f"{time}–{end}" if end else time, "title": title, "_start": time}
-        loc = item.get("location")
-        if isinstance(loc, str) and loc.strip():
-            row["location"] = loc.strip()
+        if loc_s:
+            row["location"] = loc_s
         out.append(row)
     out.sort(key=lambda e: e["_start"])
     return out
@@ -151,6 +169,7 @@ def split_extraescolares(rows: list[dict]) -> tuple[list[dict], list[dict]]:
             tarde.append(clean)
             continue
         if mins is None:
+            manana.append(clean)
             continue
         manana.append(clean)
         if mins >= MANANA_ANTES:
@@ -913,6 +932,7 @@ def build_hoy(
     deportes = sports_lines(sports_day, sports_week, ymd)
     deporte = sports_pick_line(sports_events_for_day(sports_day, sports_week, ymd))
     es_laborable = laborable(ymd)
+    es_festivo = festivo(ymd)
     stamp = (actualizado or "").strip()
     ropa = nacho_ropa(ymd)
     ropa_tarde = nacho_ropa(manana_ymd) if manana_ymd else ""
@@ -954,6 +974,7 @@ def build_hoy(
         "fecha": ymd,
         "timezone": ZONE,
         "laborable": es_laborable,
+        "festivo": es_festivo,
         "actualizado": stamp,
         "viaje_texto": viaje_txt,
         "viaje_hoy": viaje_hoy,

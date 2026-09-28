@@ -100,6 +100,8 @@ class GoClientAuthHtmlTests(unittest.TestCase):
         self.assertIn('class="comedor"', self.html)
         self.assertIn("Sin menú de comedor", self.html)
         self.assertIn("Nacho:", self.html)
+        self.assertIn("Festivo", self.html)
+        self.assertIn("isFestivo", self.html)
         self.assertIn("casa_json", self.html)
         self.assertNotIn("fetch('data.json'", self.html)
         self.assertNotIn("fetch('sports.json'", self.html)

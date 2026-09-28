@@ -9,6 +9,8 @@ from epaper_hoy import (
     TIEMPO_FALTA,
     build_hoy,
     events_from_reglas,
+    festivo,
+    laborable,
     lluvia_line,
     nacho_ropa,
     rest_url_redacted,
@@ -419,6 +421,74 @@ class EpaperHoyTests(unittest.TestCase):
         titles_mar = [e["title"] for e in mar["tarde"]["extraescolares"]]
         self.assertEqual(titles_mar, ["hoy no hay inglés"])
         self.assertNotIn("time", mar["tarde"]["extraescolares"][0])
+
+    def test_logopeda_sin_hora_pinta_titulo(self):
+        reglas = {
+            "schema_version": 1,
+            "timezone": "Europe/Madrid",
+            "extraescolares": [
+                {
+                    "id": "logopeda-nacho",
+                    "title": "Logopeda Nacho",
+                    "time": "sin hora",
+                    "weekdays": [4],
+                    "from": "2026-10-01",
+                    "until": "2026-10-01",
+                }
+            ],
+        }
+        rows = events_from_reglas(reglas, "2026-10-01")
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["title"], "Logopeda Nacho")
+        self.assertNotIn("time", rows[0])
+        vacio = {
+            "schema_version": 1,
+            "timezone": "Europe/Madrid",
+            "extraescolares": [{**reglas["extraescolares"][0], "time": ""}],
+        }
+        self.assertEqual(events_from_reglas(vacio, "2026-10-01")[0]["title"], "Logopeda Nacho")
+        self.assertNotIn("time", events_from_reglas(vacio, "2026-10-01")[0])
+        jue = doc("2026-10-01", reglas=reglas, calendario=[])
+        titles_m = [e["title"] for e in jue["manana"]["extraescolares"]]
+        titles_t = [e["title"] for e in jue["tarde"]["extraescolares"]]
+        self.assertEqual(titles_m, ["Logopeda Nacho"])
+        self.assertNotIn("time", jue["manana"]["extraescolares"][0])
+        self.assertNotIn("Logopeda Nacho", titles_t)
+        self.assertEqual(events_from_reglas(reglas, "2026-10-08"), [])
+        self.assertEqual(events_from_reglas(reglas, "2026-09-24"), [])
+
+    def test_festivo_12_oct_sin_menu_ni_extras(self):
+        self.assertTrue(festivo("2026-10-12"))
+        self.assertFalse(laborable("2026-10-12"))
+        self.assertTrue(laborable("2026-10-13"))
+        self.assertFalse(festivo("2026-10-13"))
+        self.assertEqual(nacho_ropa("2026-10-12"), "")
+        reglas = {
+            "schema_version": 1,
+            "timezone": "Europe/Madrid",
+            "extraescolares": [
+                {"id": "futbol-nacho", "title": "Fútbol Nacho", "time": "16:30", "weekdays": [1, 3], "from": "2026-09-21"},
+            ],
+        }
+        self.assertEqual(events_from_reglas(reglas, "2026-10-12"), [])
+        inventado = {
+            "schema_version": 1,
+            "timezone": "Europe/Madrid",
+            "dias": {"2026-10-12": {"platos": ["paella inventada", "filete"]}},
+        }
+        payload = doc("2026-10-12", reglas=reglas, calendario=[], comedor=inventado)
+        self.assertFalse(payload["laborable"])
+        self.assertTrue(payload["festivo"])
+        self.assertEqual(payload["manana"]["comedor"], "")
+        self.assertEqual(payload["manana"]["extraescolares"], [])
+        self.assertEqual(payload["tarde"]["extraescolares"], [])
+        self.assertEqual(payload["manana"]["nacho_ropa"], "")
+        blob = json.dumps(payload, ensure_ascii=False)
+        self.assertNotIn("paella", blob)
+        self.assertNotIn("Fútbol Nacho", blob)
+        self.assertNotIn("filete", blob)
+        vacio = doc("2026-10-12", reglas=reglas, calendario=[], comedor=COMEDOR)
+        self.assertEqual(vacio["manana"]["comedor"], "")
 
     def test_viaje_hoy_y_manana_no_lejano(self):
         viajes = {
