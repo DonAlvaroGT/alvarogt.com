@@ -15,6 +15,8 @@ assert.match(html, /tablon-build:/);
 assert.match(html, /if\(embedded\)return/);
 assert.match(html, /id="shell"/);
 assert.match(html, /<title>Tablón</);
+assert.doesNotMatch(html, /familia/);
+assert.match(html, /houseName/);
 assert.doesNotMatch(html, /@gmail\.com/);
 assert.doesNotMatch(html, /alvarogt@alvarogt\.com/);
 assert.doesNotMatch(html, /value="[^"]+@/);

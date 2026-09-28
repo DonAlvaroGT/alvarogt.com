@@ -11,6 +11,9 @@ MANIFEST = json.loads((ROOT / "manifest.json").read_text(encoding="utf-8"))
 class CasaShellTests(unittest.TestCase):
     def test_gate_copy_and_no_iframe_until_touch(self):
         self.assertIn('id="gate"', HTML)
+        self.assertIn('<div class="kicker">Casa</div>', HTML)
+        self.assertNotIn("familia", HTML)
+        self.assertNotIn("familia", JS)
         self.assertRegex(HTML, r'id="shell"[^>]*hidden')
         self.assertIn('id="scroller"', HTML)
         self.assertNotRegex(HTML, r"<iframe\b")
