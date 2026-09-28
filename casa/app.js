@@ -1,4 +1,3 @@
-export const ALLOWED = ['agarciatimon@gmail.com', 'luzolivas@gmail.com'];
 export const VIEWS = { go: '/go/', tablon: '/tablon/', viajes: '/viajes/' };
 export const HOSTS = [
   'localhost',
@@ -14,7 +13,7 @@ export const TAB_NAMES = ['go', 'tablon', 'viajes'];
 const TITLES = { go: 'Go', tablon: 'Tablón', viajes: 'Viajes' };
 
 export function isAdult(email) {
-  return ALLOWED.includes(String(email || '').toLowerCase());
+  return String(email || '').includes('@');
 }
 
 export function srcFor(name) {
@@ -416,27 +415,42 @@ export function boot() {
 async function setupGoogle(setStatus, markLogin, wasLogin, clearLogin) {
   try {
     const config = await loadFirebaseConfig();
-    const [{ initializeApp }, auth] = await Promise.all([
+    const [{ initializeApp }, auth, firestore] = await Promise.all([
       import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js'),
-      import('https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js')
+      import('https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js'),
+      import('https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js')
     ]);
     const app = initializeApp(config);
     const service = auth.getAuth(app);
     await auth.setPersistence(service, auth.browserLocalPersistence);
+    const db = firestore.getFirestore(app);
+    let casaOk = false;
     window.__casaAuth = {
       email: () => String((service.currentUser && service.currentUser.email) || '').toLowerCase(),
-      idToken: async () => (service.currentUser ? service.currentUser.getIdToken() : null)
+      idToken: async () => (service.currentUser ? service.currentUser.getIdToken() : null),
+      ok: () => casaOk
     };
     const provider = new auth.GoogleAuthProvider();
 
-    const enter = (user) => {
-      if (isAdult(user.email)) {
+    const houseAllowed = async () => {
+      try {
+        await firestore.getDoc(firestore.doc(db, 'casa_json', 'go_data'));
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    const enter = async (user) => {
+      if (await houseAllowed()) {
+        casaOk = true;
         clearLogin();
         rememberAdult(user.email);
         setStatus(user.displayName || user.email);
         showShell();
         return;
       }
+      casaOk = false;
       setStatus('Cuenta no autorizada');
       showGate();
       if (wasLogin()) {
@@ -452,6 +466,7 @@ async function setupGoogle(setStatus, markLogin, wasLogin, clearLogin) {
         expireTimer = 0;
       }
       if (!user) {
+        casaOk = false;
         if (liveShell()) {
           expireTimer = setTimeout(() => {
             expireTimer = 0;
@@ -466,7 +481,7 @@ async function setupGoogle(setStatus, markLogin, wasLogin, clearLogin) {
         return;
       }
       hideExpiredOverlay();
-      enter(user);
+      void enter(user);
     });
 
     try { await auth.getRedirectResult(service); } catch (e) {

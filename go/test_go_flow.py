@@ -66,9 +66,9 @@ class GoClientAuthHtmlTests(unittest.TestCase):
         self.assertIn("firebase-auth.js", self.html)
         self.assertIn("firebase-firestore.js", self.html)
         self.assertIn("select_account", self.html)
-        self.assertIn("'agarciatimon@gmail.com'", self.html)
-        self.assertIn("'luzolivas@gmail.com'", self.html)
-        self.assertNotIn("agustingarciatimon@gmail.com", self.html)
+        self.assertNotIn("@gmail.com", self.html)
+        self.assertIn("houseAllowed", self.html)
+        self.assertIn("parentOk", self.html)
 
     def test_data_from_firestore_after_start_app(self):
         self.assertIn("async function startApp()", self.html)
@@ -111,7 +111,7 @@ class GoClientAuthHtmlTests(unittest.TestCase):
         self.assertNotIn("new Date(sportsData.comprobado)", self.html)
         self.assertNotIn("No hay agenda deportiva publicada", self.html)
         self.assertIn("html.embedded", self.html)
-        self.assertIn("parentAdult", self.html)
+        self.assertIn("parentOk", self.html)
         self.assertIn("__casaAuth", self.html)
         self.assertIn("frame-size", self.html)
         self.assertNotIn("sports-schema", self.html)

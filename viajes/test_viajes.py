@@ -7,7 +7,7 @@ HTML = (Path(__file__).resolve().parent / "index.html").read_text(encoding="utf-
 class ViajesEmbeddedTests(unittest.TestCase):
     def test_embedded_hides_salir_and_inherits_casa(self):
         self.assertIn("html.embedded", HTML)
-        self.assertIn("parentAdult", HTML)
+        self.assertIn("parentOk", HTML)
         self.assertIn("__casaAuth", HTML)
         self.assertIn("enterFromParent", HTML)
         self.assertIn("parentIdToken", HTML)
@@ -15,8 +15,7 @@ class ViajesEmbeddedTests(unittest.TestCase):
         self.assertIn(">Salir</button>", HTML)
         self.assertIn("html.embedded .access-row", HTML)
         self.assertIn("Continuar con Google", HTML)
-        self.assertIn("'isabelgarciatimon@gmail.com'", HTML)
-        self.assertIn("'agarciatimon@gmail.com'", HTML)
+        self.assertNotIn("@gmail.com", HTML)
         self.assertIn("viajes-build:", HTML)
         self.assertIn('html[data-viajes-vista="hoy"]', HTML)
         self.assertIn("#clocks", HTML)
@@ -51,13 +50,12 @@ class ViajesEmbeddedTests(unittest.TestCase):
         self.assertIn("https?:\\/\\/\\S+", HTML)
         self.assertNotIn("run.app", HTML)
 
-    def test_paleta_lucita_distinta_garcia_timon(self):
-        self.assertIn("'Lucita y Álvaro': '#f7d3b0'", HTML)
-        self.assertIn("'Lucita y Álvaro': '#c45c26'", HTML)
-        self.assertIn("'García Timón': '#e4d0dc'", HTML)
-        self.assertIn("'García Timón': '#8b4a6b'", HTML)
-        self.assertNotEqual("#f7d3b0", "#e4d0dc")
-        self.assertIn("'Lucita y Álvaro', 'García Timón'", HTML)
+    def test_paleta_sale_del_json(self):
+        self.assertIn("function quienPalette", HTML)
+        self.assertIn("data.quien", HTML)
+        self.assertNotIn("const QUIEN_ORDER", HTML)
+        self.assertNotIn("const QUIEN_COLOR", HTML)
+        self.assertNotIn("const QUIEN_DOT", HTML)
 
     def test_render_months_after_load(self):
         start = HTML.index("async function startApp()")

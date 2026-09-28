@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Viajes · Álvaro GT</title>
-  <!-- viajes-build: 20260926b -->
+  <!-- viajes-build: 20260928c -->
   <style>
     :root {
       color-scheme: light;
@@ -116,6 +116,7 @@
     }
     html.embedded .access-row { display: none; }
     html.embedded #gate { min-height: 0; padding: 28px 16px; }
+    body:not(.in-session) .jump { display: none; }
     html[data-viajes-vista="hoy"] #clocks { display: none; }
     html[data-viajes-vista="hoy"] article.day.hoy { padding: 28px 26px; }
     html[data-viajes-vista="hoy"] article.day.manana { padding: 14px 16px; }
@@ -144,7 +145,7 @@
     </div>
   </header>
 
-  <section id="gate" class="wrap" hidden>
+  <section id="gate" class="wrap">
     <div>
       <p class="eyebrow">Casa · Viajes</p>
       <h2>Entra con Google</h2>
@@ -174,14 +175,6 @@
   </div>
 
 <script type="module">
-const allowed = [
-  'agarciatimon@gmail.com',
-  'luzolivas@gmail.com',
-  'isabelgarciatimon@gmail.com',
-  'garciatimon@gmail.com',
-  'agustingarciayperez@gmail.com',
-  'agustingarciatimon@gmail.com'
-];
 const embedded = (() => { try { return window.parent !== window && window.parent.location.origin === location.origin; } catch { return false; } })();
 if (embedded) document.documentElement.classList.add('embedded');
 const prod = ['alvarogt.com', 'www.alvarogt.com'].includes(location.hostname);
@@ -626,21 +619,14 @@ async function renderTrips() {
   pastList.innerHTML = (await Promise.all(hechos.map(v => card(v, true)))).join('');
 }
 
-const QUIEN_ORDER = ['Olivas Holgado', 'Maribel y Agustín', 'Gugus', 'Lucita y Álvaro', 'García Timón'];
-const QUIEN_COLOR = {
-  'Olivas Holgado': '#c5d8eb',
-  'Maribel y Agustín': '#f0e0c0',
-  'Gugus': '#cde8d8',
-  'Lucita y Álvaro': '#f7d3b0',
-  'García Timón': '#e4d0dc'
-};
-const QUIEN_DOT = {
-  'Olivas Holgado': '#3a6b9e',
-  'Maribel y Agustín': '#ad7b27',
-  'Gugus': '#2f7d5a',
-  'Lucita y Álvaro': '#c45c26',
-  'García Timón': '#8b4a6b'
-};
+function quienPalette() {
+  const q = (data && data.quien && typeof data.quien === 'object') ? data.quien : {};
+  return {
+    order: Array.isArray(q.order) ? q.order : [],
+    color: (q.color && typeof q.color === 'object') ? q.color : {},
+    dot: (q.dot && typeof q.dot === 'object') ? q.dot : {}
+  };
+}
 function addMonth(y, m, n) {
   const d = new Date(Date.UTC(y, m - 1 + n, 1));
   return {y: d.getUTCFullYear(), m: d.getUTCMonth() + 1};
@@ -684,15 +670,16 @@ function renderMonths() {
   const [ty, tm] = realToday.split('-').map(Number);
   const months = [addMonth(ty, tm, monthOffset), addMonth(ty, tm, monthOffset + 1)];
   const heading = monthPairTitle(monthOffset);
+  const pal = quienPalette();
   const names = [...new Set((data.viajes || []).map(v => v.quien).filter(Boolean))];
   names.sort((a, b) => {
-    const ia = QUIEN_ORDER.indexOf(a), ib = QUIEN_ORDER.indexOf(b);
+    const ia = pal.order.indexOf(a), ib = pal.order.indexOf(b);
     if (ia === -1 && ib === -1) return a.localeCompare(b, 'es');
     if (ia === -1) return 1;
     if (ib === -1) return -1;
     return ia - ib;
   });
-  const legend = names.map(n => `<span><i style="background:${esc(quienColor(n, QUIEN_DOT))}"></i>${esc(n)}</span>`).join('');
+  const legend = names.map(n => `<span><i style="background:${esc(quienColor(n, pal.dot))}"></i>${esc(n)}</span>`).join('');
   const dow = ['L','M','X','J','V','S','D'].map(d => `<div class="cal-dow">${d}</div>`).join('');
   const grids = months.map(({y, m}) => {
     const monthName = new Intl.DateTimeFormat('es-ES', {month:'long', timeZone:'UTC'}).format(new Date(Date.UTC(y, m - 1, 1)));
@@ -709,9 +696,9 @@ function renderMonths() {
       let tip = '';
       if (hits.length === 1) {
         cls.push('marked');
-        style = ` style="--mark:${esc(quienColor(hits[0].quien, QUIEN_COLOR))}"`;
+        style = ` style="--mark:${esc(quienColor(hits[0].quien, pal.color))}"`;
       } else if (hits.length > 1) {
-        dots = `<span class="cal-dots">${hits.map(h => `<i style="background:${esc(quienColor(h.quien, QUIEN_DOT))}"></i>`).join('')}</span>`;
+        dots = `<span class="cal-dots">${hits.map(h => `<i style="background:${esc(quienColor(h.quien, pal.dot))}"></i>`).join('')}</span>`;
         tip = ` title="${esc(hits.map(h => `${h.quien} · ${h.titulo}`).join('\n'))}"`;
       }
       return `<div class="${cls.join(' ')}" data-day="${esc(key)}"${style}${tip}><span>${c.d}</span>${dots}</div>`;
@@ -730,7 +717,7 @@ async function parentIdToken() {
   if (!embedded) return null;
   try { return await window.parent.__casaAuth?.idToken?.() || null; } catch { return null; }
 }
-function parentAdult() { return allowed.includes(parentEmail()); }
+function parentOk() { if (!embedded) return false; try { return !!window.parent.__casaAuth?.ok?.(); } catch { return false; } }
 async function casaDoc(id) {
   if (fsApi && db) {
     try {
@@ -757,6 +744,7 @@ async function startApp() {
   const payload = await casaDoc('viajes');
   if (payload.schema_version !== 1 || !Array.isArray(payload.viajes)) throw new Error('schema');
   data = payload;
+  document.body.classList.add('in-session');
   document.querySelector('#app').hidden = false;
   chosenDate = fechaParam();
   syncJump();
@@ -772,6 +760,7 @@ const signIn = document.querySelector('#google-sign-in');
 const signOut = document.querySelector('#google-sign-out');
 const setStatus = text => { status.textContent = text; };
 const showGate = () => {
+  document.body.classList.remove('in-session');
   document.querySelector('#gate').hidden = false;
   document.querySelector('#app').hidden = true;
   started = false;
@@ -780,8 +769,8 @@ const showGate = () => {
 };
 const failLoad = () => {
   started = false;
-  document.querySelector('#app').hidden = false;
-  document.querySelector('#trip-list').innerHTML = '<p class="error">No se ha podido cargar los viajes.</p>';
+  showGate();
+  setStatus('No se ha podido cargar los viajes.');
 };
 async function setupGoogle() {
   if (!['localhost', '127.0.0.1', 'alvarogt.com', 'www.alvarogt.com', 'tablongo.web.app', 'tablongo.firebaseapp.com'].includes(location.hostname)) {
@@ -804,9 +793,11 @@ async function setupGoogle() {
     db = firestore.getFirestore(app);
     const provider = new auth.GoogleAuthProvider();
     provider.setCustomParameters({prompt: 'select_account'});
-    const enter = user => {
-      const email = (user.email || '').toLowerCase();
-      if (!allowed.includes(email)) {
+    const viajesAllowed = async () => {
+      try { await firestore.getDoc(firestore.doc(db, 'casa_json', 'viajes')); return true; } catch { return false; }
+    };
+    const enter = async user => {
+      if (!(await viajesAllowed())) {
         auth.signOut(service);
         setStatus('Cuenta no autorizada');
         showGate();
@@ -816,14 +807,16 @@ async function setupGoogle() {
       signIn.hidden = true;
       signOut.hidden = embedded;
       document.querySelector('#gate').hidden = true;
+      document.body.classList.add('in-session');
       startApp().catch(failLoad);
     };
     const enterFromParent = () => {
-      if (!parentAdult()) return false;
+      if (!parentOk()) return false;
       setStatus(parentEmail());
       signIn.hidden = true;
       signOut.hidden = true;
       document.querySelector('#gate').hidden = true;
+      document.body.classList.add('in-session');
       startApp().catch(failLoad);
       return true;
     };
@@ -834,7 +827,7 @@ async function setupGoogle() {
         showGate();
         return;
       }
-      enter(user);
+      void enter(user);
     });
     if (auth.authStateReady) await auth.authStateReady(service);
     if (!service.currentUser) enterFromParent();
@@ -852,7 +845,7 @@ async function setupGoogle() {
     document.querySelector('#gate-sign-in').addEventListener('click', login);
     signOut.addEventListener('click', () => auth.signOut(service));
   } catch (e) {
-    if (parentAdult()) { startApp().catch(failLoad); return; }
+    if (parentOk()) { startApp().catch(failLoad); return; }
     setStatus('Acceso · configuración no disponible');
     showGate();
   }

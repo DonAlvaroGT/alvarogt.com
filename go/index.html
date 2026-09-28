@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>García Olivas</title>
-  <!-- go-build: 20260928a -->
+  <!-- go-build: 20260928c -->
   <style>
     :root {
       color-scheme: light;
@@ -172,7 +172,6 @@
   import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20260928a';
   import { ymdInZone, nextYmd, weekYmds, nextWeekYmds, isFestivo } from './fechas.mjs?v=20260928a';
   import { lastVista, rememberVista, datesForVista, dayLabel, headingParts } from './vista.mjs?v=20260928a';
-  const allowed=['agarciatimon@gmail.com','luzolivas@gmail.com'];
   const embedded=(()=>{try{return window.parent!==window&&window.parent.location.origin===location.origin}catch{return false}})();
   if(embedded)document.documentElement.classList.add('embedded');
   const zone='Europe/Madrid';
@@ -189,7 +188,7 @@
     if(!embedded)return null;
     try{return await window.parent.__casaAuth?.idToken?.()||null}catch{return null}
   }
-  function parentAdult(){return allowed.includes(parentEmail())}
+  function parentOk(){if(!embedded)return false;try{return !!window.parent.__casaAuth?.ok?.()}catch{return false}}
   function notifyCasaHeight(){
     if(!embedded)return;
     const h=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight,400);
@@ -332,9 +331,9 @@
       db=firestore.getFirestore(app);
       const provider=new auth.GoogleAuthProvider();
       provider.setCustomParameters({prompt:'select_account'});
-      const enter=user=>{
-        const email=(user.email||'').toLowerCase();
-        if(!allowed.includes(email)){
+      const houseAllowed=async()=>{try{await firestore.getDoc(firestore.doc(db,'casa_json','go_data'));return true}catch{return false}};
+      const enter=async user=>{
+        if(!(await houseAllowed())){
           auth.signOut(service);
           setStatus('Cuenta no autorizada');
           showGate();
@@ -346,7 +345,7 @@
         startApp();
       };
       const enterFromParent=()=>{
-        if(!parentAdult())return false;
+        if(!parentOk())return false;
         setStatus(parentEmail());
         signIn.hidden=true;
         signOut.hidden=true;
@@ -360,7 +359,7 @@
           showGate();
           return;
         }
-        enter(user);
+        void enter(user);
       });
       if(auth.authStateReady)await auth.authStateReady(service);
       if(!service.currentUser)enterFromParent();
@@ -388,7 +387,7 @@
       document.querySelector('#gate-sign-in').addEventListener('click',login);
       signOut.addEventListener('click',()=>auth.signOut(service));
     }catch(e){
-      if(parentAdult()){startApp();return}
+      if(parentOk()){startApp();return}
       setStatus('Acceso · configuración no disponible');
       showGate();
     }
