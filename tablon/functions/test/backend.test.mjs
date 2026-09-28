@@ -4,6 +4,7 @@ import {
   createPeriodicInstances,
   resolveTrustedActor,
 } from '../src/pure.mjs';
+import { allowBoardToken, boardCorsOrigin } from '../src/board-gate.mjs';
 import { normalizeWeeklyDays, madridWeekday, frequencyPeriods, resolveBoardPeriod, resolveCommandPeriod, madridCalendarDate, shiftCalendarDate } from '../src/backend.contract.mjs';
 
 const adultAuth = { uid: 'adult-1', token: { email: 'agarciatimon@gmail.com', email_verified: true } };
@@ -58,5 +59,14 @@ const yInst = { id: 'task-1:2026-09-14', taskId: 'task-1', period: '2026-09-14',
 const yVal = executeCommand({ action: 'validate_task', actor: adultActor, task, instance: yInst, eventId: 'evt-yesterday', store: new Map() });
 assert.equal(yVal.award.awardId, 'task-1:2026-09-14:Nacho');
 assert.notEqual(yVal.award.awardId, 'task-1:2026-09-07:Nacho');
+
+assert.equal(allowBoardToken({ email: 'agarciatimon@gmail.com', email_verified: true }), true);
+assert.equal(allowBoardToken({ email: 'luzolivas@gmail.com', email_verified: true }), true);
+assert.equal(allowBoardToken({ email: 'agarciatimon@gmail.com', email_verified: false }), false);
+assert.equal(allowBoardToken({ childRole: 'supervised' }), true);
+assert.equal(allowBoardToken({ email: 'otro@example.com', email_verified: true }), false);
+assert.equal(allowBoardToken(null), false);
+assert.equal(boardCorsOrigin('https://alvarogt.com'), 'https://alvarogt.com');
+assert.equal(boardCorsOrigin('https://evil.example'), '');
 
 console.log('functions backend tests: ok');

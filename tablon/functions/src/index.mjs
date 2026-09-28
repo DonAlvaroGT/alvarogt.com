@@ -1,15 +1,18 @@
-import { onCall, HttpsError } from 'firebase-functions/v2/https';
+import { onCall, onRequest, HttpsError } from 'firebase-functions/v2/https';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { commandFor, applyCommand, awardPoints, createInstanceId, frequencyPeriods, canonicalInstanceStatus, resolveCommandPeriod, madridCalendarDate, periodKeyForTask } from './backend.contract.mjs';
+import { allowBoardToken, boardCorsOrigin } from './board-gate.mjs';
 
 if (!getApps().length) initializeApp();
 const auth = getAuth();
 const db = getFirestore();
 const ADULTS = new Set(['agarciatimon@gmail.com', 'luzolivas@gmail.com']);
-
 
 function isAdult(actor) { return actor.role === 'adult'; }
 
@@ -98,6 +101,46 @@ const CALLABLE_OPTIONS = {
   // exigiendo Firebase Auth y claims en actorFrom().
   invoker: 'public',
 };
+
+export const board = onRequest({
+  region: 'europe-west1',
+  cors: false,
+  invoker: 'public',
+}, async (req, res) => {
+  const allowOrigin = boardCorsOrigin(req.get('origin') || '');
+  if (allowOrigin) {
+    res.set('Access-Control-Allow-Origin', allowOrigin);
+    res.set('Vary', 'Origin');
+  }
+  res.set('Access-Control-Allow-Headers', 'Authorization');
+  res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  if (req.method === 'OPTIONS') {
+    res.status(204).send('');
+    return;
+  }
+  if (req.method !== 'GET') {
+    res.status(405).send('');
+    return;
+  }
+  const header = req.get('authorization') || '';
+  if (!header.startsWith('Bearer ')) {
+    res.status(401).send('Inicia sesión.');
+    return;
+  }
+  try {
+    const decoded = await auth.verifyIdToken(header.slice(7));
+    if (!allowBoardToken(decoded)) {
+      res.status(403).send('Cuenta no autorizada.');
+      return;
+    }
+    const source = readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'board.js'), 'utf8');
+    res.set('Content-Type', 'application/javascript; charset=utf-8');
+    res.set('Cache-Control', 'private, no-store');
+    res.status(200).send(source);
+  } catch {
+    res.status(401).send('Inicia sesión.');
+  }
+});
 
 export const childDone = onCall(CALLABLE_OPTIONS, request => command('child_done', request));
 export const validateTask = onCall(CALLABLE_OPTIONS, request => command('validate_task', request));
