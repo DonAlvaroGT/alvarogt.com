@@ -10,7 +10,15 @@ ROOT = Path(__file__).resolve().parent
 ZONE = "Europe/Madrid"
 EXPECTED = [
     {"id": "futbol-nacho", "title": "Fútbol Nacho", "time": "16:30", "weekdays": [1, 3], "from": "2026-09-21"},
-    {"id": "ingles-dom", "title": "Inglés con Dom", "time": "16:30", "weekdays": [4], "from": "2026-09-24"},
+    {"id": "ingles-dom", "title": "Inglés con Dom", "time": "16:30", "weekdays": [2], "from": "2026-09-22"},
+    {
+        "id": "logopeda-nacho",
+        "title": "Logopeda Nacho",
+        "time": "sin hora",
+        "weekdays": [4],
+        "from": "2026-10-01",
+        "until": "2026-10-01",
+    },
     {"id": "natacion-mollete", "title": "Natación Mollete", "time": "18:30", "end": "19:00", "weekdays": [3]},
 ]
 
@@ -19,7 +27,7 @@ def validate_reglas(payload: dict) -> dict:
     if payload.get("schema_version") != 1 or payload.get("timezone") != ZONE:
         raise ValueError("reglas-schema")
     items = payload.get("extraescolares")
-    if not isinstance(items, list) or len(items) != 3:
+    if not isinstance(items, list) or len(items) != 4:
         raise ValueError("reglas-schema")
     return payload
 
@@ -55,7 +63,7 @@ class ReglasSchemaTests(unittest.TestCase):
             self.skipTest("go/reglas.json no está en disco")
         payload = validate_reglas(json.loads(path.read_text(encoding="utf-8")))
         self.assertEqual(payload["extraescolares"], EXPECTED)
-        natacion = payload["extraescolares"][2]
+        natacion = payload["extraescolares"][3]
         self.assertEqual(natacion["time"], "18:30")
         self.assertEqual(natacion["end"], "19:00")
         self.assertNotEqual(natacion["time"], "18:00")

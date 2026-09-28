@@ -13,8 +13,16 @@
       "id": "ingles-dom",
       "title": "Inglés con Dom",
       "time": "16:30",
+      "weekdays": [2],
+      "from": "2026-09-22"
+    },
+    {
+      "id": "logopeda-nacho",
+      "title": "Logopeda Nacho",
+      "time": "sin hora",
       "weekdays": [4],
-      "from": "2026-09-24"
+      "from": "2026-10-01",
+      "until": "2026-10-01"
     },
     {
       "id": "natacion-mollete",
