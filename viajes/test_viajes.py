@@ -108,6 +108,30 @@ class ViajesEmbeddedTests(unittest.TestCase):
         self.assertIn("await casaDoc('viajes')", body)
         self.assertIn("mergeViajes(payload, await loadViajesCasa())", body)
 
+    def test_resumen_cronologico_y_marca_casa(self):
+        self.assertIn("function tripChrono", HTML)
+        self.assertIn("a.inicio", HTML)
+        self.assertIn("a.fin", HTML)
+        self.assertIn(".slice().sort(tripChrono)", HTML)
+        self.assertGreaterEqual(HTML.count(".slice().sort(tripChrono)"), 2)
+        self.assertIn('class="solo-casa"', HTML)
+        self.assertIn("solo casa", HTML)
+        start = HTML.index("async function renderTrips()")
+        end = HTML.index("function quienPalette()", start)
+        body = HTML[start:end]
+        self.assertIn("esPrivado(v)", body)
+        self.assertIn("casaMark", body)
+        self.assertIn("tripChrono", body)
+        self.assertLess(HTML.index("function tripChrono"), HTML.index("async function renderTrips()"))
+
+    def test_pie_intacto(self):
+        self.assertIn(
+            "Fuente de datos: viajes.json · Tiempo: Open-Meteo · Mapa: OpenStreetMap · Vuelos: Flightradar24 y FlightAware (enlaces, sin seguimiento en vivo).",
+            HTML,
+        )
+        self.assertIn("Creado por Álvaro GT y sus minions", HTML)
+        self.assertIn("viajes-build: 20260929d", HTML)
+
 
 class ViajesPrivadosTests(unittest.TestCase):
     root = Path(__file__).resolve().parent

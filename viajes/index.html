@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Viajes · Álvaro GT</title>
-  <!-- viajes-build: 20260929c -->
+  <!-- viajes-build: 20260929d -->
   <style>
     :root {
       color-scheme: light;
@@ -83,6 +83,7 @@
     .trips h2 { color: var(--navy); font: 400 clamp(2rem, 5vw, 3.4rem)/.95 Georgia, serif; margin: 0 0 18px; }
     .trip { background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow); padding: 20px 22px; margin: 0 0 12px; display: grid; grid-template-columns: 1.5fr .8fr; gap: 12px; }
     .trip h3 { color: var(--navy); font: 400 1.7rem/1.1 Georgia, serif; margin: 6px 0 8px; }
+    .solo-casa { color: var(--gold); font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-left: 8px; font-family: Inter, ui-sans-serif, system-ui, sans-serif; vertical-align: middle; }
     .count { color: var(--gold); font-variant-numeric: tabular-nums; font-weight: 700; }
     .live { color: #197a45; font-weight: 700; }
     .done { color: var(--ink-soft); }
@@ -543,10 +544,16 @@ async function renderDays() {
   }
 }
 
+function tripChrono(a, b) {
+  const ia = String(a && a.inicio || '');
+  const ib = String(b && b.inicio || '');
+  if (ia !== ib) return ia.localeCompare(ib);
+  return String(a && a.fin || '').localeCompare(String(b && b.fin || ''));
+}
 async function renderTrips() {
   const today = todayKey();
-  const abiertos = data.viajes.filter(v => today <= v.fin);
-  const hechos = data.viajes.filter(v => today > v.fin);
+  const abiertos = data.viajes.filter(v => today <= v.fin).slice().sort(tripChrono);
+  const hechos = data.viajes.filter(v => today > v.fin).slice().sort(tripChrono);
   const card = async (v, past) => {
     const cd = countdown(v, today);
     const place = covers(v.inicio, v.fin, today)
@@ -557,10 +564,11 @@ async function renderTrips() {
     const dates = new Intl.DateTimeFormat('es-ES', {day:'numeric', month:'short', timeZone: casa}).format(new Date(v.inicio + 'T12:00:00Z'))
       + ' – ' +
       new Intl.DateTimeFormat('es-ES', {day:'numeric', month:'short', timeZone: casa}).format(new Date(v.fin + 'T12:00:00Z'));
+    const casaMark = esPrivado(v) ? ' <span class="solo-casa">solo casa</span>' : '';
     return `<article class="trip">
       <div>
         <div class="eyebrow">${esc(dates)}</div>
-        <h3>${esc(v.titulo)}</h3>
+        <h3>${esc(v.titulo)}${casaMark}</h3>
         <p class="meta">${esc(v.quien)}</p>
         <p class="meta">${esc(cities)}</p>
         ${v.detalle ? `<p class="meta"><a href="${esc(v.detalle)}">Abrir detalle →</a></p>` : ''}
