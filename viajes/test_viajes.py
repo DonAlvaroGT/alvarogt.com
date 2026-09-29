@@ -95,9 +95,12 @@ class ViajesEmbeddedTests(unittest.TestCase):
         self.assertIn("function mergeViajes", HTML)
         self.assertIn("function mergeQuien", HTML)
         self.assertIn("function loadViajesCasa", HTML)
+        self.assertIn("function esPrivado", HTML)
         self.assertIn("casaDoc('viajes_casa')", HTML)
         self.assertIn("casaDoc('viajes')", HTML)
+        self.assertIn("pubTrips.filter(v => !esPrivado(v))", HTML)
         self.assertNotIn("Mari Luz", HTML)
+        self.assertNotIn("mariluz-vidal", HTML)
         self.assertNotIn("@gmail.com", HTML)
         start = HTML.index("async function startApp()")
         end = HTML.index("}", start)
@@ -129,6 +132,8 @@ class ViajesPrivadosTests(unittest.TestCase):
         put = (self.repo / "go" / "casa_put_json.py").read_text(encoding="utf-8")
         self.assertIn('"viajes/viajes.json": "viajes"', put)
         self.assertIn('"viajes/viajes_casa.json": "viajes_casa"', put)
+        self.assertIn("viajes.json tiene privado", put)
+        self.assertIn("cada viaje lleva privado true", put)
 
     def test_json_publico_sin_mari_luz(self):
         pub = (self.root / "viajes.json").read_text(encoding="utf-8")
@@ -145,23 +150,62 @@ class ViajesPrivadosTests(unittest.TestCase):
         self.assertNotIn("Mari Luz y Vidal", payload["quien"]["order"])
         self.assertNotIn("Mari Luz y Vidal", payload["quien"]["color"])
         self.assertNotIn("Mari Luz y Vidal", payload["quien"]["dot"])
+        self.assertFalse(any(v.get("privado") is True for v in payload["viajes"]))
+        self.assertFalse(any(v.get("visible") in ("casa", "privado") for v in payload["viajes"]))
 
-    def test_json_casa_solo_mari_luz(self):
+    def test_json_casa_flag_no_ids_hardcode(self):
         casa = json.loads((self.root / "viajes_casa.json").read_text(encoding="utf-8"))
         self.assertEqual(casa["schema_version"], 1)
-        ids = [v["id"] for v in casa["viajes"]]
-        self.assertEqual(set(ids), {"mariluz-vidal-malaga", "mariluz-vidal-larioja"})
+        self.assertTrue(casa["viajes"])
+        for v in casa["viajes"]:
+            self.assertTrue(v.get("privado") is True or v.get("visible") in ("casa", "privado"))
         self.assertEqual(casa["quien"]["order"], ["Mari Luz y Vidal"])
         self.assertIn("Mari Luz y Vidal", casa["quien"]["color"])
         self.assertIn("Mari Luz y Vidal", casa["quien"]["dot"])
-        for v in casa["viajes"]:
-            self.assertEqual(v["quien"], "Mari Luz y Vidal")
         malaga = next(v for v in casa["viajes"] if v["id"] == "mariluz-vidal-malaga")
         rioja = next(v for v in casa["viajes"] if v["id"] == "mariluz-vidal-larioja")
         self.assertEqual(malaga["inicio"], "2026-11-07")
         self.assertEqual(malaga["fin"], "2026-11-09")
+        self.assertTrue(malaga["privado"])
         self.assertEqual(rioja["inicio"], "2026-09-30")
         self.assertEqual(rioja["fin"], "2026-10-01")
+        self.assertTrue(rioja["privado"])
+
+    def test_split_por_flag_sin_ids(self):
+        from split_viajes import es_privado, split_doc
+
+        src = (self.root / "split_viajes.py").read_text(encoding="utf-8")
+        self.assertNotIn("mariluz", src)
+        self.assertNotIn("Mari Luz", src)
+        self.assertNotIn("larioja", src)
+        self.assertNotIn("malaga", src)
+        self.assertTrue(es_privado({"privado": True}))
+        self.assertTrue(es_privado({"visible": "casa"}))
+        self.assertFalse(es_privado({"id": "lisboa"}))
+        doc = {
+            "schema_version": 1,
+            "actualizado": "2026-09-29",
+            "fuente": "test",
+            "zona_casa": "Europe/Madrid",
+            "quien": {
+                "order": ["Lucita y Álvaro", "SoloCasa"],
+                "color": {"Lucita y Álvaro": "#f7d3b0", "SoloCasa": "#b7ddd8"},
+                "dot": {"Lucita y Álvaro": "#c45c26", "SoloCasa": "#1f6f68"},
+            },
+            "viajes": [
+                {"id": "publico-x", "quien": "Lucita y Álvaro", "titulo": "Lisboa"},
+                {"id": "futuro-privado", "privado": True, "quien": "SoloCasa", "titulo": "X"},
+                {"id": "futuro-visible", "visible": "casa", "quien": "SoloCasa", "titulo": "Y"},
+            ],
+        }
+        pub, casa = split_doc(doc)
+        self.assertEqual([v["id"] for v in pub["viajes"]], ["publico-x"])
+        self.assertEqual({v["id"] for v in casa["viajes"]}, {"futuro-privado", "futuro-visible"})
+        self.assertNotIn("SoloCasa", pub["quien"]["order"])
+        self.assertNotIn("SoloCasa", pub["quien"]["color"])
+        self.assertEqual(casa["quien"]["order"], ["SoloCasa"])
+        self.assertIn("Lucita y Álvaro", pub["quien"]["order"])
+        self.assertNotIn("Lucita y Álvaro", casa["quien"]["order"])
 
 
 if __name__ == "__main__":

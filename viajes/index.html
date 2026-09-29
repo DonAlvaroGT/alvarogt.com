@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Viajes · Álvaro GT</title>
-  <!-- viajes-build: 20260929b -->
+  <!-- viajes-build: 20260929c -->
   <style>
     :root {
       color-scheme: light;
@@ -606,12 +606,23 @@ function mergeQuien(a, b) {
     dot: Object.assign({}, qa.dot || {}, qb.dot || {})
   };
 }
+function esPrivado(v) {
+  return !!(v && (v.privado === true || v.visible === 'casa' || v.visible === 'privado'));
+}
 function mergeViajes(pub, casa) {
-  if (!casa || casa.schema_version !== 1 || !Array.isArray(casa.viajes)) return pub;
-  const seen = new Set((pub.viajes || []).map(v => v && v.id).filter(Boolean));
-  const extra = casa.viajes.filter(v => v && v.id && !seen.has(v.id));
+  const pubTrips = (pub.viajes || []).filter(v => v && v.id);
+  if (!casa || casa.schema_version !== 1 || !Array.isArray(casa.viajes)) {
+    return Object.assign({}, pub, { viajes: pubTrips.filter(v => !esPrivado(v)) });
+  }
+  const seen = new Set();
+  const viajes = [];
+  for (const v of pubTrips.concat(casa.viajes)) {
+    if (!v || !v.id || seen.has(v.id)) continue;
+    seen.add(v.id);
+    viajes.push(v);
+  }
   return Object.assign({}, pub, {
-    viajes: (pub.viajes || []).concat(extra),
+    viajes,
     quien: mergeQuien(pub.quien, casa.quien)
   });
 }
