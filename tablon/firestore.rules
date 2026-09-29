@@ -92,8 +92,16 @@ service cloud.firestore {
     match /events/{id} { allow read: if adult(); allow write: if false; }
     match /history/{id} { allow read: if adult(); allow write: if false; }
 
-    // GO (go_data, go_sports y el resto): solo las dos de casa.
-    // Viajes (casa_json/viajes): esas dos más las cuatro de lectura. Solo lectura.
+    // GO y el resto de casa_json: solo las dos de casa.
+    // Viajes público (casa_json/viajes): esas dos más las cuatro de lectura.
+    // Viajes de casa (casa_json/viajes_casa): solo las dos de casa. Write: Admin SDK.
+    function casaReader() {
+      return signedIn()
+        && request.auth.token.email in [
+          'agarciatimon@gmail.com',
+          'luzolivas@gmail.com'
+        ];
+    }
     function viajesReader() {
       return signedIn()
         && request.auth.token.email in [
@@ -107,12 +115,8 @@ service cloud.firestore {
     }
     match /casa_json/{id} {
       allow read: if (id == 'viajes' && viajesReader())
-        || (id != 'viajes'
-            && signedIn()
-            && request.auth.token.email in [
-              'agarciatimon@gmail.com',
-              'luzolivas@gmail.com'
-            ]);
+        || (id == 'viajes_casa' && casaReader())
+        || (id != 'viajes' && id != 'viajes_casa' && casaReader());
       allow write: if false;
     }
 

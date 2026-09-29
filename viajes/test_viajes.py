@@ -1,3 +1,4 @@
+import json
 import unittest
 from pathlib import Path
 
@@ -61,9 +62,9 @@ class ViajesEmbeddedTests(unittest.TestCase):
         start = HTML.index("async function startApp()")
         end = HTML.index("}", start)
         body = HTML[start:end]
-        self.assertIn("data = payload", body)
+        self.assertIn("data = mergeViajes(payload, await loadViajesCasa())", body)
         self.assertIn("renderMonths();", body)
-        self.assertLess(body.index("data = payload"), body.index("renderMonths();"))
+        self.assertLess(body.index("data = mergeViajes"), body.index("renderMonths();"))
 
     def test_month_calendar_keeps_grid_legend_nav(self):
         self.assertIn("while (cells.length < 42)", HTML)
@@ -89,6 +90,78 @@ class ViajesEmbeddedTests(unittest.TestCase):
         self.assertIn(".cal-day.trip { cursor: pointer; }", HTML)
         self.assertIn("scrollIntoView", HTML)
         self.assertLess(HTML.index("if (btn)"), HTML.index("closest('.cal-day')"))
+
+    def test_casa_merge_not_public_filter(self):
+        self.assertIn("function mergeViajes", HTML)
+        self.assertIn("function mergeQuien", HTML)
+        self.assertIn("function loadViajesCasa", HTML)
+        self.assertIn("casaDoc('viajes_casa')", HTML)
+        self.assertIn("casaDoc('viajes')", HTML)
+        self.assertNotIn("Mari Luz", HTML)
+        self.assertNotIn("@gmail.com", HTML)
+        start = HTML.index("async function startApp()")
+        end = HTML.index("}", start)
+        body = HTML[start:end]
+        self.assertIn("await casaDoc('viajes')", body)
+        self.assertIn("mergeViajes(payload, await loadViajesCasa())", body)
+
+
+class ViajesPrivadosTests(unittest.TestCase):
+    root = Path(__file__).resolve().parent
+    repo = root.parent
+
+    def test_rules_viajes_casa_solo_casa(self):
+        rules = (self.repo / "tablon" / "firestore.rules").read_text(encoding="utf-8")
+        self.assertIn("function casaReader()", rules)
+        self.assertIn("id == 'viajes_casa' && casaReader()", rules)
+        self.assertIn("id == 'viajes' && viajesReader()", rules)
+        self.assertIn("id != 'viajes' && id != 'viajes_casa' && casaReader()", rules)
+        self.assertIn("allow write: if false;", rules)
+        casa_block = rules[rules.index("function casaReader()") : rules.index("function viajesReader()")]
+        self.assertIn("agarciatimon@gmail.com", casa_block)
+        self.assertIn("luzolivas@gmail.com", casa_block)
+        self.assertNotIn("'isabelgarciatimon@gmail.com'", casa_block)
+        self.assertNotIn("'garciatimon@gmail.com'", casa_block)
+        self.assertNotIn("'agustingarciayperez@gmail.com'", casa_block)
+        self.assertNotIn("'agustingarciatimon@gmail.com'", casa_block)
+
+    def test_casa_put_both_docs(self):
+        put = (self.repo / "go" / "casa_put_json.py").read_text(encoding="utf-8")
+        self.assertIn('"viajes/viajes.json": "viajes"', put)
+        self.assertIn('"viajes/viajes_casa.json": "viajes_casa"', put)
+
+    def test_json_publico_sin_mari_luz(self):
+        pub = (self.root / "viajes.json").read_text(encoding="utf-8")
+        self.assertNotIn("Mari Luz", pub)
+        self.assertNotIn("mariluz-vidal", pub)
+        self.assertNotIn("2026-09-30", pub)
+        self.assertNotIn("2026-11-07", pub)
+        self.assertNotIn("La Rioja", pub)
+        payload = json.loads(pub)
+        self.assertEqual(payload["schema_version"], 1)
+        ids = [v["id"] for v in payload["viajes"]]
+        self.assertNotIn("mariluz-vidal-malaga", ids)
+        self.assertNotIn("mariluz-vidal-larioja", ids)
+        self.assertNotIn("Mari Luz y Vidal", payload["quien"]["order"])
+        self.assertNotIn("Mari Luz y Vidal", payload["quien"]["color"])
+        self.assertNotIn("Mari Luz y Vidal", payload["quien"]["dot"])
+
+    def test_json_casa_solo_mari_luz(self):
+        casa = json.loads((self.root / "viajes_casa.json").read_text(encoding="utf-8"))
+        self.assertEqual(casa["schema_version"], 1)
+        ids = [v["id"] for v in casa["viajes"]]
+        self.assertEqual(set(ids), {"mariluz-vidal-malaga", "mariluz-vidal-larioja"})
+        self.assertEqual(casa["quien"]["order"], ["Mari Luz y Vidal"])
+        self.assertIn("Mari Luz y Vidal", casa["quien"]["color"])
+        self.assertIn("Mari Luz y Vidal", casa["quien"]["dot"])
+        for v in casa["viajes"]:
+            self.assertEqual(v["quien"], "Mari Luz y Vidal")
+        malaga = next(v for v in casa["viajes"] if v["id"] == "mariluz-vidal-malaga")
+        rioja = next(v for v in casa["viajes"] if v["id"] == "mariluz-vidal-larioja")
+        self.assertEqual(malaga["inicio"], "2026-11-07")
+        self.assertEqual(malaga["fin"], "2026-11-09")
+        self.assertEqual(rioja["inicio"], "2026-09-30")
+        self.assertEqual(rioja["fin"], "2026-10-01")
 
 
 if __name__ == "__main__":

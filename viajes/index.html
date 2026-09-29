@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Viajes · Álvaro GT</title>
-  <!-- viajes-build: 20260929a -->
+  <!-- viajes-build: 20260929b -->
   <style>
     :root {
       color-scheme: light;
@@ -593,6 +593,31 @@ function quienPalette() {
     dot: (q.dot && typeof q.dot === 'object') ? q.dot : {}
   };
 }
+function mergeQuien(a, b) {
+  const qa = (a && typeof a === 'object') ? a : {};
+  const qb = (b && typeof b === 'object') ? b : {};
+  const order = [];
+  for (const n of [...(Array.isArray(qa.order) ? qa.order : []), ...(Array.isArray(qb.order) ? qb.order : [])]) {
+    if (n && !order.includes(n)) order.push(n);
+  }
+  return {
+    order,
+    color: Object.assign({}, qa.color || {}, qb.color || {}),
+    dot: Object.assign({}, qa.dot || {}, qb.dot || {})
+  };
+}
+function mergeViajes(pub, casa) {
+  if (!casa || casa.schema_version !== 1 || !Array.isArray(casa.viajes)) return pub;
+  const seen = new Set((pub.viajes || []).map(v => v && v.id).filter(Boolean));
+  const extra = casa.viajes.filter(v => v && v.id && !seen.has(v.id));
+  return Object.assign({}, pub, {
+    viajes: (pub.viajes || []).concat(extra),
+    quien: mergeQuien(pub.quien, casa.quien)
+  });
+}
+async function loadViajesCasa() {
+  try { return await casaDoc('viajes_casa'); } catch { return null; }
+}
 function addMonth(y, m, n) {
   const d = new Date(Date.UTC(y, m - 1 + n, 1));
   return {y: d.getUTCFullYear(), m: d.getUTCMonth() + 1};
@@ -709,7 +734,7 @@ async function startApp() {
   started = true;
   const payload = await casaDoc('viajes');
   if (payload.schema_version !== 1 || !Array.isArray(payload.viajes)) throw new Error('schema');
-  data = payload;
+  data = mergeViajes(payload, await loadViajesCasa());
   document.body.classList.add('in-session');
   document.querySelector('#app').hidden = false;
   chosenDate = fechaParam();
