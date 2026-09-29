@@ -14,14 +14,14 @@ assert.equal(isLaborable('2026-10-12'), false);
 assert.equal(isFestivo('2026-10-13'), false);
 assert.equal(isLaborable('2026-10-13'), true);
 
-assert.equal(nachoRopa('2026-09-21'), 'uniforme');
+assert.equal(nachoRopa('2026-09-21'), 'chándal');
 assert.equal(nachoRopa('2026-09-22'), 'chándal');
-assert.equal(nachoRopa('2026-09-23'), 'chándal');
+assert.equal(nachoRopa('2026-09-23'), 'uniforme');
 assert.equal(nachoRopa('2026-09-24'), 'uniforme');
-assert.equal(nachoRopa('2026-09-25'), 'uniforme');
+assert.equal(nachoRopa('2026-09-25'), 'chándal');
 assert.equal(nachoRopa('2026-09-19'), '');
 assert.equal(nachoRopa('2026-09-20'), '');
 assert.equal(nachoRopa('2026-10-12'), '');
 assert.equal(nachoRopa('2026-10-13'), 'chándal');
-assert.equal(nachoRopa('2026-10-16'), 'uniforme');
+assert.equal(nachoRopa('2026-10-16'), 'chándal');
 console.log('ok ropa');

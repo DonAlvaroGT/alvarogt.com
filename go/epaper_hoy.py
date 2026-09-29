@@ -70,7 +70,7 @@ def nacho_ropa(ymd: str) -> str:
     wd = weekday_iso(ymd)
     if wd is None or wd >= 6 or festivo(ymd):
         return ""
-    if wd in (2, 3):
+    if wd in (1, 2, 5):
         return "chándal"
     return "uniforme"
 
