@@ -21,8 +21,8 @@ SKIP_CAL = {"Trabajo"}
 
 
 def nacho_uniform(day):
-    """Regla de casa para Nacho: chándal martes y miércoles; uniforme el resto de días lectivos."""
-    return "chándal" if day.weekday() in (1, 2) else "uniforme"
+    """Regla de casa para Nacho: chándal lunes, martes y viernes; uniforme miércoles y jueves."""
+    return "chándal" if day.weekday() in (0, 1, 4) else "uniforme"
 
 
 def filter_events(events, dates):
