@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Viajes · Álvaro GT</title>
-  <!-- viajes-build: 20260928c -->
+  <!-- viajes-build: 20260929a -->
   <style>
     :root {
       color-scheme: light;
@@ -120,7 +120,6 @@
     html[data-viajes-vista="hoy"] #clocks { display: none; }
     html[data-viajes-vista="hoy"] article.day.hoy { padding: 28px 26px; }
     html[data-viajes-vista="hoy"] article.day.manana { padding: 14px 16px; }
-    html[data-viajes-vista="hoy"] .days a, html[data-viajes-vista="hoy"] .days .map-wrap, html[data-viajes-vista="hoy"] .days .flights, html[data-viajes-vista="hoy"] .days .items, html[data-viajes-vista="hoy"] .days .wx-day { display: none; }
   </style>
 </head>
 <body>
@@ -498,36 +497,6 @@ function dayPlaceBody(place, wxId, withMap) {
 function dayCls(label) {
   return label === 'Hoy' ? 'day hoy' : 'day manana';
 }
-function stripUrlPrecio(text) {
-  return String(text || '')
-    .replace(/https?:\/\/\S+/gi, '')
-    .replace(/\b\d+(?:[.,]\d+)?\s*€/g, '')
-    .replace(/\s+/g, ' ')
-    .replace(/^[ ·,;]+|[ ·,;]+$/g, '');
-}
-function panelLetter(viaje, day) {
-  const place = placeOn(viaje, day) || {};
-  const titulo = viaje.titulo || place.titulo || '';
-  const sitio = place.label || (viaje.lugar_principal && viaje.lugar_principal.label) || '';
-  const plan = stripUrlPrecio(place.plan || '');
-  return {titulo, sitio, plan};
-}
-function compactDayCard(label, dayKey, viajes) {
-  const trips = tripsCovering(viajes, dayKey);
-  const cls = dayCls(label);
-  if (!trips.length) {
-    return `<article class="${cls}"><div class="date">${esc(label)} · ${esc(pretty(dayKey, casa))}</div><h3>${esc(label)}</h3><p class="copy">Sin viaje este día.</p></article>`;
-  }
-  const blocks = trips.map(trip => {
-    const {titulo, sitio, plan} = panelLetter(trip, dayKey);
-    return `<div class="day-trip">
-      ${titulo ? `<h3 class="trip-hit-title">${esc(titulo)}</h3>` : ''}
-      ${sitio ? `<p class="trip-hit-who">${esc(sitio)}</p>` : ''}
-      ${plan ? `<p class="copy">${esc(plan)}</p>` : ''}
-    </div>`;
-  }).join('');
-  return `<article class="${cls}"><div class="date">${esc(label)} · ${esc(pretty(dayKey, casa))}</div>${blocks}</article>`;
-}
 function dayCard(label, dayKey, viajes) {
   const trips = tripsCovering(viajes, dayKey);
   const cls = dayCls(label);
@@ -561,10 +530,7 @@ function dayCard(label, dayKey, viajes) {
 async function renderDays() {
   const today = todayKey();
   const tomorrow = addDay(today, 1);
-  const compact = document.documentElement.getAttribute('data-viajes-vista') === 'hoy';
-  const card = compact ? compactDayCard : dayCard;
-  document.querySelector('#days').innerHTML = card('Hoy', today, data.viajes) + card('Mañana', tomorrow, data.viajes);
-  if (compact) return;
+  document.querySelector('#days').innerHTML = dayCard('Hoy', today, data.viajes) + dayCard('Mañana', tomorrow, data.viajes);
   for (const key of [today, tomorrow]) {
     const trips = tripsCovering(data.viajes, key);
     for (const trip of trips) {
