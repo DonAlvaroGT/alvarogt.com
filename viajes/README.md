@@ -1,6 +1,6 @@
 # Viajes · alvarogt.com/viajes
 
-Frink actualiza `viajes.json` (público, lo leen las seis cuentas) y `viajes_casa.json` (solo Lucita y Álvaro). Sube con `go/casa_put_json.py --name viajes/viajes.json` y `--name viajes/viajes_casa.json`. El HTML de casa fusiona los dos; el de parientes solo el público. El JSON no va a git: vive en Firestore `casa_json/viajes` y `casa_json/viajes_casa`.
+Frink actualiza `viajes.json` (lo leen las cuentas de Viajes) y `viajes_casa.json` (solo Lucita y Álvaro). Un viaje con `"privado": true` o `"visible": "casa"` va a `viajes_casa`; el resto al público. Al añadir, ese flag basta (`python3 viajes/split_viajes.py`); no hardcodear ids. Sube con `go/casa_put_json.py --name viajes/viajes.json` y `--name viajes/viajes_casa.json`. El HTML de casa fusiona los dos; el de parientes solo el público. Paleta de un quien solo privado: no va al JSON público. El JSON no va a git: vive en Firestore `casa_json/viajes` y `casa_json/viajes_casa`.
 
 Login en la propia página (mismas dos cuentas que GO). La puerta dice «Casa · Viajes». Esta página no abre el tablón.
 

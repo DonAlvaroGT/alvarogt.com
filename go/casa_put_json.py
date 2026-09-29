@@ -67,7 +67,23 @@ def main() -> None:
     parser.add_argument("--file", type=Path, required=True)
     args = parser.parse_args()
     raw = args.file.read_text(encoding="utf-8")
-    json.loads(raw)
+    payload = json.loads(raw)
+
+    def _privado(v: object) -> bool:
+        return isinstance(v, dict) and (
+            v.get("privado") is True or v.get("visible") in ("casa", "privado")
+        )
+
+    trips = payload.get("viajes") if isinstance(payload, dict) else None
+    if args.name == "viajes/viajes.json" and isinstance(trips, list):
+        if any(_privado(v) for v in trips):
+            raise SystemExit("viajes.json tiene privado: pasa split_viajes.py antes")
+    if args.name == "viajes/viajes_casa.json" and isinstance(trips, list):
+        if not trips:
+            raise SystemExit("viajes_casa.json vacío")
+        if any(not _privado(v) for v in trips):
+            raise SystemExit("viajes_casa.json: cada viaje lleva privado true")
+
     if not SA.is_file():
         raise SystemExit("falta la cuenta de servicio de tablongo (no git)")
     put(args.name, raw)
