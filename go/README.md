@@ -22,6 +22,7 @@ El sello `#updated` usa `go_data.generated_at` si es un timestamp ISO (hora Madr
 /Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name go/sports_week.json --file go/sports_week.json
 /Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name go/comedor.json --file go/comedor.json
 /Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name viajes/viajes.json --file viajes/viajes.json
+/Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name viajes/viajes_casa.json --file viajes/viajes_casa.json
 ```
 
 Los JSON viven en Firestore `casa_json`. No van a git ni a GitHub Pages. La página en `alvarogt.com/go/` los lee tras el login.
