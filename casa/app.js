@@ -205,12 +205,21 @@ export function markTab(name) {
   });
 }
 
+let monoEggTimer = 0;
+
 export function showMonoEgg() {
   const egg = document.getElementById('mono-egg');
-  if (egg) egg.hidden = false;
+  if (!egg) return;
+  egg.hidden = false;
+  if (monoEggTimer) clearTimeout(monoEggTimer);
+  monoEggTimer = setTimeout(hideMonoEgg, 1500);
 }
 
 export function hideMonoEgg() {
+  if (monoEggTimer) {
+    clearTimeout(monoEggTimer);
+    monoEggTimer = 0;
+  }
   const egg = document.getElementById('mono-egg');
   if (egg) egg.hidden = true;
 }
