@@ -5,23 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Álvaro GT</title>
+  <!-- home-build: 20260930a -->
   <style>
     :root { color-scheme: dark; --ink:#f4f0e8; --bg:#11110f; }
     * { box-sizing:border-box; }
     html, body { margin:0; min-height:100%; }
     body { min-height:100vh; display:grid; place-items:center; background:radial-gradient(circle at 70% 20%, #292721 0, var(--bg) 42%), var(--bg); color:var(--ink); font-family:Georgia, 'Times New Roman', serif; }
-    h1 { margin:0; width:min(92vw,1100px); font-size:clamp(4.5rem,16vw,13rem); line-height:.82; letter-spacing:-.085em; font-weight:400; }
-    footer { position:fixed; left:16px; bottom:16px; right:210px; text-align:left; font-size:.78rem; color:#c9c4b8; }
-    .home-links { position:fixed; right:16px; bottom:16px; display:flex; gap:8px; z-index:1; }
+    h1 { margin:0; width:min(92vw,1100px); font-size:clamp(4.5rem,16vw,13rem); line-height:.82; letter-spacing:-.085em; font-weight:400; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; }
+    footer { position:fixed; left:16px; bottom:16px; right:210px; text-align:left; font-size:.78rem; color:#c9c4b8; z-index:2; }
+    .home-links { position:fixed; right:16px; bottom:16px; display:flex; gap:8px; z-index:2; }
     .home-links a { padding:6px 10px; border:1px solid #8a867c; border-radius:999px; color:var(--ink); font:500 .72rem/1 ui-sans-serif,system-ui,-apple-system,sans-serif; text-decoration:none; opacity:.85 }
     .home-links a:hover,.home-links a:focus { opacity:1; background:#f4f0e8; color:var(--bg) }
+    #oso-egg[hidden] { display:none !important; }
+    #oso-egg { position:fixed; left:50%; top:46%; transform:translate(-50%,-50%); z-index:0; display:flex; flex-direction:column; align-items:center; gap:6px; margin:0; padding:8px; border:0; background:transparent; color:var(--ink); font:500 .85rem/1.2 Georgia, 'Times New Roman', serif; cursor:pointer; }
+    #oso-egg svg { display:block; width:22px; height:24px; }
   </style>
 </head>
 <body>
   <h1>Álvaro<br>GT</h1>
+  <button type="button" id="oso-egg" hidden>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 36" width="22" height="24" aria-hidden="true">
+      <ellipse cx="10" cy="8" rx="5" ry="4.5" fill="#6b3a1f"/>
+      <ellipse cx="24" cy="8" rx="5" ry="4.5" fill="#6b3a1f"/>
+      <ellipse cx="10" cy="8.5" rx="2.2" ry="2" fill="#4a2714"/>
+      <ellipse cx="24" cy="8.5" rx="2.2" ry="2" fill="#4a2714"/>
+      <ellipse cx="17" cy="22" rx="11" ry="12" fill="#7a4524"/>
+      <circle cx="17" cy="14" r="10" fill="#8a522c"/>
+      <ellipse cx="17" cy="18" rx="5.5" ry="4" fill="#c9a077"/>
+      <circle cx="13.2" cy="12.5" r="1.3" fill="#1c1008"/>
+      <circle cx="20.8" cy="12.5" r="1.3" fill="#1c1008"/>
+      <ellipse cx="17" cy="16.2" rx="1.8" ry="1.2" fill="#1c1008"/>
+    </svg>
+    <span>Muerte a los pandas</span>
+  </button>
   <footer>Creado por Álvaro GT y sus minions</footer>
   <nav class="home-links" aria-label="Sitios de casa">
   <a href="/casa/">Casa</a>
   </nav>
+  <script src="/pie.js?v=20260930a"></script>
+  <script src="/home.js?v=20260930a"></script>
 </body>
 </html>

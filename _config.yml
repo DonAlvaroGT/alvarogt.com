@@ -38,6 +38,7 @@ exclude:
   - go/test_tiempo.mjs
   - go/test_trip_line.mjs
   - go/test_vista.mjs
+  - test_pie.py
   - go/condiciones.json
   - go/reglas.json
   - go/favoritos.json
