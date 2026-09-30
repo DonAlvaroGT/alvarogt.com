@@ -4,7 +4,7 @@ import { html } from './source.mjs';
 import vm from 'node:vm';
 
 
-assert.match(html, /tablon-build: 20260928e-priv/, 'marcador de cache-bust del cambio');
+assert.match(html, /tablon-build: 20260930b-priv/, 'marcador de cache-bust del cambio');
 assert.match(html, /id="validate-all-queue"/, 'el botón Validar todo está en el HTML');
 assert.match(html, />✅ Validar todo</, 'el texto del botón es Validar todo');
 assert.match(html, /data-action="validate-all-queue"/, 'un toque dispara validate-all-queue');

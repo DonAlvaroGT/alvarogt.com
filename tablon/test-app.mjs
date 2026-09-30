@@ -28,6 +28,8 @@ assert.doesNotMatch(gate, /initial\{/);
 assert.doesNotMatch(gate, /id="task-form"/);
 assert.doesNotMatch(gate, /id="reward-form"/);
 assert.doesNotMatch(gate, /id="shell"/);
+assert.doesNotMatch(gate, /🙊/);
+assert.doesNotMatch(gate, /validate-egg/);
 assert.doesNotMatch(gate, /@gmail\.com/);
 assert.doesNotMatch(gate, /alvarogt@alvarogt\.com/);
 assert.doesNotMatch(gate, /value="[^"]+@/);

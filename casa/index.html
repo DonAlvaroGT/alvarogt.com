@@ -169,6 +169,26 @@
       background: rgba(17, 17, 15, 0.55);
       padding: calc(24px + env(safe-area-inset-top, 0px)) 16px calc(24px + env(safe-area-inset-bottom, 0px));
     }
+    #mono-egg[hidden] { display: none !important; }
+    #mono-egg {
+      position: fixed;
+      left: 50%;
+      top: 42%;
+      transform: translate(-50%, -50%);
+      z-index: 25;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+      padding: 8px;
+      border: 0;
+      background: transparent;
+      color: #1a1c17;
+      font: 500 .85rem/1.2 Georgia, 'Times New Roman', serif;
+      cursor: pointer;
+    }
+    #mono-egg svg { display: block; width: 22px; height: 24px; }
   </style>
 </head>
 <body>
@@ -192,6 +212,21 @@
   <div id="session-overlay" hidden>
     <button id="session-reenter" class="demo" type="button">Sesión caducada · Entrar de nuevo</button>
   </div>
-  <script type="module" src="./app.js?v=20260928d"></script>
+  <button type="button" id="mono-egg" hidden>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 36" width="22" height="24" aria-hidden="true">
+      <circle cx="8" cy="12" r="5" fill="#6b3a1f"/>
+      <circle cx="26" cy="12" r="5" fill="#6b3a1f"/>
+      <circle cx="8" cy="12" r="2.4" fill="#c9a077"/>
+      <circle cx="26" cy="12" r="2.4" fill="#c9a077"/>
+      <ellipse cx="17" cy="20" rx="11" ry="12" fill="#7a4524"/>
+      <circle cx="17" cy="16" r="10" fill="#8a522c"/>
+      <ellipse cx="17" cy="20" rx="6" ry="4.2" fill="#c9a077"/>
+      <circle cx="13.2" cy="14.2" r="1.3" fill="#1c1008"/>
+      <circle cx="20.8" cy="14.2" r="1.3" fill="#1c1008"/>
+      <ellipse cx="17" cy="17.6" rx="1.5" ry="1.1" fill="#1c1008"/>
+    </svg>
+    <span>primo listo</span>
+  </button>
+  <script type="module" src="./app.js?v=20260930b"></script>
 </body>
 </html>
