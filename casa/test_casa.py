@@ -50,7 +50,8 @@ class CasaShellTests(unittest.TestCase):
         self.assertGreater(egg_at, 0)
         self.assertNotIn("<svg", HTML[:egg_at])
         self.assertIn("<svg", HTML[egg_at:])
-        self.assertIn("./app.js?v=20260930b", HTML)
+        self.assertIn("./app.js?v=20260930c", HTML)
+        self.assertIn("setTimeout(hideMonoEgg, 1500)", JS)
         self.assertNotIn("<audio", HTML)
         self.assertNotIn("speechSynthesis", HTML)
 

@@ -400,19 +400,38 @@ test('Go no pone punto por interés 5', () => {
   assert.equal(d.go.classList.contains('has-hot'), false);
 });
 
-test('toque en Go enseña el mono; un toque lo quita; sin sonido', () => {
-  const d = mockDom();
-  showShell();
-  assert.equal(d.egg.hidden, true);
-  onGoTabTap();
-  assert.equal(d.egg.hidden, false);
-  dismissMonoEgg();
-  assert.equal(d.egg.hidden, true);
-  showView('go');
-  assert.equal(d.egg.hidden, true);
-  showMonoEgg();
-  hideMonoEgg();
-  assert.equal(d.egg.hidden, true);
+test('toque en Go enseña el mono; un toque lo quita; se va solo a 1,5 s; sin sonido', () => {
+  const queued = [];
+  const realSet = globalThis.setTimeout;
+  const realClear = globalThis.clearTimeout;
+  globalThis.setTimeout = (fn, ms) => {
+    queued.push({ fn, ms, dead: false });
+    return queued.length;
+  };
+  globalThis.clearTimeout = (id) => {
+    const item = queued[id - 1];
+    if (item) item.dead = true;
+  };
+  try {
+    const d = mockDom();
+    showShell();
+    assert.equal(d.egg.hidden, true);
+    onGoTabTap();
+    assert.equal(d.egg.hidden, false);
+    assert.equal(queued.at(-1).ms, 1500);
+    dismissMonoEgg();
+    assert.equal(d.egg.hidden, true);
+    assert.equal(queued.at(-1).dead, true);
+    showView('go');
+    assert.equal(d.egg.hidden, true);
+    onGoTabTap();
+    assert.equal(d.egg.hidden, false);
+    queued.at(-1).fn();
+    assert.equal(d.egg.hidden, true);
+  } finally {
+    globalThis.setTimeout = realSet;
+    globalThis.clearTimeout = realClear;
+  }
 });
 
 test('login_hint del último adulto, sin select_account', () => {
