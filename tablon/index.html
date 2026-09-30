@@ -25,6 +25,7 @@ html.embedded #google-sign-out,html.embedded #google-sign-in,html.embedded #chil
 <header class="shell top"><div><div class="eyebrow">Casa · Tablón familiar</div><h1>Tablón</h1></div><div style="display:flex;flex-direction:column;align-items:end;gap:8px"><div class="access-row"><span id="google-status" class="access-status">Acceso · comprobando</span><button id="google-sign-in" class="demo" type="button">Adultos</button><button id="child-sign-in" class="demo" type="button">Niños</button><button id="google-sign-out" class="demo" type="button" hidden>Salir</button></div><form id="child-login" class="child-login" hidden><label>Correo <input id="child-email" type="email" required></label><label>Contraseña <input id="child-password" type="password" required></label><button class="approve" type="submit">Entrar</button></form></div></header>
 <div id="board-root" hidden></div>
 <footer class="shell" style="padding:28px 0 36px;color:var(--muted);font-size:.8rem">Creado por Álvaro GT y sus minions</footer>
+<script src="/pie.js?v=20260930a"></script>
 <div id="toast" class="toast" role="status"></div>
 <script type="module">
 const BOARD_URL = 'https://europe-west1-tablongo.cloudfunctions.net/board';

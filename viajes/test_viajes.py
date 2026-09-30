@@ -130,7 +130,7 @@ class ViajesEmbeddedTests(unittest.TestCase):
             HTML,
         )
         self.assertIn("Creado por Álvaro GT y sus minions", HTML)
-        self.assertIn("viajes-build: 20260929d", HTML)
+        self.assertIn("viajes-build: 20260930a", HTML)
 
 
 class ViajesPrivadosTests(unittest.TestCase):
