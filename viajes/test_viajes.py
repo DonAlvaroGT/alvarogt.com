@@ -71,7 +71,7 @@ class ViajesEmbeddedTests(unittest.TestCase):
         self.assertIn("covers(v.inicio, v.fin, key)", HTML)
         self.assertNotIn("dias[]", HTML)
         self.assertIn('class="cal-dots"', HTML)
-        self.assertIn("Dos puntos = dos viajes ese día", HTML)
+        self.assertIn("Hasta tres puntos. Si hay 2 o 3 viajes, el número.", HTML)
         self.assertIn('class="month-legend"', HTML)
         self.assertIn('id="month-prev"', HTML)
         self.assertIn('id="month-next"', HTML)
@@ -79,6 +79,21 @@ class ViajesEmbeddedTests(unittest.TestCase):
         self.assertIn("‹", HTML)
         self.assertIn("Este mes y el siguiente", HTML)
         self.assertIn('id="month-view"', HTML)
+
+    def test_month_dots_cap_count_and_list(self):
+        self.assertIn("hits.slice(0, 3)", HTML)
+        self.assertIn("hits.length === 2 || hits.length === 3", HTML)
+        self.assertIn('class="cal-n"', HTML)
+        self.assertIn("flex-direction: row", HTML)
+        self.assertIn('id="month-day-list"', HTML)
+        self.assertIn("function showDayHits", HTML)
+        self.assertIn("function hideDayHits", HTML)
+        self.assertIn("${esc(h.quien)} · ${esc(h.titulo)}", HTML)
+        self.assertIn("showDayHits(key, hits)", HTML)
+        self.assertLess(HTML.index("showDayHits(key, hits)"), HTML.index("goToDay(key)"))
+        self.assertIn("tripsCovering(data.viajes || [], key)", HTML)
+        self.assertIn("pubTrips.filter(v => !esPrivado(v))", HTML)
+        self.assertNotIn("@gmail.com", HTML)
 
     def test_tap_trip_day_opens_hoy_of_that_date(self):
         self.assertIn("closest('.cal-day')", HTML)
@@ -90,6 +105,7 @@ class ViajesEmbeddedTests(unittest.TestCase):
         self.assertIn(".cal-day.trip { cursor: pointer; }", HTML)
         self.assertIn("scrollIntoView", HTML)
         self.assertLess(HTML.index("if (btn)"), HTML.index("closest('.cal-day')"))
+        self.assertLess(HTML.index("showDayHits(key, hits)"), HTML.index("goToDay(key)"))
 
     def test_casa_merge_not_public_filter(self):
         self.assertIn("function mergeViajes", HTML)
@@ -130,7 +146,7 @@ class ViajesEmbeddedTests(unittest.TestCase):
             HTML,
         )
         self.assertIn("Creado por Álvaro GT y sus minions", HTML)
-        self.assertIn("viajes-build: 20260930a", HTML)
+        self.assertIn("viajes-build: 20260930b", HTML)
 
 
 class ViajesPrivadosTests(unittest.TestCase):
