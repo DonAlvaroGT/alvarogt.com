@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Viajes · Álvaro GT</title>
-  <!-- viajes-build: 20260930a -->
+  <!-- viajes-build: 20260930b -->
   <style>
     :root {
       color-scheme: light;
@@ -103,13 +103,17 @@
     .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
     .cal-dow, .cal-day { min-width: 0; text-align: center; font-variant-numeric: tabular-nums; }
     .cal-dow { color: var(--gold); font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 0 0 6px; }
-    .cal-day { min-height: 38px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--navy); font-size: .82rem; }
+    .cal-day { min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--navy); font-size: .82rem; }
     .cal-day.other { color: var(--ink-soft); opacity: .38; }
     .cal-day.today { box-shadow: inset 0 0 0 2px var(--navy); }
     .cal-day.marked { background: var(--mark); }
     .cal-day.trip { cursor: pointer; }
-    .cal-dots { display: flex; gap: 3px; height: 6px; }
+    .cal-dots { display: flex; flex-direction: row; gap: 3px; height: 6px; }
     .cal-dots i { width: 6px; height: 6px; display: block; }
+    .cal-n { color: var(--gold); font-size: .65rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+    #month-day-list { margin: 0 0 48px; background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow); padding: 16px 18px; }
+    #month-day-list[hidden] { display: none; }
+    #month-day-list ul { margin: 8px 0 0; }
     @media (max-width: 800px) {
       .wrap { width: min(100% - 30px, 1160px); }
       nav { padding-bottom: 28px; }
@@ -160,6 +164,7 @@
       <section class="clocks" id="clocks" aria-label="Hora y tiempo"></section>
       <section class="days" id="days" aria-live="polite"></section>
       <section class="months" id="month-view" aria-label="Calendario"></section>
+      <div id="month-day-list" hidden></div>
       <section class="trips">
         <p class="eyebrow">Próximos</p>
         <h2>Resumen de viajes</h2>
@@ -174,7 +179,7 @@
     </main>
   </div>
 
-<script src="/pie.js?v=20260930a"></script>
+<script src="/pie.js?v=20260930b"></script>
 <script type="module">
 const embedded = (() => { try { return window.parent !== window && window.parent.location.origin === location.origin; } catch { return false; } })();
 if (embedded) document.documentElement.classList.add('embedded');
@@ -674,6 +679,23 @@ function monthPairTitle(offset) {
   if (offset > 0) return `Mes +${offset} y siguiente`;
   return `Mes ${offset} y siguiente`;
 }
+function hideDayHits() {
+  const panel = document.querySelector('#month-day-list');
+  if (!panel) return;
+  panel.hidden = true;
+  panel.innerHTML = '';
+}
+function showDayHits(key, hits) {
+  const panel = document.querySelector('#month-day-list');
+  if (!panel) return;
+  if (hits.length < 2) {
+    hideDayHits();
+    return;
+  }
+  const items = hits.map(h => `<li>${esc(h.quien)} · ${esc(h.titulo)}</li>`).join('');
+  panel.hidden = false;
+  panel.innerHTML = `<p class="date">${esc(pretty(key, casa))}</p><ul class="items">${items}</ul>`;
+}
 function renderMonths() {
   const box = document.querySelector('#month-view');
   if (!box) return;
@@ -704,19 +726,27 @@ function renderMonths() {
       if (hits.length) cls.push('trip');
       let style = '';
       let dots = '';
+      let count = '';
       let tip = '';
       if (hits.length === 1) {
         cls.push('marked');
         style = ` style="--mark:${esc(quienColor(hits[0].quien, pal.color))}"`;
-      } else if (hits.length > 1) {
-        dots = `<span class="cal-dots">${hits.map(h => `<i style="background:${esc(quienColor(h.quien, pal.dot))}"></i>`).join('')}</span>`;
+      }
+      if (hits.length) {
+        const shown = hits.slice(0, 3);
+        dots = `<span class="cal-dots">${shown.map(h => `<i style="background:${esc(quienColor(h.quien, pal.dot))}"></i>`).join('')}</span>`;
+      }
+      if (hits.length === 2 || hits.length === 3) {
+        count = `<span class="cal-n">${hits.length}</span>`;
+      }
+      if (hits.length > 1) {
         tip = ` title="${esc(hits.map(h => `${h.quien} · ${h.titulo}`).join('\n'))}"`;
       }
-      return `<div class="${cls.join(' ')}" data-day="${esc(key)}"${style}${tip}><span>${c.d}</span>${dots}</div>`;
+      return `<div class="${cls.join(' ')}" data-day="${esc(key)}"${style}${tip}><span>${c.d}</span>${dots}${count}</div>`;
     }).join('');
     return `<article class="month-box"><h3>${esc(title)}</h3><div class="cal-grid">${dow}${days}</div></article>`;
   }).join('');
-  box.innerHTML = `<p class="eyebrow">Calendario</p><div class="month-head"><h2>${esc(heading)}</h2><div class="month-nav"><button type="button" class="demo" id="month-prev" aria-label="Mes anterior">‹</button><button type="button" class="demo" id="month-next" aria-label="Mes siguiente">›</button></div></div><div class="month-legend">${legend}</div><p class="month-legend">Dos puntos = dos viajes ese día</p><div class="month-grids">${grids}</div>`;
+  box.innerHTML = `<p class="eyebrow">Calendario</p><div class="month-head"><h2>${esc(heading)}</h2><div class="month-nav"><button type="button" class="demo" id="month-prev" aria-label="Mes anterior">‹</button><button type="button" class="demo" id="month-next" aria-label="Mes siguiente">›</button></div></div><div class="month-legend">${legend}</div><p class="month-legend">Hasta tres puntos. Si hay 2 o 3 viajes, el número.</p><div class="month-grids">${grids}</div>`;
 }
 
 let fsApi = null, db = null, fsProject = 'tablongo';
@@ -873,6 +903,7 @@ document.querySelector('#month-view').addEventListener('click', e => {
   const btn = e.target.closest('#month-prev, #month-next');
   if (btn) {
     monthOffset += btn.id === 'month-next' ? 1 : -1;
+    hideDayHits();
     renderMonths();
     return;
   }
@@ -882,6 +913,7 @@ document.querySelector('#month-view').addEventListener('click', e => {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(key || '')) return;
   const hits = tripsCovering(data.viajes || [], key);
   if (!hits.length) return;
+  showDayHits(key, hits);
   document.documentElement.setAttribute('data-viajes-vista', 'hoy');
   goToDay(key);
   const days = document.querySelector('#days');
