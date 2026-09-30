@@ -6,7 +6,8 @@ import {
   lastAdultHint, rememberAdult, HINT_KEY, googleParams, isStandaloneDisplay,
   lastTab, rememberTab, TAB_KEY, TAB_NAMES,
   queueHasPending, setTablonQueueDot, readTablonQueueFromFrame, refreshTablonQueueDot,
-  setViajesTripDot, readTripSoonFromGoFrame, refreshViajesTripDot, applyViajesHoy
+  setViajesTripDot, readTripSoonFromGoFrame, refreshViajesTripDot, applyViajesHoy,
+  showMonoEgg, hideMonoEgg, onGoTabTap, dismissMonoEgg
 } from './app.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -108,6 +109,7 @@ function mockDom(opts = {}) {
   const shell = el({ hidden: true });
   const scroller = el({ children: [] });
   const overlay = el({ hidden: true });
+  const egg = el({ hidden: true });
   const status = el({ textContent: '' });
   const goDot = el({ hidden: true, className: 'tab-dot' });
   const go = el({ dataset: { view: 'go' }, attrs: { 'aria-selected': 'true', 'data-view': 'go' }, children: [goDot] });
@@ -124,6 +126,7 @@ function mockDom(opts = {}) {
     '#shell': shell,
     '#scroller': scroller,
     '#session-overlay': overlay,
+    '#mono-egg': egg,
     '#google-status': status,
     '#tabs': tabs,
     '#tabs button[aria-selected="true"]': go,
@@ -138,6 +141,7 @@ function mockDom(opts = {}) {
       return node;
     },
     querySelector(sel) { return nodes[sel] || null; },
+    getElementById(id) { return nodes['#' + id] || null; },
     querySelectorAll(sel) {
       if (sel === '#tabs button') return tabs.children;
       if (sel === '#scroller iframe') return scroller.children;
@@ -145,7 +149,7 @@ function mockDom(opts = {}) {
     },
     visibilityState: 'visible'
   };
-  return { gate, shell, scroller, overlay, status, go, tablon, viajes };
+  return { gate, shell, scroller, overlay, egg, status, go, tablon, viajes };
 }
 
 test('sin login no hay iframe ni barra', () => {
@@ -394,6 +398,21 @@ test('Go no pone punto por interés 5', () => {
   showView('go');
   assert.equal(d.go.querySelector('.tab-dot').hidden, true);
   assert.equal(d.go.classList.contains('has-hot'), false);
+});
+
+test('toque en Go enseña el mono; un toque lo quita; sin sonido', () => {
+  const d = mockDom();
+  showShell();
+  assert.equal(d.egg.hidden, true);
+  onGoTabTap();
+  assert.equal(d.egg.hidden, false);
+  dismissMonoEgg();
+  assert.equal(d.egg.hidden, true);
+  showView('go');
+  assert.equal(d.egg.hidden, true);
+  showMonoEgg();
+  hideMonoEgg();
+  assert.equal(d.egg.hidden, true);
 });
 
 test('login_hint del último adulto, sin select_account', () => {

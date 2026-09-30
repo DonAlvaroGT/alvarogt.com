@@ -205,6 +205,28 @@ export function markTab(name) {
   });
 }
 
+export function showMonoEgg() {
+  const egg = document.getElementById('mono-egg');
+  if (egg) egg.hidden = false;
+}
+
+export function hideMonoEgg() {
+  const egg = document.getElementById('mono-egg');
+  if (egg) egg.hidden = true;
+}
+
+export function onGoTabTap() {
+  showMonoEgg();
+}
+
+export function dismissMonoEgg(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  hideMonoEgg();
+}
+
 function bindFrame(frame) {
   frame.addEventListener('load', () => {
     try {
@@ -391,7 +413,9 @@ export function boot() {
     const btn = e.target.closest('button[data-view]');
     if (!btn) return;
     showView(btn.dataset.view);
+    if (btn.dataset.view === 'go') onGoTabTap();
   });
+  document.getElementById('mono-egg')?.addEventListener('pointerdown', dismissMonoEgg);
 
   window.addEventListener('message', (ev) => {
     if (ev.origin !== location.origin) return;

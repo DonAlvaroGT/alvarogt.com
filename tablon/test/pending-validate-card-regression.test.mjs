@@ -4,7 +4,7 @@ import { html } from './source.mjs';
 import vm from 'node:vm';
 
 
-assert.match(html, /tablon-build: 20260928e-priv/, 'marcador de cache-bust vigente');
+assert.match(html, /tablon-build: 20260930b-priv/, 'marcador de cache-bust vigente');
 assert.match(html, /\.task\.pending-validate\{[^}]*grid-column:1\/-1/, 'la ficha pendiente ocupa toda la fila');
 assert.match(html, /\.task\.pending-validate\{[^}]*background:#6c4dff/, 'el estado pendiente usa otro color, no naranja/rosa');
 assert.match(html, /status==='waiting'\?' pending-validate':'/, 'solo el estado pendiente de validar agranda la ficha');

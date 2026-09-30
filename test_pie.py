@@ -119,6 +119,12 @@ class PiePaginasTests(unittest.TestCase):
         self.assertIn("% 20", PIE_JS)
         self.assertIn("Europe/Madrid", PIE_JS)
         self.assertIn(PIE_OSOS, PIE_JS)
+        self.assertEqual(PIE_NORMAL, "Creado por Álvaro GT y sus minions")
+        self.assertNotIn("sus monos", PIE_JS)
+        self.assertNotIn("sus monos", HOME_HTML)
+        self.assertNotIn("sus monos", GO)
+        self.assertNotIn("sus monos", VIAJES)
+        self.assertNotIn("sus monos", TABLON)
         self.assertNotIn("Audio", PIE_JS)
         self.assertNotIn("speechSynthesis", PIE_JS)
 
