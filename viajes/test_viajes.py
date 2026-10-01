@@ -146,7 +146,16 @@ class ViajesEmbeddedTests(unittest.TestCase):
             HTML,
         )
         self.assertIn("Creado por Álvaro GT y sus minions", HTML)
-        self.assertIn("viajes-build: 20260930b", HTML)
+        self.assertIn("viajes-build: 20261001a", HTML)
+        self.assertIn("function calQuienColor", HTML)
+        self.assertIn("quien === 'Gugus'", HTML)
+        cal = HTML[HTML.index("function calQuienColor") : HTML.index("function monthPairTitle")]
+        self.assertIn("#b4bab6", cal)
+        self.assertIn("#e6e8e6", cal)
+        days = HTML[HTML.index("async function renderDays()") : HTML.index("function tripChrono")]
+        trips = HTML[HTML.index("async function renderTrips()") : HTML.index("function quienPalette")]
+        self.assertNotIn("calQuienColor", days)
+        self.assertNotIn("calQuienColor", trips)
 
 
 class ViajesPrivadosTests(unittest.TestCase):
@@ -179,8 +188,6 @@ class ViajesPrivadosTests(unittest.TestCase):
         pub = (self.root / "viajes.json").read_text(encoding="utf-8")
         self.assertNotIn("Mari Luz", pub)
         self.assertNotIn("mariluz-vidal", pub)
-        self.assertNotIn("2026-09-30", pub)
-        self.assertNotIn("2026-11-07", pub)
         self.assertNotIn("La Rioja", pub)
         payload = json.loads(pub)
         self.assertEqual(payload["schema_version"], 1)
@@ -190,6 +197,11 @@ class ViajesPrivadosTests(unittest.TestCase):
         self.assertNotIn("Mari Luz y Vidal", payload["quien"]["order"])
         self.assertNotIn("Mari Luz y Vidal", payload["quien"]["color"])
         self.assertNotIn("Mari Luz y Vidal", payload["quien"]["dot"])
+        self.assertEqual(payload["quien"]["color"]["Gugus"], "#cde8d8")
+        self.assertEqual(payload["quien"]["dot"]["Gugus"], "#2f7d5a")
+        inicios = {v.get("inicio") for v in payload["viajes"]}
+        self.assertNotIn("2026-09-30", inicios)
+        self.assertNotIn("2026-11-07", inicios)
         self.assertFalse(any(v.get("privado") is True for v in payload["viajes"]))
         self.assertFalse(any(v.get("visible") in ("casa", "privado") for v in payload["viajes"]))
 
