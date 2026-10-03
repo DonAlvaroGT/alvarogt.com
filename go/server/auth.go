@@ -39,9 +39,9 @@ type Server struct {
 func newTestServer() http.Handler {
 	s := NewServer(mapVerifier{
 		"token-intruso": "intruso@example.com",
-		"token-alvaro":  "",
-		"token-luz":     "",
-	}, []string{"", ""}, []byte("test-session-secret"), false)
+		"token-alvaro":  "adult-1@example.com",
+		"token-luz":     "adult-2@example.com",
+	}, []string{"adult-1@example.com", "adult-2@example.com"}, []byte("test-session-secret"), false)
 	s.mux.Handle("/data.json", s.RequireAuth(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"ok":true}`))

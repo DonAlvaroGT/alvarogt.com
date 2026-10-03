@@ -170,12 +170,12 @@ class ViajesPrivadosTests(unittest.TestCase):
         self.assertIn("id != 'viajes' && id != 'viajes_casa' && casaReader()", rules)
         self.assertIn("allow write: if false;", rules)
         casa_block = rules[rules.index("function casaReader()") : rules.index("function viajesReader()")]
-        self.assertIn("", casa_block)
-        self.assertIn("", casa_block)
-        self.assertNotIn("''", casa_block)
-        self.assertNotIn("''", casa_block)
-        self.assertNotIn("''", casa_block)
-        self.assertNotIn("''", casa_block)
+        self.assertIn("adult-1@example.com", casa_block)
+        self.assertIn("adult-2@example.com", casa_block)
+        self.assertNotIn("'adult-3@example.com'", casa_block)
+        self.assertNotIn("'adult-4@example.com'", casa_block)
+        self.assertNotIn("'adult-5@example.com'", casa_block)
+        self.assertNotIn("'adult-6@example.com'", casa_block)
 
     def test_casa_put_both_docs(self):
         put = (self.repo / "go" / "casa_put_json.py").read_text(encoding="utf-8")

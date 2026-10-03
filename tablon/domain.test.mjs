@@ -10,7 +10,7 @@ import {
   adultUndo,
 } from './domain.mjs';
 
-assert.deepEqual(ADULT_ALLOWLIST, ['', '']);
+assert.deepEqual(ADULT_ALLOWLIST, ['adult-1@example.com', 'adult-2@example.com']);
 assert.equal(CHILD_ROLE, 'child');
 assert.equal(can('child', 'task.read'), true);
 assert.equal(can('child', 'task.create'), false);

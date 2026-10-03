@@ -1,4 +1,4 @@
-export const ADULT_ALLOWLIST = ['', ''];
+export const ADULT_ALLOWLIST = ['adult-1@example.com', 'adult-2@example.com'];
 export const CHILD_ROLE = 'child';
 
 const permissions = {
