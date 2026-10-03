@@ -31,8 +31,9 @@ HHMM = re.compile(r"^(\d{1,2}):(\d{2})")
 YMD = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 FESTIVOS = frozenset({"2026-10-12"})
 SCOPES = ("https://www.googleapis.com/auth/datastore", "https://www.googleapis.com/auth/cloud-platform")
-SPORT_MIN = 10 * 60
+SPORT_MIN = 9 * 60
 SPORT_MAX = 22 * 60 + 30
+SPORT_MARK = "*"
 MANANA_ANTES = 14 * 60
 ALLOW_CAL = {"Familia", "Casa"}
 CASA_QUIEN = "garcia timon"
@@ -647,7 +648,11 @@ def weather_copy(day: dict | None) -> str:
     lo, hi = as_int(day.get("min")), as_int(day.get("max"))
     if lo is None or hi is None:
         return TIEMPO_FALTA
-    sky = cielo_word(day.get("weather_code"))
+    rain = day.get("rain_probability")
+    if isinstance(rain, (int, float)) and not isinstance(rain, bool) and rain >= 45:
+        sky = "lluvia"
+    else:
+        sky = cielo_word(day.get("weather_code"))
     base = f"{lo}–{hi}°"
     return f"{base} {sky}" if sky else base
 
@@ -674,74 +679,90 @@ def fetch_tiempo() -> dict | None:
     return parse_tiempo(payload)
 
 
+def is_favorito(event: dict | None) -> bool:
+    if not isinstance(event, dict):
+        return False
+    deporte = str(event.get("deporte") or "")
+    rival = str(event.get("rival") or "").lower()
+    if deporte == "femenino":
+        return False
+    if deporte == "futbol" and "real madrid" in rival:
+        return True
+    if deporte == "f1":
+        return True
+    if deporte == "mlb" and "brewers" in rival:
+        return True
+    if deporte == "nfl" and "dolphins" in rival:
+        return True
+    if deporte == "nhl" and "red wings" in rival:
+        return True
+    return False
+
+
 def sports_on_day(payload: dict | None, ymd: str) -> list[dict]:
-    if not payload or not ymd:
+    if not payload or not YMD.match(ymd or ""):
         return []
-    doc_date = payload.get("comprobado") or payload.get("date") or ""
-    rows = payload.get("eventos") or payload.get("events") or []
+    rows = payload.get("partidos")
     if not isinstance(rows, list):
         return []
     kept: list[dict] = []
     for event in rows:
         if not isinstance(event, dict):
             continue
-        day = event.get("fecha") or event.get("date")
-        if YMD.match(str(day or "")):
-            if day != ymd:
-                continue
-        elif str(doc_date) != ymd:
+        if str(event.get("fecha_madrid") or "") != ymd:
+            continue
+        if str(event.get("deporte") or "") == "femenino":
+            continue
+        if not is_favorito(event):
             continue
         mins = minutes(str(event.get("hora_madrid") or ""))
         if mins is None or mins < SPORT_MIN or mins > SPORT_MAX:
             continue
         kept.append(event)
-    kept.sort(key=lambda e: minutes(str(e.get("hora_madrid") or "")) or 0)
+    kept.sort(key=lambda e: (minutes(str(e.get("hora_madrid") or "")) or 0, str(e.get("rival") or "")))
     return kept
 
 
-def sports_line(event: dict) -> str:
-    name = re.sub(r"\s+vs\.?\s+", "–", str(event.get("evento") or ""), flags=re.I).strip()
+def sports_bit(event: dict) -> str:
     hora = str(event.get("hora_madrid") or "").strip()
-    canal = event.get("canal")
-    canal_s = canal.strip() if isinstance(canal, str) else ""
-    if not name:
+    rival = str(event.get("rival") or "").strip()
+    if not rival:
         return ""
-    if not hora:
-        return name
-    return f"{name} a las {hora} en {canal_s}" if canal_s else f"{name} a las {hora}"
+    return f"{hora} · {rival}" if hora else rival
 
 
-def sports_pick_line(events: list[dict]) -> str:
-    if not events:
-        return ""
-    ranked = sorted(
-        events,
-        key=lambda e: (
-            -(e["interes"] if isinstance(e.get("interes"), (int, float)) else 0),
-            minutes(str(e.get("hora_madrid") or "")) or 0,
-        ),
-    )
-    return sports_line(ranked[0])
-
-
-def sports_events_for_day(daily: dict | None, week: dict | None, ymd: str) -> list[dict]:
-    events = sports_on_day(daily, ymd)
-    if not events:
-        events = sports_on_day(week, ymd)
-    return events
-
-
-def sports_lines(daily: dict | None, week: dict | None, ymd: str) -> list[str]:
+def sports_lines(payload: dict | None, ymd: str) -> list[str]:
     out: list[str] = []
-    for event in sports_events_for_day(daily, week, ymd):
-        line = sports_line(event)
+    for event in sports_on_day(payload, ymd):
+        line = sports_bit(event)
         if line:
             out.append(line)
     return out
 
 
-def sports_for_day(daily: dict | None, week: dict | None, ymd: str) -> str:
-    return sports_pick_line(sports_events_for_day(daily, week, ymd))
+def sports_for_day(payload: dict | None, ymd: str) -> str:
+    return " · ".join(sports_lines(payload, ymd))
+
+
+def sports_ficha(payload: dict | None, ymd: str) -> str:
+    bits = sports_lines(payload, ymd)
+    if not bits:
+        return ""
+    return f"{SPORT_MARK} " + " · ".join(bits)
+
+
+def sports_extraescolar(payload: dict | None, ymd: str) -> dict | None:
+    events = sports_on_day(payload, ymd)
+    title = sports_ficha(payload, ymd)
+    if not title or not events:
+        return None
+    times = [minutes(str(e.get("hora_madrid") or "")) for e in events]
+    times = [t for t in times if t is not None]
+    if not times:
+        return {"title": title}
+    afternoon = [t for t in times if t >= MANANA_ANTES]
+    start = afternoon[0] if afternoon else times[0]
+    return {"title": title, "_start": f"{start // 60:02d}:{start % 60:02d}"}
 
 
 def _parse_stamp(stamp: str) -> datetime | None:
@@ -905,18 +926,24 @@ def build_hoy(
     *,
     reglas: dict | None,
     viajes,
-    sports_day: dict | None,
-    sports_week: dict | None,
+    deporte: dict | None = None,
+    sports_day: dict | None = None,
+    sports_week: dict | None = None,
     tiempo: dict | None,
     calendario: list[dict] | None = None,
     comedor: dict | None = None,
     actualizado: str | None = None,
 ) -> dict:
+    del sports_week
     extras = events_from_reglas(reglas, ymd)
     extra_titles = {norm_title(e["title"]) for e in extras}
     extra_titles |= {norm_title(str(e.get("_skip_of") or "")) for e in extras if e.get("_skip_of")}
     extra_titles.discard("")
     extras = extras + calendar_rows(calendario, ymd, extra_titles)
+    src = deporte if deporte is not None else sports_day
+    sport_row = sports_extraescolar(src, ymd)
+    if sport_row:
+        extras.append(sport_row)
     extras.sort(key=lambda e: (1 if e.get("_allday") else 0, e.get("_start") or "99:99"))
     manana_ex, tarde_ex = split_extraescolares(extras)
     casa = trip_on(viajes, ymd)
@@ -929,8 +956,8 @@ def build_hoy(
     tiempo_txt = weather_copy(day_w)
     lluvia_txt = lluvia_line(day_w)
     rain_n = as_int(day_w.get("rain_probability")) if day_w else None
-    deportes = sports_lines(sports_day, sports_week, ymd)
-    deporte = sports_pick_line(sports_events_for_day(sports_day, sports_week, ymd))
+    deportes = sports_lines(src, ymd)
+    deporte_txt = sports_for_day(src, ymd)
     es_laborable = laborable(ymd)
     es_festivo = festivo(ymd)
     stamp = (actualizado or "").strip()
@@ -957,7 +984,7 @@ def build_hoy(
         "nacho_ropa": ropa_tarde,
         "extraescolares": tarde_ex,
         "viaje": viaje,
-        "deporte": deporte,
+        "deporte": deporte_txt,
         "mela": cena_txt,
     }
     finde = {
@@ -966,7 +993,7 @@ def build_hoy(
         "rain_probability": rain_n,
         "extraescolares": manana_ex + [e for e in tarde_ex if e not in manana_ex],
         "viaje": viaje,
-        "deporte": deporte,
+        "deporte": deporte_txt,
         "mela": comida_txt,
     }
     return {
@@ -1033,26 +1060,23 @@ def _read_json(path: Path) -> dict | None:
     return payload if isinstance(payload, dict) else None
 
 
-def load_sources() -> tuple[dict | None, dict | None, dict | None, dict | None, list[dict], dict | None]:
+def load_sources() -> tuple[dict | None, dict | None, dict | None, list[dict], dict | None]:
     creds = None
     if SA.is_file():
         creds = _creds()
     reglas = firestore_get_casa("go_reglas", creds) if creds else None
     viajes = firestore_get_casa("viajes", creds) if creds else None
-    sports = firestore_get_casa("go_sports", creds) if creds else None
-    week = firestore_get_casa("go_sports_week", creds) if creds else None
+    deporte = firestore_get_casa("deporte", creds) if creds else None
     comedor = firestore_get_casa("go_comedor", creds) if creds else None
     if reglas is None:
         reglas = _read_json(REPO / "go" / "reglas.json")
     if viajes is None:
         viajes = _read_json(REPO / "viajes" / "viajes.json")
-    if sports is None:
-        sports = _read_json(REPO / "go" / "sports.json")
-    if week is None:
-        week = _read_json(REPO / "go" / "sports_week.json")
+    if deporte is None:
+        deporte = _read_json(REPO / "deporte" / "deporte.json")
     if comedor is None:
         comedor = _read_json(REPO / "go" / "comedor.json")
-    return reglas, viajes, sports, week, read_calendar(), comedor
+    return reglas, viajes, deporte, read_calendar(), comedor
 
 
 def put_epaper(body: str) -> None:
@@ -1096,15 +1120,14 @@ def main() -> None:
     parser.add_argument("--ymd", default="")
     args = parser.parse_args()
     ymd = args.ymd or ymd_madrid()
-    reglas, viajes, sports, week, calendario, comedor = load_sources()
+    reglas, viajes, deporte, calendario, comedor = load_sources()
     tiempo = fetch_tiempo()
     ahora = datetime.now(ZoneInfo(ZONE)).strftime("%Y-%m-%d %H:%M")
     doc = build_hoy(
         ymd,
         reglas=reglas,
         viajes=viajes,
-        sports_day=sports,
-        sports_week=week,
+        deporte=deporte,
         tiempo=tiempo,
         calendario=calendario,
         comedor=comedor,
