@@ -12,7 +12,6 @@ export const TAGS = {
   f1: { label: 'F1', color: '#e10600' },
   wec: { label: 'WEC', color: '#b8860b' },
   nhl: { label: 'NHL', color: '#5dade2' },
-  femenino: { label: 'Femenino', color: '#c2185b' },
 };
 
 export function ymdMadrid(date = new Date(), tz = TZ) {
@@ -59,9 +58,22 @@ export function isBrewers(p) {
   return /brewers/i.test(String((p && p.rival) || ''));
 }
 
+export function isFavorito(p) {
+  const deporte = String((p && p.deporte) || '');
+  const rival = String((p && p.rival) || '');
+  const t = rival.toLowerCase();
+  if (deporte === 'futbol' && t.includes('real madrid')) return true;
+  if (deporte === 'f1') return true;
+  if (deporte === 'mlb' && t.includes('brewers')) return true;
+  if (deporte === 'nfl' && t.includes('dolphins')) return true;
+  if (deporte === 'nhl' && t.includes('red wings')) return true;
+  return false;
+}
+
 export function keepPartido(p) {
   if (!p || typeof p !== 'object') return false;
   if (!YMD.test(String(p.fecha_madrid || ''))) return false;
+  if (String((p && p.deporte) || '') === 'femenino') return false;
   if (isNhl(p) && !inWindow(p)) return false;
   return true;
 }
