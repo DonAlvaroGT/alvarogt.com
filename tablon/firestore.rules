@@ -113,10 +113,15 @@ service cloud.firestore {
           'agustingarciatimon@gmail.com'
         ];
     }
+    function deporteReader() {
+      return signedIn()
+        && request.auth.token.email == 'agarciatimon@gmail.com';
+    }
     match /casa_json/{id} {
       allow read: if (id == 'viajes' && viajesReader())
         || (id == 'viajes_casa' && casaReader())
-        || (id != 'viajes' && id != 'viajes_casa' && casaReader());
+        || (id == 'deporte' && deporteReader())
+        || (id != 'viajes' && id != 'viajes_casa' && id != 'deporte' && casaReader());
       allow write: if false;
     }
 

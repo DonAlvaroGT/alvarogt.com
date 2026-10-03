@@ -21,6 +21,7 @@ DOCS = {
     "go/favoritos.json": "go_favoritos",
     "viajes/viajes.json": "viajes",
     "viajes/viajes_casa.json": "viajes_casa",
+    "deporte/deporte.json": "deporte",
 }
 SA = Path.home() / ".hermes/gabinete/secrets/tablongo-firebase-adminsdk.json"
 PROJECT = "tablongo"

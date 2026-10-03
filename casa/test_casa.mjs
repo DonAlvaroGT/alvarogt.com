@@ -7,7 +7,7 @@ import {
   lastTab, rememberTab, TAB_KEY, TAB_NAMES,
   queueHasPending, setTablonQueueDot, readTablonQueueFromFrame, refreshTablonQueueDot,
   setViajesTripDot, readTripSoonFromGoFrame, refreshViajesTripDot, applyViajesHoy,
-  showMonoEgg, hideMonoEgg, onGoTabTap, dismissMonoEgg
+  showMonoEgg, hideMonoEgg, onGoTabTap, dismissMonoEgg, setDeporteTab
 } from './app.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -17,18 +17,20 @@ test('pista de adulto es un correo, no una allowlist', () => {
   assert.equal(isAdult(''), false);
 });
 
-test('tres destinos, sin precarga', () => {
+test('cuatro destinos, Deporte lazy', () => {
   assert.equal(srcFor('go'), '/go/');
   assert.equal(srcFor('tablon'), '/tablon/');
   assert.equal(srcFor('viajes'), '/viajes/');
+  assert.equal(srcFor('deporte'), '/deporte/');
   assert.equal(srcFor('nope'), '/go/');
-  assert.deepEqual(VIEWS, { go: '/go/', tablon: '/tablon/', viajes: '/viajes/' });
+  assert.deepEqual(VIEWS, { go: '/go/', tablon: '/tablon/', viajes: '/viajes/', deporte: '/deporte/' });
 });
 
 test('la barra sigue el path del iframe', () => {
   assert.equal(tabFromPath('/go/'), 'go');
   assert.equal(tabFromPath('/tablon/premiosganados/'), 'tablon');
   assert.equal(tabFromPath('/viajes/'), 'viajes');
+  assert.equal(tabFromPath('/deporte/'), 'deporte');
 });
 
 function el(init = {}) {
@@ -120,7 +122,10 @@ function mockDom(opts = {}) {
   const viajesDot = el({ hidden: true, className: 'tab-dot' });
   const viajes = el({ dataset: { view: 'viajes' }, attrs: { 'aria-selected': 'false', 'data-view': 'viajes' }, children: [viajesDot] });
   viajes.dataset.view = 'viajes';
-  const tabs = el({ children: [go, tablon, viajes] });
+  const deporteDot = el({ hidden: true, className: 'tab-dot' });
+  const deporte = el({ hidden: true, dataset: { view: 'deporte' }, attrs: { 'aria-selected': 'false', 'data-view': 'deporte', hidden: '' }, children: [deporteDot] });
+  deporte.dataset.view = 'deporte';
+  const tabs = el({ children: [go, tablon, viajes, deporte] });
   const nodes = {
     '#gate': gate,
     '#shell': shell,
@@ -132,7 +137,8 @@ function mockDom(opts = {}) {
     '#tabs button[aria-selected="true"]': go,
     '#tabs button[data-view="go"]': go,
     '#tabs button[data-view="tablon"]': tablon,
-    '#tabs button[data-view="viajes"]': viajes
+    '#tabs button[data-view="viajes"]': viajes,
+    '#tabs button[data-view="deporte"]': deporte
   };
   globalThis.document = {
     createElement(tag) {
@@ -149,7 +155,8 @@ function mockDom(opts = {}) {
     },
     visibilityState: 'visible'
   };
-  return { gate, shell, scroller, overlay, egg, status, go, tablon, viajes };
+  setDeporteTab(false);
+  return { gate, shell, scroller, overlay, egg, status, go, tablon, viajes, deporte };
 }
 
 test('sin login no hay iframe ni barra', () => {
@@ -263,7 +270,7 @@ test('resume no recarga si la visible sigue viva', () => {
 
 test('restaura la última pestaña; si no hay valor, Go', () => {
   assert.equal(TAB_KEY, 'casa.lastTab');
-  assert.deepEqual(TAB_NAMES, ['go', 'tablon', 'viajes']);
+  assert.deepEqual(TAB_NAMES, ['go', 'tablon', 'viajes', 'deporte']);
   const d = mockDom();
   assert.equal(lastTab(), 'go');
   showShell();
@@ -454,4 +461,19 @@ test('login_hint del último adulto, sin select_account', () => {
   assert.equal(Object.prototype.hasOwnProperty.call(googleParams(), 'prompt'), false);
   globalThis.window.navigator.standalone = true;
   assert.equal(isStandaloneDisplay(), true);
+});
+
+test('Deporte solo si el probe deja la pestaña', () => {
+  const d = mockDom();
+  showShell();
+  assert.equal(d.deporte.hidden, true);
+  showView('deporte');
+  assert.equal(d.scroller.children.some((f) => f.getAttribute('data-casa-view') === 'deporte'), false);
+  setDeporteTab(true);
+  assert.equal(d.deporte.hidden, false);
+  showView('deporte');
+  const frame = d.scroller.children.find((f) => f.getAttribute('data-casa-view') === 'deporte');
+  assert.equal(frame.src, '/deporte/');
+  setDeporteTab(false);
+  assert.equal(d.deporte.hidden, true);
 });
