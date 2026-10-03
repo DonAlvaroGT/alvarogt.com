@@ -61,7 +61,7 @@ class JobTests(unittest.TestCase):
         self.assertEqual(hora, "21:00")
         self.assertEqual(fecha, "2026-10-10")
 
-    def test_soccer_keeps_rm_barca_and_rm_femenino(self):
+    def test_soccer_keeps_rm_barca_not_femenino(self):
         days = ["2026-10-10"]
         getter = FakeGet({
             "soccer/esp.1/scoreboard": {"events": [
@@ -71,15 +71,12 @@ class JobTests(unittest.TestCase):
             ]},
             "soccer/esp.w.1/scoreboard": {"events": [
                 ev("9", "2026-10-10T17:00Z", "Real Madrid", "Atlético Madrid"),
-                ev("8", "2026-10-10T17:00Z", "Barcelona", "Madrid CFF"),
             ]},
         })
-        men = job.collect_soccer(getter, days, False)
-        women = job.collect_soccer(getter, days, True)
+        men = job.collect_soccer(getter, days)
         self.assertEqual({p["rival"] for p in men}, {"Villarreal – Real Madrid", "Getafe – Barcelona"})
         self.assertEqual(men[0]["deporte"], "futbol")
-        self.assertEqual({p["rival"] for p in women}, {"Real Madrid – Atlético Madrid"})
-        self.assertEqual(women[0]["deporte"], "femenino")
+        self.assertTrue(all(p["deporte"] != "femenino" for p in men))
         self.assertEqual(job.tv_espana("DAZN LaLiga"), "DAZN LaLiga")
         self.assertEqual(job.tv_espana("Movistar Plus+"), "Movistar Plus+")
         self.assertEqual(job.tv_espana("Disney+"), "Disney+")
@@ -151,6 +148,7 @@ class JobTests(unittest.TestCase):
                 return {"events": []}
         payload = job.build_payload(now, Boom({}))
         self.assertEqual(payload["fuentes"]["esp.1"], "403")
+        self.assertNotIn("esp.w.1", payload["fuentes"])
         self.assertEqual(payload["fuentes"]["wec"], "omitido")
         self.assertEqual(payload["partidos"], [])
         self.assertEqual(payload["schema_version"], 1)
@@ -160,7 +158,9 @@ class JobTests(unittest.TestCase):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         js = (ROOT / "app.js").read_text(encoding="utf-8")
         py = (ROOT / "deporte_job.py").read_text(encoding="utf-8")
-        self.assertIn("deporte-build: 20261003b", html)
+        self.assertIn("deporte-build: 20261003c", html)
+        self.assertIn("casa-star", html)
+        self.assertIn("★", html)
         self.assertIn("En ventana", html)
         self.assertIn("Fuera de ventana", html)
         self.assertIn("Sin sesión no hay partidos", html)
@@ -170,6 +170,8 @@ class JobTests(unittest.TestCase):
         self.assertNotIn("@gmail.com", js)
         self.assertNotIn("Homer", py)
         self.assertNotIn("go_sports", py)
+        self.assertNotIn("esp.w.1", py)
+        self.assertNotIn("femenino", py)
 
 
 if __name__ == "__main__":

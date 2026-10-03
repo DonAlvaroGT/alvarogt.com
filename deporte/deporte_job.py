@@ -250,28 +250,23 @@ def espn_scoreboard(get: Fetcher, path: str, ymd: str) -> list[dict]:
     return events if isinstance(events, list) else []
 
 
-def keep_soccer(away: str, home: str, femenino: bool) -> bool:
+def keep_soccer(away: str, home: str) -> bool:
     names = {fold(away), fold(home)}
-    if femenino:
-        return "real madrid" in names
     return "real madrid" in names or "barcelona" in names
 
 
-def collect_soccer(get: Fetcher, days: list[str], femenino: bool) -> list[dict]:
-    path = "soccer/esp.w.1" if femenino else "soccer/esp.1"
-    deporte = "femenino" if femenino else "futbol"
-    prefix = "ligaf" if femenino else "laliga"
+def collect_soccer(get: Fetcher, days: list[str]) -> list[dict]:
     out: list[dict] = []
     for ymd in days:
-        for ev in espn_scoreboard(get, path, ymd):
+        for ev in espn_scoreboard(get, "soccer/esp.1", ymd):
             if not isinstance(ev, dict):
                 continue
             away, home = espn_teams(ev)
-            if not keep_soccer(away, home, femenino):
+            if not keep_soccer(away, home):
                 continue
             p = partido(
-                f"{prefix}-{ev.get('id')}",
-                deporte,
+                f"laliga-{ev.get('id')}",
+                "futbol",
                 str(ev.get("date") or ""),
                 rival_line(away, home, str(ev.get("name") or "")),
                 espn_tv(ev),
@@ -472,8 +467,7 @@ def build_payload(now: datetime | None = None, get: Fetcher | None = None) -> di
     fuentes: dict[str, str] = {}
     partidos: list[dict] = []
     catch_fuente("mlb", lambda: collect_mlb(getter, days), fuentes, partidos)
-    catch_fuente("esp.1", lambda: collect_soccer(getter, days, False), fuentes, partidos)
-    catch_fuente("esp.w.1", lambda: collect_soccer(getter, days, True), fuentes, partidos)
+    catch_fuente("esp.1", lambda: collect_soccer(getter, days), fuentes, partidos)
     catch_fuente("nfl", lambda: collect_nfl(getter, days), fuentes, partidos)
     catch_fuente("ncaa", lambda: collect_ncaa(getter, days), fuentes, partidos)
     catch_fuente("nhl", lambda: collect_nhl(getter, days), fuentes, partidos)

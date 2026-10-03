@@ -1,3 +1,5 @@
+import { isFavorito } from './filtro.mjs';
+
 export function parentEmail() {
   try {
     if (window.parent === window) return '';
@@ -77,10 +79,11 @@ export async function casaDoc(id, fsApi, db, project) {
 export function cardHtml(p, esc) {
   const tag = p.tag || {};
   const tv = p.tv ? `<span class="tv">${esc(p.tv)}</span>` : '';
+  const star = p.favorito ? '<span class="casa-star" title="casa">★</span>' : '';
   return `<article class="match" style="--tag:${esc(tag.color || '#666')}">
     <span class="tag">${esc(tag.label || '')}</span>
     <span class="hora">${esc(p.hora || '')}</span>
-    <span class="rival">${esc(p.rival || '')}</span>
+    <span class="rival">${star}${esc(p.rival || '')}</span>
     ${tv}
   </article>`;
 }
@@ -91,5 +94,6 @@ export function paintList(partidos, tagOf, tvOf, lineaIgnored) {
     rival: String(p.rival || ''),
     tv: tvOf(p),
     tag: tagOf(p),
+    favorito: isFavorito(p),
   }));
 }

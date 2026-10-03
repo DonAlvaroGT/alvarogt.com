@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   ymdMadrid, addDaysYmd, weekStartMonday, weekDays, inWindow, keepPartido,
-  hoyList, restoSemana, diaList, sortPartidos, isBrewers, emptyMsg, lineaToque, TAGS, WIN_START,
+  hoyList, restoSemana, diaList, sortPartidos, isBrewers, isFavorito, emptyMsg, lineaToque, TAGS, WIN_START,
 } from './filtro.mjs';
 import { paintList, HOSTS, cardHtml } from './app.js';
 
@@ -30,6 +30,7 @@ const payload = {
     { deporte: 'nhl', fecha_madrid: '2026-10-06', hora_madrid: '02:00', rival: 'Rangers – Wings', tv: 'TNT', utc: '2026-10-06T00:00:00Z' },
     { deporte: 'futbol', fecha_madrid: '2026-10-10', hora_madrid: '21:00', rival: 'Villarreal – Real Madrid', tv: '', utc: '2026-10-10T19:00:00Z' },
     { deporte: 'femenino', fecha_madrid: '2026-10-07', hora_madrid: '19:00', rival: 'Real Madrid – Barça', tv: '', utc: '2026-10-07T17:00:00Z' },
+    { deporte: 'nfl', fecha_madrid: '2026-10-07', hora_madrid: '20:15', rival: 'Dolphins – Bills', tv: '', utc: '2026-10-07T18:15:00Z' },
     { deporte: 'mlb', fecha_madrid: '2026-10-07', hora_madrid: '02:10', rival: 'Dodgers – Padres', tv: '', utc: '2026-10-07T00:10:00Z' },
   ],
 };
@@ -50,11 +51,24 @@ test('resto de la semana no incluye hoy; martes ve el sábado por calendario', (
   assert.equal(resto.some((r) => r.fecha === '2026-10-06'), false);
   const mie = resto.find((r) => r.fecha === '2026-10-07');
   assert.ok(mie);
-  assert.deepEqual(mie.ventana.map((p) => p.rival), ['Real Madrid – Barça']);
+  assert.deepEqual(mie.ventana.map((p) => p.rival), ['Dolphins – Bills']);
   assert.deepEqual(mie.fuera.map((p) => p.rival), ['Dodgers – Padres']);
+  assert.equal(mie.ventana.some((p) => p.deporte === 'femenino'), false);
   const sab = diaList(payload, '2026-10-10');
   assert.equal(sab[0].rival, 'Villarreal – Real Madrid');
   assert.equal(addDaysYmd('2026-10-06', 4), '2026-10-10');
+});
+
+test('favoritos casa', () => {
+  assert.equal(isFavorito({ deporte: 'futbol', rival: 'Villarreal – Real Madrid' }), true);
+  assert.equal(isFavorito({ deporte: 'futbol', rival: 'Getafe – Barcelona' }), false);
+  assert.equal(isFavorito({ deporte: 'femenino', rival: 'Real Madrid – Barça' }), false);
+  assert.equal(isFavorito({ deporte: 'mlb', rival: 'Brewers – Mets' }), true);
+  assert.equal(isFavorito({ deporte: 'nfl', rival: 'Dolphins – Bills' }), true);
+  assert.equal(isFavorito({ deporte: 'nhl', rival: 'Red Wings – Rangers' }), true);
+  assert.equal(isFavorito({ deporte: 'f1', rival: 'Bahrain GP' }), true);
+  assert.equal(isFavorito({ deporte: 'mlb', rival: 'Cubs – Cardinals' }), false);
+  assert.equal(keepPartido({ deporte: 'femenino', fecha_madrid: '2026-10-07', hora_madrid: '19:00', rival: 'Real Madrid – Barça' }), false);
 });
 
 test('toque no inventa TV', () => {
@@ -70,12 +84,15 @@ test('sin datos si las fuentes fallan', () => {
 });
 
 test('tags y pie de lista', () => {
-  assert.equal(TAGS.femenino.label, 'Femenino');
+  assert.equal(TAGS.femenino, undefined);
   assert.equal(TAGS.nhl.color, '#5dade2');
   const painted = paintList(sortPartidos(payload.partidos.filter((p) => p.fecha_madrid === '2026-10-06' && p.deporte === 'mlb')), (p) => TAGS[p.deporte], (p) => p.tv || '');
   assert.equal(painted[0].rival.includes('Brewers'), true);
+  assert.equal(painted[0].favorito, true);
+  assert.equal(painted[1].favorito, false);
   assert.equal(isBrewers(payload.partidos[1]), true);
-  assert.match(cardHtml({ tag: TAGS.mlb, hora: '21:15', rival: 'Brewers', tv: '' }, (s) => s), /Brewers/);
+  assert.match(cardHtml({ tag: TAGS.mlb, hora: '21:15', rival: 'Brewers', tv: '', favorito: true }, (s) => s), /casa-star.*★.*Brewers/s);
+  assert.equal(cardHtml({ tag: TAGS.mlb, hora: '20:10', rival: 'Cubs', tv: '', favorito: false }, (s) => s).includes('★'), false);
   assert.ok(HOSTS.includes('alvarogt.com'));
 });
 
@@ -88,7 +105,9 @@ test('app.js no trae correos', async () => {
     assert.equal(blob.includes('@gmail.com'), false);
     assert.equal(blob.includes('agarcia'), false);
   }
-  assert.match(html, /deporte-build: 20261003b/);
+  assert.match(html, /deporte-build: 20261003c/);
+  assert.match(html, /casa-star/);
+  assert.match(html, /★/);
   assert.match(html, /En ventana/);
   assert.match(html, /Fuera de ventana/);
   assert.match(html, /Creado por Álvaro GT y sus minions/);
