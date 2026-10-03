@@ -10,11 +10,13 @@ from epaper_hoy import (
     build_hoy,
     events_from_reglas,
     festivo,
+    is_favorito,
     laborable,
     lluvia_line,
     nacho_ropa,
     rest_url_redacted,
     skip_aviso,
+    sports_ficha,
     sports_for_day,
     sports_lines,
 )
@@ -105,13 +107,50 @@ TIEMPO = {
     "2026-09-19": {"min": 15, "max": 26, "weather_code": 3, "rain_probability": 20},
     "2026-09-21": {"min": 14.9, "max": 31.8, "weather_code": 2},
 }
-SPORTS_WEEK = {
+DEPORTE = {
+    "schema_version": 1,
     "timezone": "Europe/Madrid",
-    "events": [
-        {"fecha": "2026-09-18", "evento": "Fuera de ventana", "hora_madrid": "09:00", "interes": 5},
-        {"fecha": "2026-09-18", "evento": "Noche", "hora_madrid": "23:00", "interes": 5},
-        {"fecha": "2026-09-19", "evento": "Sevilla vs Barcelona", "hora_madrid": "21:00", "interes": 4, "canal": "Movistar Plus+", "deporte": "fútbol"},
-        {"fecha": "2026-09-19", "evento": "Brewers vs Cubs", "hora_madrid": "16:00", "interes": 2, "canal": "DAZN"},
+    "partidos": [
+        {"fecha_madrid": "2026-09-18", "hora_madrid": "08:59", "rival": "Malasia · Libres", "deporte": "f1"},
+        {"fecha_madrid": "2026-09-18", "hora_madrid": "23:00", "rival": "Malasia · Noche", "deporte": "f1"},
+        {
+            "fecha_madrid": "2026-09-19",
+            "hora_madrid": "21:00",
+            "rival": "Sevilla – Barcelona",
+            "deporte": "futbol",
+        },
+        {
+            "fecha_madrid": "2026-09-19",
+            "hora_madrid": "16:00",
+            "rival": "Brewers – Cubs",
+            "deporte": "mlb",
+        },
+        {
+            "fecha_madrid": "2026-09-19",
+            "hora_madrid": "21:00",
+            "rival": "Miami Dolphins – Bills",
+            "deporte": "nfl",
+        },
+        {
+            "fecha_madrid": "2026-09-19",
+            "hora_madrid": "18:00",
+            "rival": "Detroit Red Wings – Bruins",
+            "deporte": "nhl",
+        },
+        {
+            "fecha_madrid": "2026-09-21",
+            "hora_madrid": "21:00",
+            "rival": "Real Madrid – Valencia",
+            "deporte": "futbol",
+        },
+        {
+            "fecha_madrid": "2026-09-21",
+            "hora_madrid": "21:00",
+            "rival": "Real Madrid – Barcelona",
+            "deporte": "femenino",
+        },
+        {"fecha_madrid": "2026-10-03", "hora_madrid": "10:00", "rival": "Malasia · Qualy", "deporte": "f1"},
+        {"fecha_madrid": "2026-10-04", "hora_madrid": "09:00", "rival": "Malasia · Carrera", "deporte": "f1"},
     ],
 }
 CAL = [
@@ -151,8 +190,9 @@ def doc(ymd, **kwargs):
         ymd,
         reglas=kwargs.get("reglas", REGLAS),
         viajes=kwargs.get("viajes", VIAJES),
+        deporte=kwargs.get("deporte", DEPORTE),
         sports_day=kwargs.get("sports_day"),
-        sports_week=kwargs.get("sports_week", SPORTS_WEEK),
+        sports_week=kwargs.get("sports_week"),
         tiempo=kwargs.get("tiempo", TIEMPO),
         calendario=kwargs.get("calendario", CAL),
         comedor=kwargs.get("comedor", COMEDOR),
@@ -266,9 +306,9 @@ class EpaperHoyTests(unittest.TestCase):
         titles_t = [e["title"] for e in lunes["tarde"]["extraescolares"]]
         self.assertEqual(
             titles_m,
-            ["Piano Luz", "Cita Hospital Viamed Santa Elena", "Fútbol Nacho", "Abuelos GT en Atenas"],
+            ["Piano Luz", "Cita Hospital Viamed Santa Elena", "Fútbol Nacho", "* 21:00 · Real Madrid – Valencia", "Abuelos GT en Atenas"],
         )
-        self.assertEqual(titles_t, ["Fútbol Nacho", "Abuelos GT en Atenas"])
+        self.assertEqual(titles_t, ["Fútbol Nacho", "* 21:00 · Real Madrid – Valencia", "Abuelos GT en Atenas"])
         self.assertNotIn("Piano Luz", titles_t)
         martes = doc("2026-09-22")
         titles_m = [e["title"] for e in martes["manana"]["extraescolares"]]
@@ -320,24 +360,49 @@ class EpaperHoyTests(unittest.TestCase):
         self.assertNotIn("14:00", finde["finde"]["mela"])
 
     def test_deporte_ventana_sin_inventar(self):
-        self.assertEqual(sports_for_day(None, SPORTS_WEEK, "2026-09-18"), "")
-        self.assertIn("Sevilla", sports_for_day(None, SPORTS_WEEK, "2026-09-19"))
-        self.assertIn("21:00", sports_for_day(None, SPORTS_WEEK, "2026-09-19"))
+        self.assertFalse(is_favorito({"deporte": "futbol", "rival": "Sevilla – Barcelona"}))
+        self.assertTrue(is_favorito({"deporte": "futbol", "rival": "Real Madrid – Valencia"}))
+        self.assertFalse(is_favorito({"deporte": "femenino", "rival": "Real Madrid – Barcelona"}))
+        self.assertEqual(sports_for_day(None, "2026-09-18"), "")
+        self.assertEqual(sports_for_day(DEPORTE, "2026-09-18"), "")
+        self.assertNotIn("Sevilla", sports_for_day(DEPORTE, "2026-09-19"))
         vacio = doc("2026-09-18")
         self.assertEqual(vacio["tarde"]["deporte"], "")
         self.assertEqual(vacio["finde"]["deporte"], "")
         self.assertEqual(vacio["deportes"], [])
+        self.assertFalse(any(str(e.get("title") or "").startswith("*") for e in vacio["manana"]["extraescolares"]))
+        self.assertFalse(any(str(e.get("title") or "").startswith("*") for e in vacio["tarde"]["extraescolares"]))
         sabado = doc("2026-09-19")
-        self.assertIn("Sevilla", sabado["tarde"]["deporte"])
-        self.assertEqual(sabado["tarde"]["deporte"], sabado["finde"]["deporte"])
+        ficha = "* 16:00 · Brewers – Cubs · 18:00 · Detroit Red Wings – Bruins · 21:00 · Miami Dolphins – Bills"
+        self.assertEqual(sports_ficha(DEPORTE, "2026-09-19"), ficha)
         self.assertEqual(
-            sabado["deportes"],
+            sports_lines(DEPORTE, "2026-09-19"),
             [
-                "Brewers–Cubs a las 16:00 en DAZN",
-                "Sevilla–Barcelona a las 21:00 en Movistar Plus+",
+                "16:00 · Brewers – Cubs",
+                "18:00 · Detroit Red Wings – Bruins",
+                "21:00 · Miami Dolphins – Bills",
             ],
         )
-        self.assertEqual(sports_lines(None, SPORTS_WEEK, "2026-09-18"), [])
+        titles_f = [e["title"] for e in sabado["finde"]["extraescolares"]]
+        titles_t = [e["title"] for e in sabado["tarde"]["extraescolares"]]
+        self.assertEqual(titles_f.count(ficha), 1)
+        self.assertEqual(titles_t.count(ficha), 1)
+        self.assertTrue(all("Sevilla" not in t for t in titles_f))
+        self.assertNotIn("time", [e for e in sabado["finde"]["extraescolares"] if e["title"] == ficha][0])
+        lunes = doc("2026-09-21")
+        titles_m = [e["title"] for e in lunes["manana"]["extraescolares"]]
+        titles_t = [e["title"] for e in lunes["tarde"]["extraescolares"]]
+        rm = "* 21:00 · Real Madrid – Valencia"
+        self.assertEqual(titles_m.count(rm), 1)
+        self.assertEqual(titles_t.count(rm), 1)
+        self.assertEqual(titles_t.count("Fútbol Nacho"), 1)
+        self.assertTrue(all("femenino" not in t.lower() and "Barcelona" not in t for t in titles_m if t.startswith("*")))
+        self.assertEqual(sports_ficha(DEPORTE, "2026-10-03"), "* 10:00 · Malasia · Qualy")
+        self.assertEqual(sports_ficha(DEPORTE, "2026-10-04"), "* 09:00 · Malasia · Carrera")
+        oct3 = doc("2026-10-03", reglas={"schema_version": 1, "timezone": "Europe/Madrid", "extraescolares": []}, calendario=[])
+        titles_oct = [e["title"] for e in oct3["finde"]["extraescolares"]]
+        self.assertEqual(titles_oct, ["* 10:00 · Malasia · Qualy"])
+        self.assertEqual(sports_lines(None, "2026-09-18"), [])
 
     def test_actualizado_solo_si_viene(self):
         sin = doc("2026-09-21")
@@ -347,8 +412,7 @@ class EpaperHoyTests(unittest.TestCase):
             "2026-09-21",
             reglas=REGLAS,
             viajes=VIAJES,
-            sports_day=None,
-            sports_week=SPORTS_WEEK,
+            deporte=DEPORTE,
             tiempo=TIEMPO,
             calendario=CAL,
             actualizado="2026-09-21 19:04",
@@ -367,6 +431,16 @@ class EpaperHoyTests(unittest.TestCase):
         nubes = doc("2026-09-21")
         self.assertEqual(nubes["manana"]["tiempo"], "15–32° nubes")
         self.assertNotIn("lluvia", nubes["manana"]["tiempo"])
+        agua = doc(
+            "2026-09-18",
+            tiempo={"2026-09-18": {"min": 14, "max": 27, "weather_code": 3, "rain_probability": 45}},
+        )
+        self.assertEqual(agua["manana"]["tiempo"], "14–27° lluvia")
+        bajo = doc(
+            "2026-09-18",
+            tiempo={"2026-09-18": {"min": 14, "max": 27, "weather_code": 3, "rain_probability": 44}},
+        )
+        self.assertEqual(bajo["manana"]["tiempo"], "14–27° nubes")
 
     def test_lluvia_bajo_grados(self):
         self.assertEqual(lluvia_line({"rain_probability": 40}), "lluvia 40 %")
@@ -415,7 +489,7 @@ class EpaperHoyTests(unittest.TestCase):
         self.assertIn("Fútbol Nacho", titles_t)
         lun = doc("2026-09-21", reglas=reglas, calendario=[])
         titles_lun = [e["title"] for e in lun["tarde"]["extraescolares"]]
-        self.assertEqual(titles_lun, ["hoy no hay fútbol"])
+        self.assertEqual(titles_lun, ["hoy no hay fútbol", "* 21:00 · Real Madrid – Valencia"])
         self.assertNotIn("Fútbol Nacho", titles_lun)
         mar = doc("2026-09-22", reglas=reglas, calendario=[])
         titles_mar = [e["title"] for e in mar["tarde"]["extraescolares"]]
