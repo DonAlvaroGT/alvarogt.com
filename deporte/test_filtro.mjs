@@ -30,6 +30,7 @@ const payload = {
     { deporte: 'nhl', fecha_madrid: '2026-10-06', hora_madrid: '02:00', rival: 'Rangers – Wings', tv: 'TNT', utc: '2026-10-06T00:00:00Z' },
     { deporte: 'futbol', fecha_madrid: '2026-10-10', hora_madrid: '21:00', rival: 'Villarreal – Real Madrid', tv: '', utc: '2026-10-10T19:00:00Z' },
     { deporte: 'femenino', fecha_madrid: '2026-10-07', hora_madrid: '19:00', rival: 'Real Madrid – Barça', tv: '', utc: '2026-10-07T17:00:00Z' },
+    { deporte: 'mlb', fecha_madrid: '2026-10-07', hora_madrid: '02:10', rival: 'Dodgers – Padres', tv: '', utc: '2026-10-07T00:10:00Z' },
   ],
 };
 
@@ -47,6 +48,10 @@ test('resto de la semana no incluye hoy; martes ve el sábado por calendario', (
   assert.deepEqual(weekDays('2026-10-06')[0], '2026-10-05');
   const resto = restoSemana(payload, now);
   assert.equal(resto.some((r) => r.fecha === '2026-10-06'), false);
+  const mie = resto.find((r) => r.fecha === '2026-10-07');
+  assert.ok(mie);
+  assert.deepEqual(mie.ventana.map((p) => p.rival), ['Real Madrid – Barça']);
+  assert.deepEqual(mie.fuera.map((p) => p.rival), ['Dodgers – Padres']);
   const sab = diaList(payload, '2026-10-10');
   assert.equal(sab[0].rival, 'Villarreal – Real Madrid');
   assert.equal(addDaysYmd('2026-10-06', 4), '2026-10-10');
@@ -83,7 +88,9 @@ test('app.js no trae correos', async () => {
     assert.equal(blob.includes('@gmail.com'), false);
     assert.equal(blob.includes('agarcia'), false);
   }
-  assert.match(html, /deporte-build: 20261003a/);
+  assert.match(html, /deporte-build: 20261003b/);
+  assert.match(html, /En ventana/);
+  assert.match(html, /Fuera de ventana/);
   assert.match(html, /Creado por Álvaro GT y sus minions/);
   assert.match(html, /Sin sesión no hay partidos/);
   assert.match(html, /id="app"[^>]*hidden/);

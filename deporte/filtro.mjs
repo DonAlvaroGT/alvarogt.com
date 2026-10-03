@@ -104,10 +104,15 @@ export function restoSemana(payload, now = new Date()) {
   const today = ymdMadrid(now);
   const days = weekDays(today).filter((d) => d !== today);
   const all = partidosOf(payload);
-  return days.map((fecha) => ({
-    fecha,
-    partidos: sortPartidos(all.filter((p) => p.fecha_madrid === fecha)),
-  })).filter((row) => row.partidos.length);
+  return days.map((fecha) => {
+    const list = sortPartidos(all.filter((p) => p.fecha_madrid === fecha));
+    return {
+      fecha,
+      ventana: list.filter(inWindow),
+      fuera: list.filter((p) => !inWindow(p)),
+      partidos: list,
+    };
+  }).filter((row) => row.partidos.length);
 }
 
 export function diaList(payload, ymd) {
