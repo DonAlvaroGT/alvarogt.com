@@ -49,12 +49,12 @@ class FakeGet:
 
 
 class JobTests(unittest.TestCase):
-    def test_horizon_is_14_days_from_clock(self):
+    def test_horizon_is_62_days_from_clock(self):
         now = datetime(2026, 10, 6, 7, 0, tzinfo=ZONE)
         days = job.horizon(now)
         self.assertEqual(days[0], "2026-10-06")
-        self.assertEqual(days[-1], "2026-10-19")
-        self.assertEqual(len(days), 14)
+        self.assertEqual(days[-1], "2026-12-06")
+        self.assertEqual(len(days), 62)
 
     def test_madrid_from_utc(self):
         hora, fecha = job.madrid_from_utc("2026-10-10T19:00:00Z")
@@ -80,7 +80,11 @@ class JobTests(unittest.TestCase):
         self.assertEqual(men[0]["deporte"], "futbol")
         self.assertEqual({p["rival"] for p in women}, {"Real Madrid – Atlético Madrid"})
         self.assertEqual(women[0]["deporte"], "femenino")
-        self.assertEqual(men[0]["tv"], "ESPN+")
+        self.assertEqual(job.tv_espana("DAZN LaLiga"), "DAZN LaLiga")
+        self.assertEqual(job.tv_espana("Movistar Plus+"), "Movistar Plus+")
+        self.assertEqual(job.tv_espana("Disney+"), "Disney+")
+        self.assertEqual(job.tv_espana("ESPN+"), "")
+        self.assertEqual(men[0]["tv"], "")
 
     def test_nhl_drops_overnight(self):
         days = ["2026-10-06"]
@@ -127,7 +131,7 @@ class JobTests(unittest.TestCase):
             }]}]},
         })
         out = job.collect_mlb(getter, days)
-        self.assertEqual(out[0]["tv"], "TBS/HBO MAX")
+        self.assertEqual(out[0]["tv"], "")
         self.assertIn("Brewers", out[0]["rival"])
 
     def test_espn_403_does_not_raise(self):
@@ -156,7 +160,9 @@ class JobTests(unittest.TestCase):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         js = (ROOT / "app.js").read_text(encoding="utf-8")
         py = (ROOT / "deporte_job.py").read_text(encoding="utf-8")
-        self.assertIn("deporte-build: 20261003a", html)
+        self.assertIn("deporte-build: 20261003b", html)
+        self.assertIn("En ventana", html)
+        self.assertIn("Fuera de ventana", html)
         self.assertIn("Sin sesión no hay partidos", html)
         self.assertIn('id="app"', html)
         self.assertIn("Creado por Álvaro GT y sus minions", html)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""14 días de partidos → Firestore casa_json/deporte. Sin IA. Sin WEC inventado."""
+"""~2 meses de partidos → Firestore casa_json/deporte. Sin IA. Sin WEC inventado."""
 from __future__ import annotations
 
 import json
@@ -14,7 +14,7 @@ from typing import Any, Callable
 
 ZONE = ZoneInfo("Europe/Madrid")
 UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
-DAYS = 14
+DAYS = 62
 WIN_START = 9 * 60
 WIN_END = 22 * 60 + 30
 PUT = Path.home() / ".hermes/gabinete/alvarogt.com/go/casa_put_json.py"
@@ -135,34 +135,57 @@ def partido(
     }
 
 
+def tv_espana(text: str) -> str:
+    raw = " ".join((text or "").split())
+    if not raw:
+        return ""
+    n = fold(raw)
+    claves = ("dazn", "movistar", "disney+", "disney plus", "laliga", "m+", "gol", "tve", "rtve", "cuatro", "telecinco", "la 1", "la1")
+    return raw if any(k in n for k in claves) else ""
+
+
 def espn_tv(event: dict) -> str:
     comps = event.get("competitions") or []
     if not comps or not isinstance(comps[0], dict):
         return ""
     comp = comps[0]
+    geo_es: list[str] = []
+    geo_other: list[str] = []
+    for g in comp.get("geoBroadcasts") or []:
+        if not isinstance(g, dict):
+            continue
+        media = g.get("media") if isinstance(g.get("media"), dict) else {}
+        text = str(media.get("shortName") or media.get("name") or "").strip()
+        if not text:
+            continue
+        lang = fold(str(g.get("lang") or g.get("language") or ""))
+        market = g.get("market") if isinstance(g.get("market"), dict) else {}
+        region = fold(str(g.get("region") or g.get("country") or market.get("id") or ""))
+        if lang.startswith("es") or region in {"es", "esp", "spain", "españa"}:
+            geo_es.append(text)
+        else:
+            geo_other.append(text)
+    for text in geo_es:
+        ok = tv_espana(text)
+        if ok:
+            return ok
     for b in comp.get("broadcasts") or []:
         if not isinstance(b, dict):
             continue
         names = b.get("names")
+        text = ""
         if isinstance(names, list) and names:
             text = str(names[0]).strip()
-            if text:
-                return text
-        media = b.get("media")
-        if not isinstance(media, dict):
-            media = {}
-        text = str(media.get("shortName") or media.get("name") or "").strip()
-        if text:
-            return text
-    for g in comp.get("geoBroadcasts") or []:
-        if not isinstance(g, dict):
-            continue
-        media = g.get("media")
-        if not isinstance(media, dict):
-            media = {}
-        text = str(media.get("shortName") or media.get("name") or "").strip()
-        if text:
-            return text
+        if not text:
+            media = b.get("media") if isinstance(b.get("media"), dict) else {}
+            text = str(media.get("shortName") or media.get("name") or "").strip()
+        ok = tv_espana(text)
+        if ok:
+            return ok
+    for text in geo_other:
+        ok = tv_espana(text)
+        if ok:
+            return ok
     return ""
 
 
@@ -392,7 +415,11 @@ def mlb_tv(game: dict) -> str:
         name = str(b.get("name") or b.get("callSign") or "").strip()
         if name and name not in names:
             names.append(name)
-    return names[0] if names else ""
+    for name in names:
+        ok = tv_espana(name)
+        if ok:
+            return ok
+    return ""
 
 
 def mlb_estado(game: dict) -> str:

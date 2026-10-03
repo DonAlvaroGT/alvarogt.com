@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Deporte</title>
-  <!-- deporte-build: 20261003a -->
+  <!-- deporte-build: 20261003b -->
   <style>
     :root {
       color-scheme: light;
@@ -175,7 +175,11 @@
           list.innerHTML = `<p class="empty">${esc(emptyMsg(payload) || 'sin partidos')}</p>`;
           return;
         }
-        list.innerHTML = groups.map((g) => `<p class="day-label">${esc(weekdayTitle(g.fecha))}</p>${cards(g.partidos)}`).join('');
+        list.innerHTML = groups.map((g) => {
+          const win = g.ventana.length ? `<p class="day-label">En ventana</p>${cards(g.ventana)}` : '';
+          const out = g.fuera.length ? `<p class="day-label">Fuera de ventana</p>${cards(g.fuera)}` : '';
+          return `<p class="day-label">${esc(weekdayTitle(g.fecha))}</p>${win}${out}`;
+        }).join('');
         return;
       }
       const day = chosen && YMD.test(chosen) ? chosen : today;
