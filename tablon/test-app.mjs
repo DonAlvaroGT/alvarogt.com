@@ -55,13 +55,13 @@ assert.deepEqual(PUBLIC_FIREBASE_CONFIG, {
   appId: '1:639440141487:web:76132e8c01c030b4e1e85a',
 });
 assert.deepEqual(readRuntimeConfig({ protocol: 'file:', hostname: '' }).config.firebaseConfig, PUBLIC_FIREBASE_CONFIG);
-assert.deepEqual(ADULT_ALLOWLIST, ['agarciatimon@gmail.com', 'luzolivas@gmail.com']);
+assert.deepEqual(ADULT_ALLOWLIST, ['adult-1@example.com', 'adult-2@example.com']);
 assert.equal(CHILD_ROLE, 'child');
 assert.equal(validateRuntimeConfig({}, { protocol: 'file:', hostname: '' }).localDevelopment, true);
 assert.equal(validateRuntimeConfig({}, { protocol: 'https:', hostname: 'alvarogt.com' }).valid, false);
 assert.match(read('README.md'), /frontend aún en modo local/);
 assert.match(read('firebase.rules.example'), /pointAwards/);
-assert.match(read('firebase.example.json'), /agarciatimon@gmail.com/);
+assert.match(read('firebase.example.json'), /adult-1@example.com/);
 assert.match(read('firebase.example.json'), /activaci[oó]n y prueba pendientes/);
 const taskPanel = html.match(/<section id="tasks-view"[^>]*>([\s\S]*?)<\/section>/)?.[1] || '';
 assert.ok(taskPanel.indexOf('aria-label="Filtrar por responsable"') < taskPanel.indexOf('id="task-list"'), 'responsable filter must precede task list');

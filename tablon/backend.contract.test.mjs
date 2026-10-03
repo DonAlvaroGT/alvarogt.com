@@ -13,7 +13,7 @@ const instance = { id: 'task-1:2026-09-07', taskId: 'task-1', period: '2026-09-0
 const adult = { uid: 'adult-1', role: 'adult', email: ADULT_EMAILS[0], emailVerified: true };
 const child = { uid: 'child-shared', role: 'child' };
 
-assert.deepEqual(ADULT_EMAILS, ['agarciatimon@gmail.com', 'luzolivas@gmail.com']);
+assert.deepEqual(ADULT_EMAILS, ['adult-1@example.com', 'adult-2@example.com']);
 assert.equal(authorize(adult, 'validate_task'), true);
 assert.equal(authorize({ ...adult, emailVerified: false }, 'validate_task'), false);
 assert.equal(authorize(child, 'child_done'), true);

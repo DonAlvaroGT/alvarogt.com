@@ -7,8 +7,8 @@
   "messagingSenderId": "639440141487",
   "appId": "1:639440141487:web:76132e8c01c030b4e1e85a",
   "adultAllowlist": [
-    "agarciatimon@gmail.com",
-    "luzolivas@gmail.com"
+    "adult-1@example.com",
+    "adult-2@example.com"
   ],
   "googleAuth": "configuración documentada; activación y prueba pendientes",
   "firestore": "configuración documentada; creación y prueba de producción pendientes",

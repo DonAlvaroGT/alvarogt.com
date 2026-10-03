@@ -38,7 +38,7 @@ func run() error {
 	if len(secret) < 16 {
 		return errEnv("falta GO_SESSION_SECRET (mínimo 16 caracteres)")
 	}
-	allowed := splitEmails(getenv("GO_ALLOWED_EMAILS", "agarciatimon@gmail.com,luzolivas@gmail.com"))
+	allowed := splitEmails(getenv("GO_ALLOWED_EMAILS", "adult-1@example.com,adult-2@example.com"))
 	listen := getenv("GO_LISTEN", "127.0.0.1:8787")
 	if port := os.Getenv("PORT"); port != "" {
 		listen = ":" + port

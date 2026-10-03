@@ -7,8 +7,8 @@ service cloud.firestore {
       return signedIn()
         && request.auth.token.email_verified == true
         && request.auth.token.email in [
-          'agarciatimon@gmail.com',
-          'luzolivas@gmail.com'
+          'adult-1@example.com',
+          'adult-2@example.com'
         ];
     }
     // Debe ser un claim emitido por un mecanismo de acceso supervisado.
@@ -98,24 +98,24 @@ service cloud.firestore {
     function casaReader() {
       return signedIn()
         && request.auth.token.email in [
-          'agarciatimon@gmail.com',
-          'luzolivas@gmail.com'
+          'adult-1@example.com',
+          'adult-2@example.com'
         ];
     }
     function viajesReader() {
       return signedIn()
         && request.auth.token.email in [
-          'agarciatimon@gmail.com',
-          'luzolivas@gmail.com',
-          'isabelgarciatimon@gmail.com',
-          'garciatimon@gmail.com',
-          'agustingarciayperez@gmail.com',
-          'agustingarciatimon@gmail.com'
+          'adult-1@example.com',
+          'adult-2@example.com',
+          'adult-3@example.com',
+          'adult-4@example.com',
+          'adult-5@example.com',
+          'adult-6@example.com'
         ];
     }
     function deporteReader() {
       return signedIn()
-        && request.auth.token.email == 'agarciatimon@gmail.com';
+        && request.auth.token.email == 'adult-1@example.com';
     }
     match /casa_json/{id} {
       allow read: if (id == 'viajes' && viajesReader())

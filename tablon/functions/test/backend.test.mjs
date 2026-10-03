@@ -7,12 +7,12 @@ import {
 import { allowBoardToken, boardCorsOrigin } from '../src/board-gate.mjs';
 import { normalizeWeeklyDays, madridWeekday, frequencyPeriods, resolveBoardPeriod, resolveCommandPeriod, madridCalendarDate, shiftCalendarDate } from '../src/backend.contract.mjs';
 
-const adultAuth = { uid: 'adult-1', token: { email: 'agarciatimon@gmail.com', email_verified: true } };
+const adultAuth = { uid: 'adult-1', token: { email: 'adult-1@example.com', email_verified: true } };
 const childAuth = { uid: 'child-shared', token: { childRole: 'supervised' } };
 const task = { id: 'task-1', status: 'active', assignee: 'Nacho', frequency: 'daily', points: 5 };
 const instance = { id: 'task-1:2026-09-07', taskId: 'task-1', period: '2026-09-07', status: 'pending', pointsAwarded: false };
 
-assert.deepEqual(resolveTrustedActor(adultAuth), { uid: 'adult-1', role: 'adult', email: 'agarciatimon@gmail.com', emailVerified: true });
+assert.deepEqual(resolveTrustedActor(adultAuth), { uid: 'adult-1', role: 'adult', email: 'adult-1@example.com', emailVerified: true });
 assert.deepEqual(resolveTrustedActor(childAuth), { uid: 'child-shared', role: 'child' });
 assert.throws(() => resolveTrustedActor({ uid: 'x', token: { email: 'other@example.com', email_verified: true } }), /no autorizado/);
 assert.throws(() => resolveTrustedActor({ uid: 'x', token: { childRole: 'child' } }), /autorizad/);
@@ -60,9 +60,9 @@ const yVal = executeCommand({ action: 'validate_task', actor: adultActor, task, 
 assert.equal(yVal.award.awardId, 'task-1:2026-09-14:Nacho');
 assert.notEqual(yVal.award.awardId, 'task-1:2026-09-07:Nacho');
 
-assert.equal(allowBoardToken({ email: 'agarciatimon@gmail.com', email_verified: true }), true);
-assert.equal(allowBoardToken({ email: 'luzolivas@gmail.com', email_verified: true }), true);
-assert.equal(allowBoardToken({ email: 'agarciatimon@gmail.com', email_verified: false }), false);
+assert.equal(allowBoardToken({ email: 'adult-1@example.com', email_verified: true }), true);
+assert.equal(allowBoardToken({ email: 'adult-2@example.com', email_verified: true }), true);
+assert.equal(allowBoardToken({ email: 'adult-1@example.com', email_verified: false }), false);
 assert.equal(allowBoardToken({ childRole: 'supervised' }), true);
 assert.equal(allowBoardToken({ email: 'otro@example.com', email_verified: true }), false);
 assert.equal(allowBoardToken(null), false);

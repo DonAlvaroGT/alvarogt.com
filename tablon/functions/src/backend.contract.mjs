@@ -1,4 +1,4 @@
-export const ADULT_EMAILS = ['agarciatimon@gmail.com', 'luzolivas@gmail.com'];
+export const ADULT_EMAILS = ['adult-1@example.com', 'adult-2@example.com'];
 export const CHILD_ROLE = 'child';
 export const COMMANDS = ['child_done', 'validate_task', 'adult_done', 'undo_done'];
 

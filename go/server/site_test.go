@@ -32,9 +32,9 @@ func newSiteTestServer(t *testing.T) http.Handler {
 	}}
 	s := NewServer(mapVerifier{
 		"token-intruso": "intruso@example.com",
-		"token-alvaro":  "agarciatimon@gmail.com",
-		"token-luz":     "luzolivas@gmail.com",
-	}, []string{"agarciatimon@gmail.com", "luzolivas@gmail.com"}, []byte("test-session-secret"), false)
+		"token-alvaro":  "adult-1@example.com",
+		"token-luz":     "adult-2@example.com",
+	}, []string{"adult-1@example.com", "adult-2@example.com"}, []byte("test-session-secret"), false)
 	s.mux.HandleFunc("GET /login", s.handleLoginPage)
 	s.mux.Handle("GET /go/", s.RequireAuth(s.serveSite("/go/", filepath.Join(dir, "go"), store, map[string]string{
 		"/go/data.json":   "go/data.json",

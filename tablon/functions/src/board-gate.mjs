@@ -1,4 +1,4 @@
-const ADULTS = new Set(['agarciatimon@gmail.com', 'luzolivas@gmail.com']);
+const ADULTS = new Set(['adult-1@example.com', 'adult-2@example.com']);
 const BOARD_ORIGINS = new Set(['https://alvarogt.com', 'https://www.alvarogt.com', 'http://localhost', 'http://127.0.0.1']);
 
 export function allowBoardToken(token) {

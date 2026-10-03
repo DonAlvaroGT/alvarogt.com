@@ -7,8 +7,8 @@ service cloud.firestore {
       return signedIn()
         && request.auth.token.email_verified == true
         && request.auth.token.email in [
-          'agarciatimon@gmail.com',
-          'luzolivas@gmail.com'
+          'adult-1@example.com',
+          'adult-2@example.com'
         ];
     }
     // Debe ser un claim emitido por un mecanismo de acceso supervisado.

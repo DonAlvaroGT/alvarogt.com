@@ -12,7 +12,7 @@ import { allowBoardToken, boardCorsOrigin } from './board-gate.mjs';
 if (!getApps().length) initializeApp();
 const auth = getAuth();
 const db = getFirestore();
-const ADULTS = new Set(['agarciatimon@gmail.com', 'luzolivas@gmail.com']);
+const ADULTS = new Set(['adult-1@example.com', 'adult-2@example.com']);
 
 function isAdult(actor) { return actor.role === 'adult'; }
 
@@ -242,7 +242,7 @@ export const createDailyInstances = onSchedule({ schedule: 'every day 00:10', ti
 
 export async function setChildClaim(uid) {
   const user = await auth.getUser(uid);
-  if ((user.email || '').toLowerCase() !== 'alvarogt@alvarogt.com') throw new Error('No es la cuenta infantil autorizada.');
+  if ((user.email || '').toLowerCase() !== 'child-1@example.com') throw new Error('No es la cuenta infantil autorizada.');
   const existing = user.customClaims || {};
   await auth.setCustomUserClaims(uid, { ...existing, childRole: 'supervised', childId: existing.childId || 'shared' });
   return { uid, childRole: 'supervised', childId: existing.childId || 'shared' };

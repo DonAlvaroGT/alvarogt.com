@@ -7,7 +7,7 @@ La aplicación publicada sin configuración válida muestra «Backend pendiente�
 ## Decisiones implementadas
 
 - Firebase como proveedor previsto: Authentication con Google y Firestore.
-- Allowlist adulta: `agarciatimon@gmail.com` y `luzolivas@gmail.com`.
+- Allowlist adulta: `adult-1@example.com` y `adult-2@example.com`.
 - Una identidad infantil compartida sin login propio; su mecanismo de acceso supervisado aún debe configurarse y emitir un claim no manipulable por el navegador.
 - Niños: leer tareas visibles y marcarlas. No crean, editan, validan, deshacen ni gestionan puntos.
 - Toda marca infantil queda `child_done`, pendiente de validación adulta.
@@ -92,10 +92,10 @@ Cloud Functions (o un servidor confiable con Admin SDK) debe:
 La configuración pública y el nombre `tablongo` son documentación, no demuestran que exista una conexión operativa. Cuando Álvaro autorice la siguiente fase, comprobarlo en estas URLs oficiales, sin copiar aquí credenciales ni secretos:
 
 1. Proyecto: [Firebase Console](https://console.firebase.google.com/) → confirmar que el proyecto seleccionado es `tablongo` y que su configuración coincide con `firebase.example.json`.
-2. Authentication / Google: [Authentication](https://console.firebase.google.com/project/_/authentication/providers) → comprobar que Google está habilitado y que el acceso funciona para `agarciatimon@gmail.com` y `luzolivas@gmail.com`, con email verificado.
+2. Authentication / Google: [Authentication](https://console.firebase.google.com/project/_/authentication/providers) → comprobar que Google está habilitado y que el acceso funciona para `adult-1@example.com` y `adult-2@example.com`, con email verificado.
 3. Dominios: [Authentication → Settings → Authorized domains](https://console.firebase.google.com/project/_/authentication/settings) → comprobar el origen publicado exacto, `localhost` solo para desarrollo y ningún dominio sobrante.
 4. Firestore producción: [Firestore Database](https://console.firebase.google.com/project/_/firestore) → comprobar que la base de producción existe y que no se usa una base de pruebas.
-5. Allowlist: comprobar en la autenticación/backend que solo están permitidos `agarciatimon@gmail.com` y `luzolivas@gmail.com`; no confiar en una allowlist escrita por el navegador.
+5. Allowlist: comprobar en la autenticación/backend que solo están permitidos `adult-1@example.com` y `adult-2@example.com`; no confiar en una allowlist escrita por el navegador.
 6. Identidad infantil supervisada: acordar y comprobar el mecanismo compartido sin login propio, con autorización supervisada y un `childRole` emitido de forma confiable; verificar que JavaScript no puede falsificarlo.
 7. Reglas: revisar y probar `firebase.rules.example` en el [Rules Playground](https://console.firebase.google.com/project/_/firestore/rules) o en un entorno local autorizado; comprobar lectura por asignación, escritura adulta, transición infantil, append-only e idempotencia. No desplegar esta plantilla por el mero hecho de existir.
 8. Functions: comprobar en [Functions](https://console.firebase.google.com/project/_/functions) que existe un backend confiable desplegado para autenticación, transiciones, historial, premios y balances atómicos; hoy no existe en esta app.

@@ -8,7 +8,7 @@ import (
 
 func TestParseSessionRejectsTamperedToken(t *testing.T) {
 	secret := []byte("secret-a")
-	token, err := signSession(secret, "agarciatimon@gmail.com", time.Now(), time.Hour)
+	token, err := signSession(secret, "adult-1@example.com", time.Now(), time.Hour)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -21,7 +21,7 @@ func TestParseSessionRejectsTamperedToken(t *testing.T) {
 func TestParseSessionRejectsExpiredToken(t *testing.T) {
 	secret := []byte("secret-a")
 	now := time.Unix(1_700_000_000, 0)
-	token, err := signSession(secret, "luzolivas@gmail.com", now, time.Minute)
+	token, err := signSession(secret, "adult-2@example.com", now, time.Minute)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -33,7 +33,7 @@ func TestParseSessionRejectsExpiredToken(t *testing.T) {
 func TestParseSessionAcceptsValidToken(t *testing.T) {
 	secret := []byte("secret-a")
 	now := time.Now()
-	token, err := signSession(secret, "luzolivas@gmail.com", now, time.Hour)
+	token, err := signSession(secret, "adult-2@example.com", now, time.Hour)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,7 +41,7 @@ func TestParseSessionAcceptsValidToken(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if email != "luzolivas@gmail.com" {
+	if email != "adult-2@example.com" {
 		t.Fatalf("got %q", email)
 	}
 	if !strings.HasPrefix(token, "eyJ") {

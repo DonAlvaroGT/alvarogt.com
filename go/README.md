@@ -29,7 +29,7 @@ Los JSON viven en Firestore `casa_json`. No van a git ni a GitHub Pages. La pág
 
 ## Login (cliente)
 
-Proyecto Firebase `tablongo`. Google Sign-In en la propia página. Allowlist exacta: `agarciatimon@gmail.com` y `luzolivas@gmail.com`. Otras cuentas: `signOut` y «Cuenta no autorizada». Firestore deniega la lectura sin esas cuentas.
+Proyecto Firebase `tablongo`. Google Sign-In en la propia página. Allowlist exacta: `adult-1@example.com` y `adult-2@example.com`. Otras cuentas: `signOut` y «Cuenta no autorizada». Firestore deniega la lectura sin esas cuentas.
 
 Secretos solo en `~/.hermes/gabinete/secrets/` (`tablongo-firebase-adminsdk.json`). Nunca a git.
 
