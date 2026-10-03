@@ -1,4 +1,4 @@
-import { isFavorito } from './filtro.mjs';
+import { inWindow, isFavorito } from './filtro.mjs';
 
 export function parentEmail() {
   try {
@@ -80,9 +80,12 @@ export function cardHtml(p, esc) {
   const tag = p.tag || {};
   const tv = p.tv ? `<span class="tv">${esc(p.tv)}</span>` : '';
   const star = p.favorito ? '<span class="casa-star" title="casa">★</span>' : '';
+  const hora = p.noche
+    ? `<details class="noche"><summary>noche</summary><span class="hora">${esc(p.hora || '')}</span></details>`
+    : `<span class="hora">${esc(p.hora || '')}</span>`;
   return `<article class="match" style="--tag:${esc(tag.color || '#666')}">
     <span class="tag">${esc(tag.label || '')}</span>
-    <span class="hora">${esc(p.hora || '')}</span>
+    ${hora}
     <span class="rival">${star}${esc(p.rival || '')}</span>
     ${tv}
   </article>`;
@@ -95,5 +98,6 @@ export function paintList(partidos, tagOf, tvOf, lineaIgnored) {
     tv: tvOf(p),
     tag: tagOf(p),
     favorito: isFavorito(p),
+    noche: !inWindow(p),
   }));
 }

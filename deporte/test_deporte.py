@@ -109,6 +109,30 @@ class JobTests(unittest.TestCase):
         self.assertEqual(len(out), 1)
         self.assertIn("Texas", out[0]["rival"])
 
+    def test_ncaa_empty_poll_keeps_none(self):
+        days = ["2026-10-10"]
+        getter = FakeGet({
+            "college-football/rankings": {"rankings": []},
+            "college-football/scoreboard?dates=20261010": {"events": [
+                ev("c1", "2026-10-10T19:00Z", "Texas", "Oklahoma", tid_away="251", tid_home="9"),
+            ]},
+        })
+        self.assertEqual(job.collect_ncaa(getter, days), [])
+
+    def test_nfl_keeps_all_games(self):
+        days = ["2026-10-11"]
+        getter = FakeGet({
+            "football/nfl/scoreboard": {"events": [
+                ev("n1", "2026-10-11T17:00Z", "Dolphins", "Chiefs"),
+                ev("n2", "2026-10-11T20:00Z", "Bears", "Packers"),
+            ]},
+        })
+        out = job.collect_nfl(getter, days)
+        self.assertEqual(len(out), 2)
+        rivals = {p["rival"] for p in out}
+        self.assertIn("Bears – Packers", rivals)
+        self.assertIn("Dolphins – Chiefs", rivals)
+
     def test_mlb_national_tv_not_radio(self):
         days = ["2026-10-06"]
         getter = FakeGet({
@@ -154,15 +178,69 @@ class JobTests(unittest.TestCase):
         self.assertEqual(payload["schema_version"], 1)
         self.assertNotIn("hoy", payload)
 
+    def test_f1_oct2026_sessions_not_fp_or_event_final(self):
+        days = [f"2026-10-{d:02d}" for d in range(2, 12)]
+        sepang = {
+            "id": "600060990",
+            "name": "Gulf Air Bahrain Grand Prix in Malaysia",
+            "shortName": "Gulf Air Bahrain GP in Malaysia",
+            "date": "2026-10-02T04:30Z",
+            "status": {"type": {"name": "STATUS_FINAL"}},
+            "circuit": {"fullName": "Sepang International Circuit", "address": {"city": "Kuala lumpur", "country": "Malaysia"}},
+            "competitions": [
+                {"id": "401901646", "date": "2026-10-02T04:30Z", "type": {"id": "1", "abbreviation": "FP1"}, "status": {"type": {"name": "STATUS_FINAL"}}, "broadcasts": [{"names": ["Apple TV"]}]},
+                {"id": "401901647", "date": "2026-10-02T08:00Z", "type": {"id": "1", "abbreviation": "FP2"}, "status": {"type": {"name": "STATUS_FINAL"}}},
+                {"id": "401901648", "date": "2026-10-03T04:30Z", "type": {"id": "1", "abbreviation": "FP3"}, "status": {"type": {"name": "STATUS_FINAL"}}},
+                {"id": "401901649", "date": "2026-10-03T08:00Z", "type": {"id": "2", "abbreviation": "Qual"}, "status": {"type": {"name": "STATUS_SESSION_COMPLETE"}}, "broadcasts": [{"names": ["Apple TV"]}]},
+                {"id": "401901650", "date": "2026-10-04T07:00Z", "type": {"id": "3", "abbreviation": "Race"}, "status": {"type": {"name": "STATUS_SCHEDULED"}}, "broadcasts": [{"names": ["Apple TV"]}]},
+            ],
+        }
+        singapore = {
+            "id": "600057445",
+            "name": "Singapore Airlines Singapore Grand Prix",
+            "shortName": "Singapore Airlines Singapore GP",
+            "date": "2026-10-09T08:30Z",
+            "status": {"type": {"name": "STATUS_SCHEDULED"}},
+            "circuit": {"fullName": "Marina Bay Street Circuit", "address": {"city": "Singapore", "country": "Singapore"}},
+            "competitions": [
+                {"id": "401839113", "date": "2026-10-09T08:30Z", "type": {"id": "1", "abbreviation": "FP1"}, "status": {"type": {"name": "STATUS_SCHEDULED"}}},
+                {"id": "401839114", "date": "2026-10-09T12:30Z", "type": {"id": "5", "abbreviation": "SS"}, "status": {"type": {"name": "STATUS_SCHEDULED"}}},
+                {"id": "401839115", "date": "2026-10-10T09:00Z", "type": {"id": "6", "abbreviation": "SR"}, "status": {"type": {"name": "STATUS_SCHEDULED"}}},
+                {"id": "401839116", "date": "2026-10-10T13:00Z", "type": {"id": "2", "abbreviation": "Qual"}, "status": {"type": {"name": "STATUS_SCHEDULED"}}},
+                {"id": "401839117", "date": "2026-10-11T12:00Z", "type": {"id": "3", "abbreviation": "Race"}, "status": {"type": {"name": "STATUS_SCHEDULED"}}},
+            ],
+        }
+        getter = FakeGet({"racing/f1/scoreboard": {"events": [sepang, singapore]}})
+        out = job.collect_f1(getter, days)
+        rivals = {p["rival"] for p in out}
+        self.assertIn("Malasia · Qualy", rivals)
+        self.assertIn("Malasia · Carrera", rivals)
+        self.assertIn("Singapur · Sprint", rivals)
+        self.assertIn("Singapur · Qualy sprint", rivals)
+        self.assertIn("Singapur · Qualy", rivals)
+        self.assertIn("Singapur · Carrera", rivals)
+        self.assertTrue(all("FP" not in p["rival"] and "FP1" not in p["rival"] for p in out))
+        self.assertTrue(all(p["tv"] == "" for p in out))
+        mal_q = next(p for p in out if p["rival"] == "Malasia · Qualy")
+        mal_r = next(p for p in out if p["rival"] == "Malasia · Carrera")
+        self.assertEqual(mal_q["hora_madrid"], "10:00")
+        self.assertEqual(mal_q["fecha_madrid"], "2026-10-03")
+        self.assertEqual(mal_r["hora_madrid"], "09:00")
+        self.assertEqual(mal_r["fecha_madrid"], "2026-10-04")
+        self.assertNotEqual(mal_q["estado"], "final")
+
     def test_html_gate_and_no_emails(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         js = (ROOT / "app.js").read_text(encoding="utf-8")
         py = (ROOT / "deporte_job.py").read_text(encoding="utf-8")
-        self.assertIn("deporte-build: 20261003c", html)
+        self.assertIn("deporte-build: 20261003d", html)
         self.assertIn("casa-star", html)
-        self.assertIn("★", html)
-        self.assertIn("En ventana", html)
-        self.assertIn("Fuera de ventana", html)
+        self.assertIn("★", js)
+        self.assertIn(">Semana<", html)
+        self.assertIn("h2 class=\"dia\"", html)
+        self.assertIn("details class=\"noche\"", js)
+        self.assertNotIn("En ventana", html)
+        self.assertNotIn("Fuera de ventana", html)
         self.assertIn("Sin sesión no hay partidos", html)
         self.assertIn('id="app"', html)
         self.assertIn("Creado por Álvaro GT y sus minions", html)
