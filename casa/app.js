@@ -1,4 +1,4 @@
-export const VIEWS = { go: '/go/', tablon: '/tablon/', viajes: '/viajes/' };
+export const VIEWS = { go: '/go/', tablon: '/tablon/', viajes: '/viajes/', deporte: '/deporte/' };
 export const HOSTS = [
   'localhost',
   '127.0.0.1',
@@ -9,8 +9,10 @@ export const HOSTS = [
 ];
 export const HINT_KEY = 'casa.lastAdult';
 export const TAB_KEY = 'casa.lastTab';
-export const TAB_NAMES = ['go', 'tablon', 'viajes'];
-const TITLES = { go: 'Go', tablon: 'Tablón', viajes: 'Viajes' };
+export const TAB_NAMES = ['go', 'tablon', 'viajes', 'deporte'];
+export const OPEN_TABS = ['go', 'tablon', 'viajes'];
+const TITLES = { go: 'Go', tablon: 'Tablón', viajes: 'Viajes', deporte: 'Deporte' };
+let deporteOn = false;
 
 export function isAdult(email) {
   return String(email || '').includes('@');
@@ -24,6 +26,7 @@ export function tabFromPath(pathname) {
   const path = String(pathname || '');
   if (path.startsWith('/tablon/')) return 'tablon';
   if (path.startsWith('/viajes/')) return 'viajes';
+  if (path.startsWith('/deporte/')) return 'deporte';
   if (path.startsWith('/go/')) return 'go';
   return 'go';
 }
@@ -59,10 +62,29 @@ export function rememberAdult(email) {
   try { localStorage.setItem(HINT_KEY, v); } catch {}
 }
 
+export function deporteAllowed() {
+  return deporteOn;
+}
+
+export function setDeporteTab(on) {
+  deporteOn = !!on;
+  const btn = document.querySelector('#tabs button[data-view="deporte"]');
+  if (btn) btn.hidden = !deporteOn;
+  if (!deporteOn) {
+    try {
+      if (String((globalThis.localStorage && localStorage.getItem(TAB_KEY)) || '') === 'deporte') {
+        localStorage.setItem(TAB_KEY, 'go');
+      }
+    } catch {}
+  }
+  return deporteOn;
+}
+
 export function lastTab() {
   try {
     const v = String((globalThis.localStorage && localStorage.getItem(TAB_KEY)) || '');
-    return TAB_NAMES.includes(v) ? v : 'go';
+    if (v === 'deporte') return deporteOn ? 'deporte' : 'go';
+    return OPEN_TABS.includes(v) ? v : 'go';
   } catch {
     return 'go';
   }
@@ -319,7 +341,8 @@ function ensureGoFrame() {
 }
 
 export function showView(name) {
-  const view = TAB_NAMES.includes(name) ? name : 'go';
+  const raw = TAB_NAMES.includes(name) ? name : 'go';
+  const view = (raw === 'deporte' && !deporteOn) ? 'go' : raw;
   rememberTab(view);
   const src = srcFor(view);
   const scroller = document.querySelector('#scroller');
@@ -478,12 +501,22 @@ async function setupGoogle(setStatus, markLogin, wasLogin, clearLogin) {
       }
     };
 
+    const probeDeporte = async () => {
+      try {
+        await firestore.getDoc(firestore.doc(db, 'casa_json', 'deporte'));
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
     const enter = async (user) => {
       if (await houseAllowed()) {
         casaOk = true;
         clearLogin();
         rememberAdult(user.email);
         setStatus(user.displayName || user.email);
+        setDeporteTab(await probeDeporte());
         showShell();
         return;
       }

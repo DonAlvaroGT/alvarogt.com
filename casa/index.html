@@ -146,6 +146,7 @@
       top: 0;
       height: var(--tabs-hit);
     }
+    #tabs button[hidden] { display: none !important; }
     #tabs button[aria-selected="true"] {
       background: var(--paper);
       color: var(--bg);
@@ -207,6 +208,7 @@
       <button type="button" data-view="go" aria-selected="true">Go<span class="tab-dot" hidden aria-hidden="true"></span></button>
       <button type="button" data-view="tablon" aria-selected="false">Tablón<span class="tab-dot" hidden aria-hidden="true"></span></button>
       <button type="button" data-view="viajes" aria-selected="false">Viajes<span class="tab-dot" hidden aria-hidden="true"></span></button>
+      <button type="button" data-view="deporte" aria-selected="false" hidden>Deporte<span class="tab-dot" hidden aria-hidden="true"></span></button>
     </nav>
   </div>
   <div id="session-overlay" hidden>
@@ -227,6 +229,6 @@
     </svg>
     <span>primo listo</span>
   </button>
-  <script type="module" src="./app.js?v=20260930c"></script>
+  <script type="module" src="./app.js?v=20261003a"></script>
 </body>
 </html>

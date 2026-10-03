@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Deporte</title>
+  <!-- deporte-build: 20261003a -->
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1a1c17;
+      --muted: #6b6a62;
+      --paper: #f4f0e8;
+      --card: #fffdf8;
+      --line: #ddd6c6;
+      --accent: #c45c26;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--paper); color: var(--ink); font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .wrap { width: min(720px, calc(100% - 32px)); margin: auto; }
+    header { padding: 22px 0 8px; }
+    .eyebrow { color: var(--accent); font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin: 0 0 8px; }
+    h1 { font: 400 clamp(2.4rem, 8vw, 4.2rem)/.9 Georgia, serif; margin: 0 0 16px; }
+    .access { display: flex; gap: 10px; align-items: center; justify-content: flex-end; margin: 0 0 12px; }
+    .access-status { color: var(--muted); font-size: .76rem; }
+    button.demo { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: .76rem; cursor: pointer; }
+    button.demo[hidden] { display: none; }
+    #gate[hidden], #app[hidden] { display: none !important; }
+    #gate { min-height: 42vh; display: grid; place-items: center; text-align: center; padding: 36px 16px; }
+    #gate h2 { font: 400 2rem/1 Georgia, serif; margin: 0 0 10px; }
+    #gate p { color: var(--muted); max-width: 380px; margin: 0 auto 18px; line-height: 1.5; }
+    .views { display: flex; gap: 6px; margin: 0 0 16px; flex-wrap: wrap; }
+    .views button { flex: 1 1 auto; }
+    .views button[aria-selected="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .jump { display: flex; gap: 8px; align-items: center; margin: 0 0 16px; flex-wrap: wrap; }
+    .jump input { border: 1px solid var(--line); background: var(--card); padding: 6px 8px; font: inherit; }
+    h2 { font: 400 1.4rem/1.2 Georgia, serif; margin: 18px 0 10px; }
+    .day-label { color: var(--muted); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; margin: 16px 0 8px; }
+    .match { display: grid; grid-template-columns: auto auto 1fr auto; gap: 8px 10px; align-items: center; background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--tag, #666); padding: 10px 12px; margin: 0 0 8px; }
+    .tag { font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tag, #666); }
+    .hora { font-variant-numeric: tabular-nums; font-weight: 700; }
+    .rival { line-height: 1.3; }
+    .tv { color: var(--muted); font-size: .8rem; }
+    .empty { color: var(--muted); padding: 12px 0 24px; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 0 0 16px; }
+    .cal-dow, .cal-day { text-align: center; font-size: .78rem; min-height: 36px; display: grid; place-items: center; }
+    .cal-dow { color: var(--accent); font-size: .65rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; min-height: 0; }
+    .cal-day { background: var(--card); border: 1px solid var(--line); cursor: pointer; }
+    .cal-day.today { box-shadow: inset 0 0 0 2px var(--ink); }
+    .cal-day.has { font-weight: 700; }
+    .cal-day.other { opacity: .35; }
+    footer { color: var(--muted); font-size: .72rem; border-top: 1px solid var(--line); padding: 18px 0 40px; margin-top: 28px; }
+    html.embedded .access-row-out { display: none; }
+    @media (max-width: 560px) {
+      .match { grid-template-columns: auto 1fr; }
+      .tv { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="access">
+        <span id="google-status" class="access-status">Acceso · comprobando</span>
+        <span class="access-row-out">
+          <button id="google-sign-in" class="demo" type="button">Entrar</button>
+          <button id="google-sign-out" class="demo" type="button" hidden>Salir</button>
+        </span>
+      </div>
+      <p class="eyebrow">Casa</p>
+      <h1>Deporte</h1>
+    </div>
+  </header>
+  <section id="gate">
+    <div class="wrap">
+      <h2>Entra con Google</h2>
+      <p>Sin sesión no hay partidos.</p>
+      <button id="gate-sign-in" class="demo" type="button">Continuar con Google</button>
+    </div>
+  </section>
+  <main id="app" hidden>
+    <div class="wrap">
+      <div class="views" role="tablist">
+        <button type="button" class="demo" data-vista="hoy" aria-selected="true">Hoy</button>
+        <button type="button" class="demo" data-vista="semana" aria-selected="false">Resto de la semana</button>
+        <button type="button" class="demo" data-vista="cal" aria-selected="false">Calendario</button>
+      </div>
+      <form class="jump" id="jump-form" hidden>
+        <label>Ir a día <input id="jump-day" type="date" required></label>
+        <button class="demo" type="button" id="jump-today">Hoy</button>
+      </form>
+      <div id="cal-box" hidden></div>
+      <div id="list"></div>
+    </div>
+  </main>
+  <footer class="wrap">Creado por Álvaro GT y sus minions</footer>
+  <script src="/pie.js?v=20260930a"></script>
+  <script type="module">
+    import {
+      ymdMadrid, hoyList, restoSemana, diaList, tagOf, tvOf, emptyMsg, weekDays, addDaysYmd, YMD
+    } from './filtro.mjs';
+    import {
+      HOSTS, loadFirebaseConfig, casaDoc, parentOk, parentEmail, markEmbedded, paintList
+    } from './app.js';
+
+    const embedded = markEmbedded();
+    const status = document.querySelector('#google-status');
+    const signIn = document.querySelector('#google-sign-in');
+    const signOut = document.querySelector('#google-sign-out');
+    const gate = document.querySelector('#gate');
+    const app = document.querySelector('#app');
+    const list = document.querySelector('#list');
+    const jumpForm = document.querySelector('#jump-form');
+    const calBox = document.querySelector('#cal-box');
+    const setStatus = (t) => { status.textContent = t; };
+    let payload = null;
+    let vista = 'hoy';
+    let chosen = '';
+    let started = false;
+    let fsApi = null, db = null, fsProject = 'tablongo';
+
+    const esc = (s) => String(s || '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const cards = (rows) => paintList(rows, tagOf, tvOf).map((p) => {
+      const tv = p.tv ? `<span class="tv">${esc(p.tv)}</span>` : '';
+      return `<article class="match" style="--tag:${esc(p.tag.color)}"><span class="tag">${esc(p.tag.label)}</span><span class="hora">${esc(p.hora)}</span><span class="rival">${esc(p.rival)}</span>${tv}</article>`;
+    }).join('');
+
+    function weekdayTitle(ymd) {
+      try {
+        const [y, m, d] = ymd.split('-').map(Number);
+        return new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, d)));
+      } catch { return ymd; }
+    }
+
+    function renderCal(today) {
+      const start = weekDays(today)[0];
+      const first = start.slice(0, 8) + '01';
+      const [y, m] = today.split('-').map(Number);
+      const firstDow = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
+      const pad = firstDow === 0 ? 6 : firstDow - 1;
+      const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
+      const marked = new Set((payload.partidos || []).map((p) => p.fecha_madrid));
+      const dow = ['L','M','X','J','V','S','D'].map((x) => `<div class="cal-dow">${x}</div>`).join('');
+      const cells = [];
+      for (let i = 0; i < pad; i++) cells.push('<div class="cal-day other"></div>');
+      for (let d = 1; d <= last; d++) {
+        const key = `${String(y).padStart(4,'0')}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const cls = ['cal-day'];
+        if (key === today) cls.push('today');
+        if (marked.has(key)) cls.push('has');
+        cells.push(`<button type="button" class="${cls.join(' ')}" data-day="${key}">${d}</button>`);
+      }
+      calBox.innerHTML = `<div class="cal-grid">${dow}${cells.join('')}</div>`;
+      void first;
+    }
+
+    function render() {
+      if (!payload) {
+        list.innerHTML = '<p class="empty">sin datos</p>';
+        return;
+      }
+      const today = ymdMadrid(new Date());
+      jumpForm.hidden = vista !== 'cal';
+      calBox.hidden = vista !== 'cal';
+      if (vista === 'cal') renderCal(today);
+      if (vista === 'hoy') {
+        const rows = hoyList(payload, new Date());
+        list.innerHTML = rows.length ? cards(rows) : `<p class="empty">${esc(emptyMsg(payload) || 'sin partidos')}</p>`;
+        return;
+      }
+      if (vista === 'semana') {
+        const groups = restoSemana(payload, new Date());
+        if (!groups.length) {
+          list.innerHTML = `<p class="empty">${esc(emptyMsg(payload) || 'sin partidos')}</p>`;
+          return;
+        }
+        list.innerHTML = groups.map((g) => `<p class="day-label">${esc(weekdayTitle(g.fecha))}</p>${cards(g.partidos)}`).join('');
+        return;
+      }
+      const day = chosen && YMD.test(chosen) ? chosen : today;
+      const rows = diaList(payload, day);
+      list.innerHTML = `<p class="day-label">${esc(weekdayTitle(day))}</p>` + (rows.length ? cards(rows) : '<p class="empty">sin partidos</p>');
+    }
+
+    function setVista(name) {
+      vista = name === 'semana' || name === 'cal' ? name : 'hoy';
+      document.querySelectorAll('.views button').forEach((b) => {
+        b.setAttribute('aria-selected', b.dataset.vista === vista ? 'true' : 'false');
+      });
+      render();
+    }
+
+    async function startApp() {
+      if (started) { render(); return; }
+      started = true;
+      try {
+        payload = await casaDoc('deporte', fsApi, db, fsProject);
+        if (!payload || payload.schema_version !== 1) throw new Error('schema');
+        app.hidden = false;
+        gate.hidden = true;
+        render();
+      } catch {
+        payload = { schema_version: 1, fuentes: {}, partidos: [] };
+        app.hidden = false;
+        gate.hidden = true;
+        list.innerHTML = '<p class="empty">sin datos</p>';
+      }
+    }
+
+    const showGate = () => {
+      started = false;
+      payload = null;
+      app.hidden = true;
+      gate.hidden = false;
+      signIn.hidden = false;
+      signOut.hidden = true;
+    };
+
+    async function setupGoogle() {
+      if (!HOSTS.includes(location.hostname)) {
+        setStatus('Acceso · dominio no autorizado');
+        showGate();
+        return;
+      }
+      try {
+        const config = await loadFirebaseConfig();
+        if (config.projectId) fsProject = config.projectId;
+        const [{ initializeApp }, auth, firestore] = await Promise.all([
+          import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js'),
+          import('https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js'),
+          import('https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js')
+        ]);
+        const firebaseApp = initializeApp(config);
+        const service = auth.getAuth(firebaseApp);
+        await auth.setPersistence(service, auth.browserLocalPersistence);
+        fsApi = firestore;
+        db = firestore.getFirestore(firebaseApp);
+        const provider = new auth.GoogleAuthProvider();
+        const allowed = async () => {
+          try {
+            await firestore.getDoc(firestore.doc(db, 'casa_json', 'deporte'));
+            return true;
+          } catch { return false; }
+        };
+        const enter = async (user) => {
+          if (!(await allowed())) {
+            auth.signOut(service);
+            setStatus('Cuenta no autorizada');
+            showGate();
+            return;
+          }
+          setStatus(user.displayName || 'sesión');
+          signIn.hidden = true;
+          signOut.hidden = embedded;
+          await startApp();
+        };
+        const enterFromParent = () => {
+          if (!parentOk()) return false;
+          setStatus(parentEmail() ? 'sesión' : 'sesión');
+          signIn.hidden = true;
+          signOut.hidden = true;
+          startApp();
+          return true;
+        };
+        auth.onAuthStateChanged(service, (user) => {
+          if (!user) {
+            if (enterFromParent()) return;
+            setStatus('Sin sesión');
+            showGate();
+            return;
+          }
+          void enter(user);
+        });
+        if (auth.authStateReady) await auth.authStateReady(service);
+        if (!service.currentUser) enterFromParent();
+        const login = async () => {
+          try {
+            setStatus('Google · entrando…');
+            await auth.signInWithPopup(service, provider);
+          } catch (e) {
+            if (enterFromParent()) return;
+            setStatus('Google · ' + ((e && e.code) || 'error'));
+          }
+        };
+        signIn.addEventListener('click', login);
+        document.querySelector('#gate-sign-in').addEventListener('click', login);
+        signOut.addEventListener('click', () => auth.signOut(service));
+      } catch {
+        if (parentOk()) { startApp(); return; }
+        setStatus('Acceso · configuración no disponible');
+        showGate();
+      }
+    }
+
+    document.querySelector('.views').addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-vista]');
+      if (btn) setVista(btn.dataset.vista);
+    });
+    jumpForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      chosen = document.querySelector('#jump-day').value;
+      render();
+    });
+    document.querySelector('#jump-day').addEventListener('change', (e) => {
+      chosen = e.target.value;
+      render();
+    });
+    document.querySelector('#jump-today').addEventListener('click', () => {
+      chosen = ymdMadrid(new Date());
+      document.querySelector('#jump-day').value = chosen;
+      render();
+    });
+    calBox.addEventListener('click', (e) => {
+      const cell = e.target.closest('[data-day]');
+      if (!cell) return;
+      chosen = cell.getAttribute('data-day') || '';
+      document.querySelector('#jump-day').value = chosen;
+      render();
+    });
+    setupGoogle();
+  </script>
+</body>
+</html>

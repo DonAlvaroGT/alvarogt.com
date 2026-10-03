@@ -39,6 +39,10 @@ exclude:
   - go/test_trip_line.mjs
   - go/test_vista.mjs
   - test_pie.py
+  - deporte/deporte_job.py
+  - deporte/test_deporte.py
+  - deporte/test_filtro.mjs
+  - deporte/deporte.json
   - go/condiciones.json
   - go/reglas.json
   - go/favoritos.json

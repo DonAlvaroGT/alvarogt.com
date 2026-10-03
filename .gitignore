@@ -16,6 +16,7 @@ go/reglas.json
 go/condiciones.json
 viajes/viajes.json
 viajes/viajes_casa.json
+deporte/deporte.json
 **/tablongo-firebase-adminsdk.json
 go.env
 **/__pycache__/
