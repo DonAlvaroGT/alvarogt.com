@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Deporte</title>
-  <!-- deporte-build: 20261003c -->
+  <!-- deporte-build: 20261003d -->
   <style>
     :root {
       color-scheme: light;
@@ -36,7 +36,11 @@
     .jump { display: flex; gap: 8px; align-items: center; margin: 0 0 16px; flex-wrap: wrap; }
     .jump input { border: 1px solid var(--line); background: var(--card); padding: 6px 8px; font: inherit; }
     h2 { font: 400 1.4rem/1.2 Georgia, serif; margin: 18px 0 10px; }
+    h2.dia { font: 400 clamp(1.7rem, 5vw, 2.6rem)/1.05 Georgia, serif; margin: 22px 0 12px; text-transform: none; letter-spacing: 0; color: var(--ink); }
     .day-label { color: var(--muted); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; margin: 16px 0 8px; }
+    details.noche summary { cursor: pointer; color: var(--muted); font-size: .72rem; font-weight: 700; letter-spacing: .06em; list-style: none; }
+    details.noche summary::-webkit-details-marker { display: none; }
+    details.noche[open] .hora { display: block; margin-top: 2px; }
     .match { display: grid; grid-template-columns: auto auto 1fr auto; gap: 8px 10px; align-items: center; background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--tag, #666); padding: 10px 12px; margin: 0 0 8px; }
     .tag { font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tag, #666); }
     .hora { font-variant-numeric: tabular-nums; font-weight: 700; }
@@ -84,7 +88,7 @@
     <div class="wrap">
       <div class="views" role="tablist">
         <button type="button" class="demo" data-vista="hoy" aria-selected="true">Hoy</button>
-        <button type="button" class="demo" data-vista="semana" aria-selected="false">Resto de la semana</button>
+        <button type="button" class="demo" data-vista="semana" aria-selected="false">Semana</button>
         <button type="button" class="demo" data-vista="cal" aria-selected="false">Calendario</button>
       </div>
       <form class="jump" id="jump-form" hidden>
@@ -100,10 +104,10 @@
   <script type="module">
     import {
       ymdMadrid, hoyList, restoSemana, diaList, tagOf, tvOf, emptyMsg, weekDays, addDaysYmd, YMD
-    } from './filtro.mjs';
+    } from './filtro.mjs?v=20261003d';
     import {
-      HOSTS, loadFirebaseConfig, casaDoc, parentOk, parentEmail, markEmbedded, paintList
-    } from './app.js';
+      HOSTS, loadFirebaseConfig, casaDoc, parentOk, parentEmail, markEmbedded, paintList, cardHtml
+    } from './app.js?v=20261003d';
 
     const embedded = markEmbedded();
     const status = document.querySelector('#google-status');
@@ -122,16 +126,12 @@
     let fsApi = null, db = null, fsProject = 'tablongo';
 
     const esc = (s) => String(s || '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const cards = (rows) => paintList(rows, tagOf, tvOf).map((p) => {
-      const tv = p.tv ? `<span class="tv">${esc(p.tv)}</span>` : '';
-      const star = p.favorito ? '<span class="casa-star" title="casa">★</span>' : '';
-      return `<article class="match" style="--tag:${esc(p.tag.color)}"><span class="tag">${esc(p.tag.label)}</span><span class="hora">${esc(p.hora)}</span><span class="rival">${star}${esc(p.rival)}</span>${tv}</article>`;
-    }).join('');
+    const cards = (rows) => paintList(rows, tagOf, tvOf).map((p) => cardHtml(p, esc)).join('');
 
     function weekdayTitle(ymd) {
       try {
         const [y, m, d] = ymd.split('-').map(Number);
-        return new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, d)));
+        return new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, d))).replaceAll(',', '');
       } catch { return ymd; }
     }
 
@@ -178,15 +178,13 @@
           return;
         }
         list.innerHTML = groups.map((g) => {
-          const win = g.ventana.length ? `<p class="day-label">En ventana</p>${cards(g.ventana)}` : '';
-          const out = g.fuera.length ? `<p class="day-label">Fuera de ventana</p>${cards(g.fuera)}` : '';
-          return `<p class="day-label">${esc(weekdayTitle(g.fecha))}</p>${win}${out}`;
+          return `<h2 class="dia">${esc(weekdayTitle(g.fecha))}</h2>${cards(g.partidos)}`;
         }).join('');
         return;
       }
       const day = chosen && YMD.test(chosen) ? chosen : today;
       const rows = diaList(payload, day);
-      list.innerHTML = `<p class="day-label">${esc(weekdayTitle(day))}</p>` + (rows.length ? cards(rows) : '<p class="empty">sin partidos</p>');
+      list.innerHTML = `<h2 class="dia">${esc(weekdayTitle(day))}</h2>` + (rows.length ? cards(rows) : '<p class="empty">sin partidos</p>');
     }
 
     function setVista(name) {

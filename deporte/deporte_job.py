@@ -327,6 +327,8 @@ def ap_top25_ids(get: Fetcher) -> set[str]:
 
 def collect_ncaa(get: Fetcher, days: list[str]) -> list[dict]:
     ids = ap_top25_ids(get)
+    if not ids:
+        return []
     wanted = set(days)
     out: list[dict] = []
     seen: set[str] = set()
@@ -374,6 +376,86 @@ def collect_nhl(get: Fetcher, days: list[str]) -> list[dict]:
     return out
 
 
+F1_PAIS = {
+    "malaysia": "Malasia",
+    "bahrain": "Bahréin",
+    "singapore": "Singapur",
+    "united states": "EE. UU.",
+    "usa": "EE. UU.",
+    "mexico": "México",
+    "japan": "Japón",
+    "china": "China",
+    "australia": "Australia",
+    "italy": "Italia",
+    "spain": "España",
+    "monaco": "Mónaco",
+    "united kingdom": "Gran Bretaña",
+    "great britain": "Gran Bretaña",
+    "uk": "Gran Bretaña",
+    "belgium": "Bélgica",
+    "netherlands": "Países Bajos",
+    "austria": "Austria",
+    "hungary": "Hungría",
+    "canada": "Canadá",
+    "brazil": "Brasil",
+    "qatar": "Catar",
+    "united arab emirates": "Abu Dabi",
+    "uae": "Abu Dabi",
+    "azerbaijan": "Azerbaiyán",
+    "saudi arabia": "Arabia Saudí",
+}
+
+F1_SESION = {
+    "qual": "Qualy",
+    "qualy": "Qualy",
+    "qualifying": "Qualy",
+    "q": "Qualy",
+    "race": "Carrera",
+    "r": "Carrera",
+    "sr": "Sprint",
+    "sprint": "Sprint",
+    "ss": "Qualy sprint",
+    "sq": "Qualy sprint",
+    "sprint shootout": "Qualy sprint",
+    "sprint qualifying": "Qualy sprint",
+}
+
+
+def f1_lugar(event: dict) -> str:
+    circuit = as_dict(event.get("circuit"))
+    address = as_dict(circuit.get("address"))
+    country = str(address.get("country") or "").strip()
+    mapped = F1_PAIS.get(fold(country))
+    if mapped:
+        return mapped
+    city = str(address.get("city") or "").strip()
+    mapped_city = F1_PAIS.get(fold(city))
+    if mapped_city:
+        return mapped_city
+    return country or city
+
+
+def f1_sesion(comp: dict) -> str:
+    tipo = as_dict(comp.get("type"))
+    abbr = fold(str(tipo.get("abbreviation") or tipo.get("displayName") or tipo.get("name") or ""))
+    if not abbr:
+        tid = str(tipo.get("id") or "")
+        if tid == "2":
+            return "Qualy"
+        if tid == "3":
+            return "Carrera"
+        if tid == "6":
+            return "Sprint"
+        if tid == "5":
+            return "Qualy sprint"
+        return ""
+    if abbr.startswith("fp") or abbr in {"p1", "p2", "p3", "practice"}:
+        return ""
+    if abbr in F1_SESION:
+        return F1_SESION[abbr]
+    return ""
+
+
 def collect_f1(get: Fetcher, days: list[str]) -> list[dict]:
     wanted = set(days)
     months = sorted({d[:7].replace("-", "") for d in days})
@@ -387,14 +469,29 @@ def collect_f1(get: Fetcher, days: list[str]) -> list[dict]:
         for ev in events:
             if not isinstance(ev, dict):
                 continue
-            pid = f"f1-{ev.get('id')}"
-            if pid in seen:
+            comps = ev.get("competitions")
+            if not isinstance(comps, list) or not comps:
                 continue
-            name = str(ev.get("shortName") or ev.get("name") or "").strip()
-            p = partido(pid, "f1", str(ev.get("date") or ""), name, espn_tv(ev), espn_estado(ev))
-            if p and p["fecha_madrid"] in wanted:
-                seen.add(pid)
-                out.append(p)
+            lugar = f1_lugar(ev)
+            for comp in comps:
+                if not isinstance(comp, dict):
+                    continue
+                sesion = f1_sesion(comp)
+                if not sesion:
+                    continue
+                cid = str(comp.get("id") or "").strip()
+                pid = f"f1-{cid or ev.get('id')}"
+                if pid in seen:
+                    continue
+                rival = f"{lugar} · {sesion}" if lugar else sesion
+                utc = str(comp.get("date") or comp.get("startDate") or "")
+                p = partido(pid, "f1", utc, rival, "", espn_estado(comp), "")
+                if not p:
+                    continue
+                p["tv"] = ""
+                if p["fecha_madrid"] in wanted:
+                    seen.add(pid)
+                    out.append(p)
     return out
 
 

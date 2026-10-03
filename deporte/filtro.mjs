@@ -84,10 +84,7 @@ export function partidosOf(payload) {
   return list.filter(keepPartido);
 }
 
-function byTimeThenBrewers(a, b) {
-  const ba = isBrewers(a) ? 0 : 1;
-  const bb = isBrewers(b) ? 0 : 1;
-  if (ba !== bb) return ba - bb;
+function byTime(a, b) {
   const ia = minutesHora(a.hora_madrid);
   const ib = minutesHora(b.hora_madrid);
   if (ia == null && ib == null) return 0;
@@ -97,8 +94,27 @@ function byTimeThenBrewers(a, b) {
   return String(a.rival || '').localeCompare(String(b.rival || ''), 'es');
 }
 
+function byTimeThenBrewers(a, b) {
+  const ba = isBrewers(a) ? 0 : 1;
+  const bb = isBrewers(b) ? 0 : 1;
+  if (ba !== bb) return ba - bb;
+  return byTime(a, b);
+}
+
 export function sortPartidos(list) {
   return [...(Array.isArray(list) ? list : [])].sort(byTimeThenBrewers);
+}
+
+export function sortSemana(list) {
+  return [...(Array.isArray(list) ? list : [])].sort((a, b) => {
+    const na = String(a.deporte || '') === 'ncaa' ? 1 : 0;
+    const nb = String(b.deporte || '') === 'ncaa' ? 1 : 0;
+    if (na !== nb) return na - nb;
+    const fa = isFavorito(a) ? 0 : 1;
+    const fb = isFavorito(b) ? 0 : 1;
+    if (fa !== fb) return fa - fb;
+    return byTime(a, b);
+  });
 }
 
 export function hoyList(payload, now = new Date()) {
@@ -112,12 +128,17 @@ export function weekDays(ymd) {
   return Array.from({ length: 7 }, (_, i) => addDaysYmd(start, i));
 }
 
+export function weekFromToday(ymd) {
+  if (!YMD.test(String(ymd || ''))) return [];
+  return Array.from({ length: 7 }, (_, i) => addDaysYmd(ymd, i));
+}
+
 export function restoSemana(payload, now = new Date()) {
   const today = ymdMadrid(now);
-  const days = weekDays(today).filter((d) => d !== today);
+  const days = weekFromToday(today);
   const all = partidosOf(payload);
   return days.map((fecha) => {
-    const list = sortPartidos(all.filter((p) => p.fecha_madrid === fecha));
+    const list = sortSemana(all.filter((p) => p.fecha_madrid === fecha));
     return {
       fecha,
       ventana: list.filter(inWindow),
