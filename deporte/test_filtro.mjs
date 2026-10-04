@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   ymdMadrid, addDaysYmd, weekStartMonday, weekDays, weekFromToday, inWindow, keepPartido,
-  hoyList, restoSemana, diaList, sortPartidos, sortSemana, isBrewers, isFavorito, emptyMsg, lineaToque, TAGS, WIN_START,
+  hoyList, restoSemana, diaList, sortPartidos, sortSemana, isBrewers, isFavorito, hoyHasFavorito, emptyMsg, lineaToque, TAGS, WIN_START,
 } from './filtro.mjs';
 import { paintList, HOSTS, cardHtml } from './app.js';
 
@@ -84,6 +84,46 @@ test('favoritos casa', () => {
   assert.equal(keepPartido({ deporte: 'femenino', fecha_madrid: '2026-10-07', hora_madrid: '19:00', rival: 'Real Madrid – Barça' }), false);
 });
 
+test('hoyHasFavorito: reloj Madrid y ventana 09:00–22:30', () => {
+  const f1Hoy = new Date('2026-10-04T12:00:00+02:00');
+  assert.equal(ymdMadrid(f1Hoy), '2026-10-04');
+  assert.equal(hoyHasFavorito(payload, f1Hoy), true);
+  const víspera = new Date('2026-10-03T23:30:00+02:00');
+  assert.equal(ymdMadrid(víspera), '2026-10-03');
+  assert.equal(hoyHasFavorito(payload, víspera), false);
+  const trasMedianocheUtc = new Date('2026-10-03T22:30:00Z');
+  assert.equal(ymdMadrid(trasMedianocheUtc), '2026-10-04');
+  assert.equal(hoyHasFavorito(payload, trasMedianocheUtc), true);
+  const cubs = {
+    schema_version: 1,
+    partidos: [
+      { deporte: 'mlb', fecha_madrid: '2026-10-06', hora_madrid: '20:10', rival: 'Cubs – Cardinals' },
+    ],
+  };
+  assert.equal(hoyHasFavorito(cubs, new Date('2026-10-06T12:00:00+02:00')), false);
+  const brewNoche = {
+    schema_version: 1,
+    partidos: [
+      { deporte: 'mlb', fecha_madrid: '2026-10-06', hora_madrid: '02:10', rival: 'Brewers – Mets' },
+    ],
+  };
+  assert.equal(hoyHasFavorito(brewNoche, new Date('2026-10-06T12:00:00+02:00')), false);
+  const brewVentana = {
+    schema_version: 1,
+    partidos: [
+      { deporte: 'mlb', fecha_madrid: '2026-10-06', hora_madrid: '21:15', rival: 'Brewers – Mets' },
+    ],
+  };
+  assert.equal(hoyHasFavorito(brewVentana, new Date('2026-10-06T12:00:00+02:00')), true);
+  const fem = {
+    schema_version: 1,
+    partidos: [
+      { deporte: 'femenino', fecha_madrid: '2026-10-07', hora_madrid: '19:00', rival: 'Real Madrid – Barça' },
+    ],
+  };
+  assert.equal(hoyHasFavorito(fem, new Date('2026-10-07T12:00:00+02:00')), false);
+});
+
 test('toque no inventa TV', () => {
   assert.equal(lineaToque({ hora_madrid: '21:15', rival: 'Brewers – Mets', tv: 'TBS' }), '21:15 · Brewers – Mets · TBS');
   assert.equal(lineaToque({ hora_madrid: '21:00', rival: 'Villarreal – Real Madrid', tv: '' }), '21:00 · Villarreal – Real Madrid');
@@ -118,7 +158,9 @@ test('app.js no trae correos', async () => {
     assert.equal(blob.includes('@gmail.com'), false);
     assert.equal(blob.includes('agarcia'), false);
   }
-  assert.match(html, /deporte-build: 20261003d/);
+  assert.match(html, /deporte-build: 20261004a/);
+  assert.match(html, /data-favorito-hoy/);
+  assert.match(html, /hoyHasFavorito/);
   assert.match(html, /casa-star/);
   assert.match(js, /★/);
   assert.match(html, />Semana</);

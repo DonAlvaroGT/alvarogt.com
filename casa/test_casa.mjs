@@ -7,7 +7,8 @@ import {
   lastTab, rememberTab, TAB_KEY, TAB_NAMES,
   queueHasPending, setTablonQueueDot, readTablonQueueFromFrame, refreshTablonQueueDot,
   setViajesTripDot, readTripSoonFromGoFrame, refreshViajesTripDot, applyViajesHoy,
-  showMonoEgg, hideMonoEgg, onGoTabTap, dismissMonoEgg, setDeporteTab
+  showMonoEgg, hideMonoEgg, onGoTabTap, dismissMonoEgg, setDeporteTab,
+  setDeporteStarDot, readFavoritoHoyFromFrame, refreshDeporteStarDot
 } from './app.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -81,6 +82,12 @@ function el(init = {}) {
       if (sel === '.tab-dot') {
         return this.children.find((c) => c.className === 'tab-dot') || null;
       }
+      if (sel === '#list') {
+        return this.children.find((c) => c.id === 'list' || c.getAttribute('id') === 'list') || null;
+      }
+      if (sel === '.casa-star') {
+        return this.children.find((c) => c.className === 'casa-star') || null;
+      }
       const view = sel.match(/^iframe\[data-casa-view="([^"]+)"\]$/);
       if (view) {
         return this.children.find((c) => c.getAttribute('data-casa-view') === view[1]) || null;
@@ -91,6 +98,7 @@ function el(init = {}) {
       if (sel === 'button' || sel === '#tabs button') return this.children;
       if (sel === 'iframe') return this.children;
       if (sel === '.queue-item') return this.children.filter((c) => c.className === 'queue-item');
+      if (sel === '.casa-star') return this.children.filter((c) => c.className === 'casa-star');
       return [];
     },
     addEventListener() {},
@@ -476,4 +484,39 @@ test('Deporte solo si el probe deja la pestaña', () => {
   assert.equal(frame.src, '/deporte/');
   setDeporteTab(false);
   assert.equal(d.deporte.hidden, true);
+});
+
+test('punto de Deporte si el iframe marca ★ hoy; Lucita sin pestaña', () => {
+  const d = mockDom();
+  showShell();
+  assert.equal(d.deporte.hidden, true);
+  assert.equal(d.deporte.querySelector('.tab-dot').hidden, true);
+  assert.equal(refreshDeporteStarDot(), false);
+  assert.equal(d.deporte.querySelector('.tab-dot').hidden, true);
+  setDeporteTab(true);
+  assert.equal(d.deporte.hidden, false);
+  const frame = d.scroller.children.find((f) => f.getAttribute('data-casa-view') === 'deporte');
+  assert.equal(frame.src, '/deporte/');
+  const htmlOff = {
+    getAttribute(name) { return name === 'data-favorito-hoy' ? '0' : null; }
+  };
+  const htmlOn = {
+    getAttribute(name) { return name === 'data-favorito-hoy' ? '1' : null; }
+  };
+  frame.contentDocument = { body: {}, documentElement: htmlOff, querySelector() { return null; } };
+  frame.contentWindow = { location: { href: 'https://alvarogt.com/deporte/' } };
+  assert.equal(readFavoritoHoyFromFrame(frame), false);
+  assert.equal(refreshDeporteStarDot(), false);
+  assert.equal(d.deporte.querySelector('.tab-dot').hidden, true);
+  frame.contentDocument = { body: {}, documentElement: htmlOn, querySelector() { return null; } };
+  assert.equal(readFavoritoHoyFromFrame(frame), true);
+  assert.equal(refreshDeporteStarDot(), true);
+  assert.equal(d.deporte.classList.contains('has-star'), true);
+  assert.equal(d.deporte.querySelector('.tab-dot').hidden, false);
+  setDeporteTab(false);
+  assert.equal(d.deporte.hidden, true);
+  assert.equal(d.deporte.classList.contains('has-star'), false);
+  assert.equal(d.deporte.querySelector('.tab-dot').hidden, true);
+  const dead = el({ attrs: { 'data-casa-view': 'deporte' }, contentWindow: null, contentDocument: null });
+  assert.equal(readFavoritoHoyFromFrame(dead), null);
 });

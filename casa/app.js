@@ -71,11 +71,14 @@ export function setDeporteTab(on) {
   const btn = document.querySelector('#tabs button[data-view="deporte"]');
   if (btn) btn.hidden = !deporteOn;
   if (!deporteOn) {
+    setDeporteStarDot(false);
     try {
       if (String((globalThis.localStorage && localStorage.getItem(TAB_KEY)) || '') === 'deporte') {
         localStorage.setItem(TAB_KEY, 'go');
       }
     } catch {}
+  } else {
+    ensureDeporteFrame();
   }
   return deporteOn;
 }
@@ -165,6 +168,45 @@ export function refreshViajesTripDot() {
     return false;
   }
   return setViajesTripDot(soon);
+}
+
+export function setDeporteStarDot(on) {
+  const btn = document.querySelector('#tabs button[data-view="deporte"]');
+  if (!btn) return false;
+  btn.classList.toggle('has-star', !!on);
+  const dot = btn.querySelector('.tab-dot');
+  if (dot) dot.hidden = !on;
+  return !!on;
+}
+
+export function readFavoritoHoyFromFrame(frame) {
+  try {
+    if (!frame || isFrameDead(frame)) return null;
+    const html = frame.contentDocument && frame.contentDocument.documentElement;
+    if (!html || typeof html.getAttribute !== 'function') return null;
+    if (html.getAttribute('data-favorito-hoy') === '1') return true;
+    if (html.getAttribute('data-favorito-hoy') === '0') return false;
+    const list = frame.contentDocument.querySelector('#list');
+    if (!list) return null;
+    return list.querySelectorAll('.casa-star').length > 0;
+  } catch {
+    return null;
+  }
+}
+
+export function refreshDeporteStarDot() {
+  if (!deporteOn) {
+    setDeporteStarDot(false);
+    return false;
+  }
+  const scroller = document.querySelector('#scroller');
+  const frame = scroller && scroller.querySelector('iframe[data-casa-view="deporte"]');
+  const on = readFavoritoHoyFromFrame(frame);
+  if (on === null) {
+    setDeporteStarDot(false);
+    return false;
+  }
+  return setDeporteStarDot(on);
 }
 
 export function applyViajesHoy(frame) {
@@ -268,6 +310,7 @@ function bindFrame(frame) {
     if (frame.getAttribute('data-casa-view') === 'go') {
       watchGoTripSoon(frame);
     }
+    if (frame.getAttribute('data-casa-view') === 'deporte') watchDeporteFavorito(frame);
     if (frame.getAttribute('data-casa-view') === 'viajes') applyViajesHoy(frame);
   });
 }
@@ -298,6 +341,23 @@ function watchGoTripSoon(frame) {
     const obs = new MutationObserver(() => { refreshViajesTripDot(); });
     obs.observe(html, { attributes: true, attributeFilter: ['data-trip-soon'] });
     frame.__casaTripObs = obs;
+  } catch {}
+}
+
+function watchDeporteFavorito(frame) {
+  refreshDeporteStarDot();
+  try {
+    const doc = frame && frame.contentDocument;
+    const html = doc && doc.documentElement;
+    if (!html || typeof MutationObserver === 'undefined') return;
+    if (frame.__casaFavObs) {
+      try { frame.__casaFavObs.disconnect(); } catch {}
+    }
+    const obs = new MutationObserver(() => { refreshDeporteStarDot(); });
+    obs.observe(html, { attributes: true, attributeFilter: ['data-favorito-hoy'] });
+    const list = doc.querySelector('#list');
+    if (list) obs.observe(list, { childList: true, subtree: true });
+    frame.__casaFavObs = obs;
   } catch {}
 }
 
@@ -340,6 +400,32 @@ function ensureGoFrame() {
   return frame;
 }
 
+function ensureDeporteFrame() {
+  if (!deporteOn) return null;
+  const scroller = document.querySelector('#scroller');
+  if (!scroller) return null;
+  const existing = scroller.querySelector('iframe[data-casa-view="deporte"]');
+  if (existing) {
+    refreshDeporteStarDot();
+    return existing;
+  }
+  const frame = document.createElement('iframe');
+  frame.setAttribute('data-casa-view', 'deporte');
+  frame.setAttribute('title', TITLES.deporte);
+  frame.src = srcFor('deporte');
+  if (frame.style) {
+    frame.style.position = 'absolute';
+    frame.style.inset = '0';
+    frame.style.width = '100%';
+    frame.style.height = '100%';
+    frame.style.border = '0';
+  }
+  scroller.appendChild(frame);
+  bindFrame(frame);
+  paintFrame(frame, lastTab() === 'deporte');
+  return frame;
+}
+
 export function showView(name) {
   const raw = TAB_NAMES.includes(name) ? name : 'go';
   const view = (raw === 'deporte' && !deporteOn) ? 'go' : raw;
@@ -372,6 +458,7 @@ export function showView(name) {
   markTab(view);
   if (view === 'tablon') refreshTablonQueueDot();
   refreshViajesTripDot();
+  refreshDeporteStarDot();
   if (view === 'viajes') applyViajesHoy(frame);
   return src;
 }
@@ -385,6 +472,7 @@ export function showShell() {
   hideExpiredOverlay();
   showView(lastTab());
   ensureGoFrame();
+  ensureDeporteFrame();
 }
 
 export function isFrameDead(frame) {

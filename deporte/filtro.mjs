@@ -122,6 +122,10 @@ export function hoyList(payload, now = new Date()) {
   return sortPartidos(partidosOf(payload).filter((p) => p.fecha_madrid === today && inWindow(p)));
 }
 
+export function hoyHasFavorito(payload, now = new Date()) {
+  return hoyList(payload, now).some(isFavorito);
+}
+
 export function weekDays(ymd) {
   const start = weekStartMonday(ymd);
   if (!start) return [];
