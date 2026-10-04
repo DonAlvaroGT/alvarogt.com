@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Deporte</title>
-  <!-- deporte-build: 20261003d -->
+  <!-- deporte-build: 20261004a -->
   <style>
     :root {
       color-scheme: light;
@@ -103,11 +103,11 @@
   <script src="/pie.js?v=20260930a"></script>
   <script type="module">
     import {
-      ymdMadrid, hoyList, restoSemana, diaList, tagOf, tvOf, emptyMsg, weekDays, addDaysYmd, YMD
-    } from './filtro.mjs?v=20261003d';
+      ymdMadrid, hoyList, restoSemana, diaList, tagOf, tvOf, emptyMsg, weekDays, addDaysYmd, YMD, hoyHasFavorito
+    } from './filtro.mjs?v=20261004a';
     import {
       HOSTS, loadFirebaseConfig, casaDoc, parentOk, parentEmail, markEmbedded, paintList, cardHtml
-    } from './app.js?v=20261003d';
+    } from './app.js?v=20261004a';
 
     const embedded = markEmbedded();
     const status = document.querySelector('#google-status');
@@ -157,7 +157,13 @@
       void first;
     }
 
+    function markFavoritoHoy() {
+      const on = !!(payload && hoyHasFavorito(payload, new Date()));
+      document.documentElement.setAttribute('data-favorito-hoy', on ? '1' : '0');
+    }
+
     function render() {
+      markFavoritoHoy();
       if (!payload) {
         list.innerHTML = '<p class="empty">sin datos</p>';
         return;
@@ -208,6 +214,7 @@
         payload = { schema_version: 1, fuentes: {}, partidos: [] };
         app.hidden = false;
         gate.hidden = true;
+        markFavoritoHoy();
         list.innerHTML = '<p class="empty">sin datos</p>';
       }
     }
@@ -215,6 +222,7 @@
     const showGate = () => {
       started = false;
       payload = null;
+      markFavoritoHoy();
       app.hidden = true;
       gate.hidden = false;
       signIn.hidden = false;
