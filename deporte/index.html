@@ -108,6 +108,7 @@
     import {
       HOSTS, loadFirebaseConfig, casaDoc, parentOk, parentEmail, markEmbedded, paintList, cardHtml
     } from './app.js?v=20261004a';
+    import { lastVista, rememberVista, VISTAS } from './vista.mjs?v=20261004a';
 
     const embedded = markEmbedded();
     const status = document.querySelector('#google-status');
@@ -120,7 +121,7 @@
     const calBox = document.querySelector('#cal-box');
     const setStatus = (t) => { status.textContent = t; };
     let payload = null;
-    let vista = 'hoy';
+    let vista = lastVista();
     let chosen = '';
     let started = false;
     let fsApi = null, db = null, fsProject = 'tablongo';
@@ -193,11 +194,16 @@
       list.innerHTML = `<h2 class="dia">${esc(weekdayTitle(day))}</h2>` + (rows.length ? cards(rows) : '<p class="empty">sin partidos</p>');
     }
 
-    function setVista(name) {
-      vista = name === 'semana' || name === 'cal' ? name : 'hoy';
+    function markVista() {
       document.querySelectorAll('.views button').forEach((b) => {
         b.setAttribute('aria-selected', b.dataset.vista === vista ? 'true' : 'false');
       });
+    }
+
+    function setVista(name) {
+      vista = VISTAS.includes(name) ? name : 'hoy';
+      rememberVista(vista);
+      markVista();
       render();
     }
 
@@ -309,6 +315,7 @@
       const btn = e.target.closest('button[data-vista]');
       if (btn) setVista(btn.dataset.vista);
     });
+    markVista();
     jumpForm.addEventListener('submit', (e) => {
       e.preventDefault();
       chosen = document.querySelector('#jump-day').value;
