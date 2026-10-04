@@ -486,33 +486,34 @@ test('Deporte solo si el probe deja la pestaña', () => {
   assert.equal(d.deporte.hidden, true);
 });
 
-test('punto de Deporte si el iframe marca ★ hoy; Lucita sin pestaña', () => {
+test('punto de Deporte si hoy hay ★; Lucita sin pestaña ni badge', () => {
   const d = mockDom();
   showShell();
   assert.equal(d.deporte.hidden, true);
   assert.equal(d.deporte.querySelector('.tab-dot').hidden, true);
-  assert.equal(refreshDeporteStarDot(), false);
-  assert.equal(d.deporte.querySelector('.tab-dot').hidden, true);
+  assert.equal(d.scroller.children.some((f) => f.getAttribute('data-casa-view') === 'deporte'), false);
   setDeporteTab(true);
   assert.equal(d.deporte.hidden, false);
   const frame = d.scroller.children.find((f) => f.getAttribute('data-casa-view') === 'deporte');
   assert.equal(frame.src, '/deporte/');
-  const htmlOff = {
-    getAttribute(name) { return name === 'data-favorito-hoy' ? '0' : null; }
-  };
   const htmlOn = {
     getAttribute(name) { return name === 'data-favorito-hoy' ? '1' : null; }
   };
-  frame.contentDocument = { body: {}, documentElement: htmlOff, querySelector() { return null; } };
-  frame.contentWindow = { location: { href: 'https://alvarogt.com/deporte/' } };
-  assert.equal(readFavoritoHoyFromFrame(frame), false);
-  assert.equal(refreshDeporteStarDot(), false);
-  assert.equal(d.deporte.querySelector('.tab-dot').hidden, true);
+  const htmlOff = {
+    getAttribute(name) { return name === 'data-favorito-hoy' ? '0' : null; }
+  };
   frame.contentDocument = { body: {}, documentElement: htmlOn, querySelector() { return null; } };
+  frame.contentWindow = { location: { href: 'https://alvarogt.com/deporte/' } };
   assert.equal(readFavoritoHoyFromFrame(frame), true);
   assert.equal(refreshDeporteStarDot(), true);
   assert.equal(d.deporte.classList.contains('has-star'), true);
   assert.equal(d.deporte.querySelector('.tab-dot').hidden, false);
+  frame.contentDocument = { body: {}, documentElement: htmlOff, querySelector() { return null; } };
+  assert.equal(readFavoritoHoyFromFrame(frame), false);
+  assert.equal(refreshDeporteStarDot(), false);
+  assert.equal(d.deporte.classList.contains('has-star'), false);
+  assert.equal(d.deporte.querySelector('.tab-dot').hidden, true);
+  setDeporteStarDot(true);
   setDeporteTab(false);
   assert.equal(d.deporte.hidden, true);
   assert.equal(d.deporte.classList.contains('has-star'), false);

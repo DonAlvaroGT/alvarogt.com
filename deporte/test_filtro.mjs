@@ -161,6 +161,9 @@ test('app.js no trae correos', async () => {
   assert.match(html, /deporte-build: 20261004a/);
   assert.match(html, /data-favorito-hoy/);
   assert.match(html, /hoyHasFavorito/);
+  assert.match(html, /vista\.mjs/);
+  assert.match(html, /lastVista/);
+  assert.match(html, /rememberVista/);
   assert.match(html, /casa-star/);
   assert.match(js, /★/);
   assert.match(html, />Semana</);
