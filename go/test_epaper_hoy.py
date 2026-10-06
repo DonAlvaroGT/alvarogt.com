@@ -6,13 +6,17 @@ import json
 import unittest
 
 from epaper_hoy import (
+    FICHAS_TOPE,
+    PARCHE_MARK,
     TIEMPO_FALTA,
     build_hoy,
+    cap_fichas,
     events_from_reglas,
     festivo,
     is_favorito,
     laborable,
     lluvia_line,
+    nacho_parche,
     nacho_ropa,
     rest_url_redacted,
     skip_aviso,
@@ -306,18 +310,28 @@ class EpaperHoyTests(unittest.TestCase):
         titles_t = [e["title"] for e in lunes["tarde"]["extraescolares"]]
         self.assertEqual(
             titles_m,
-            ["Piano Luz", "Cita Hospital Viamed Santa Elena", "Fútbol Nacho", "* 21:00 · Real Madrid – Valencia", "Abuelos GT en Atenas"],
+            [
+                "# Nacho parche izquierdo",
+                "Piano Luz",
+                "Cita Hospital Viamed Santa Elena",
+                "Fútbol Nacho",
+                "* 21:00 · Real Madrid – Valencia",
+                "Abuelos GT en Atenas",
+            ],
         )
         self.assertEqual(titles_t, ["Fútbol Nacho", "* 21:00 · Real Madrid – Valencia", "Abuelos GT en Atenas"])
         self.assertNotIn("Piano Luz", titles_t)
+        self.assertNotIn("# Nacho parche izquierdo", titles_t)
         martes = doc("2026-09-22")
         titles_m = [e["title"] for e in martes["manana"]["extraescolares"]]
         titles_t = [e["title"] for e in martes["tarde"]["extraescolares"]]
         self.assertIn("Inglés con Dom", titles_m)
         self.assertIn("Inglés con Dom", titles_t)
+        self.assertEqual(titles_m[0], "# Nacho parche derecho")
+        self.assertNotIn("# Nacho parche derecho", titles_t)
         self.assertEqual(lunes["finde"].get("extraescolares", []) and True, True)
         viernes = doc("2026-09-18")
-        self.assertEqual(viernes["manana"]["extraescolares"], [])
+        self.assertEqual([e["title"] for e in viernes["manana"]["extraescolares"]], ["# Nacho parche derecho"])
         self.assertEqual(viernes["tarde"]["extraescolares"], [])
 
     def test_calendario_filtra_y_no_duplica(self):
@@ -401,7 +415,7 @@ class EpaperHoyTests(unittest.TestCase):
         self.assertEqual(sports_ficha(DEPORTE, "2026-10-04"), "* 09:00 · Malasia · Carrera")
         oct3 = doc("2026-10-03", reglas={"schema_version": 1, "timezone": "Europe/Madrid", "extraescolares": []}, calendario=[])
         titles_oct = [e["title"] for e in oct3["finde"]["extraescolares"]]
-        self.assertEqual(titles_oct, ["* 10:00 · Malasia · Qualy"])
+        self.assertEqual(titles_oct, ["# Nacho parche izquierdo", "* 10:00 · Malasia · Qualy"])
         self.assertEqual(sports_lines(None, "2026-09-18"), [])
 
     def test_actualizado_solo_si_viene(self):
@@ -525,9 +539,10 @@ class EpaperHoyTests(unittest.TestCase):
         jue = doc("2026-10-01", reglas=reglas, calendario=[])
         titles_m = [e["title"] for e in jue["manana"]["extraescolares"]]
         titles_t = [e["title"] for e in jue["tarde"]["extraescolares"]]
-        self.assertEqual(titles_m, ["Logopeda Nacho"])
-        self.assertNotIn("time", jue["manana"]["extraescolares"][0])
+        self.assertEqual(titles_m, ["# Nacho parche descanso", "Logopeda Nacho"])
+        self.assertNotIn("time", jue["manana"]["extraescolares"][1])
         self.assertNotIn("Logopeda Nacho", titles_t)
+        self.assertNotIn("# Nacho parche descanso", titles_t)
         self.assertEqual(events_from_reglas(reglas, "2026-10-08"), [])
         self.assertEqual(events_from_reglas(reglas, "2026-09-24"), [])
 
@@ -554,7 +569,8 @@ class EpaperHoyTests(unittest.TestCase):
         self.assertFalse(payload["laborable"])
         self.assertTrue(payload["festivo"])
         self.assertEqual(payload["manana"]["comedor"], "")
-        self.assertEqual(payload["manana"]["extraescolares"], [])
+        self.assertEqual([e["title"] for e in payload["manana"]["extraescolares"]], ["# Nacho parche derecho"])
+        self.assertEqual([e["title"] for e in payload["finde"]["extraescolares"]], ["# Nacho parche derecho"])
         self.assertEqual(payload["tarde"]["extraescolares"], [])
         self.assertEqual(payload["manana"]["nacho_ropa"], "")
         blob = json.dumps(payload, ensure_ascii=False)
@@ -619,6 +635,61 @@ class EpaperHoyTests(unittest.TestCase):
         self.assertTrue(ultimo["viaje_hoy"])
         self.assertEqual(ultimo["viaje_manana"], "")
         self.assertNotIn("Lisboa", ultimo["viaje_manana"])
+
+    def test_nacho_parche_ciclo_manana_y_finde(self):
+        self.assertEqual(PARCHE_MARK, "#")
+        self.assertEqual(nacho_parche("2026-10-06"), "# Nacho parche izquierdo")
+        self.assertEqual(nacho_parche("2026-10-07"), "# Nacho parche izquierdo")
+        self.assertEqual(nacho_parche("2026-10-08"), "# Nacho parche derecho")
+        self.assertEqual(nacho_parche("2026-10-09"), "# Nacho parche descanso")
+        self.assertEqual(nacho_parche("2026-10-10"), "# Nacho parche izquierdo")
+        vacio = {"schema_version": 1, "timezone": "Europe/Madrid", "extraescolares": []}
+        for ymd, lado in (
+            ("2026-10-06", "izquierdo"),
+            ("2026-10-07", "izquierdo"),
+            ("2026-10-08", "derecho"),
+            ("2026-10-09", "descanso"),
+            ("2026-10-10", "izquierdo"),
+            ("2026-10-11", "izquierdo"),
+        ):
+            payload = doc(ymd, reglas=vacio, calendario=[], deporte={"partidos": []})
+            ficha = f"# Nacho parche {lado}"
+            titles_m = [e["title"] for e in payload["manana"]["extraescolares"]]
+            titles_t = [e["title"] for e in payload["tarde"]["extraescolares"]]
+            titles_f = [e["title"] for e in payload["finde"]["extraescolares"]]
+            self.assertEqual(titles_m[0], ficha, ymd)
+            self.assertIn(ficha, titles_f)
+            self.assertNotIn(ficha, titles_t)
+            self.assertNotIn("parche", json.dumps(payload["tarde"], ensure_ascii=False))
+            self.assertNotEqual(ficha, f"Nacho {payload['manana'].get('nacho_ropa')}")
+        sab = doc("2026-10-10", reglas=vacio, calendario=[], deporte={"partidos": []})
+        self.assertEqual(sab["manana"]["nacho_ropa"], "")
+        self.assertNotIn("nacho_ropa", sab["finde"])
+        self.assertEqual(sab["finde"]["extraescolares"][0]["title"], "# Nacho parche izquierdo")
+        blob = json.dumps(doc("2026-10-06", reglas=vacio, calendario=[]), ensure_ascii=False)
+        self.assertNotIn("go_reglas", blob)
+        self.assertNotIn("skinner", blob.lower())
+
+    def test_parche_no_cae_tope_8(self):
+        items = [
+            {"id": f"x{i}", "title": f"Extra {i}", "time": "08:00", "weekdays": [2]}
+            for i in range(10)
+        ]
+        reglas = {"schema_version": 1, "timezone": "Europe/Madrid", "extraescolares": items}
+        payload = doc("2026-10-06", reglas=reglas, calendario=[], deporte={"partidos": []})
+        titles_m = [e["title"] for e in payload["manana"]["extraescolares"]]
+        titles_f = [e["title"] for e in payload["finde"]["extraescolares"]]
+        titles_t = [e["title"] for e in payload["tarde"]["extraescolares"]]
+        self.assertEqual(titles_m[0], "# Nacho parche izquierdo")
+        self.assertEqual(titles_f[0], "# Nacho parche izquierdo")
+        self.assertLessEqual(len(titles_m) + 1, FICHAS_TOPE)
+        self.assertLessEqual(len(titles_f), FICHAS_TOPE)
+        self.assertNotIn("# Nacho parche izquierdo", titles_t)
+        crowded = [{"title": f"Extra {i}"} for i in range(12)]
+        crowded.append({"title": "# Nacho parche izquierdo"})
+        kept = cap_fichas(crowded, ropa=True)
+        self.assertEqual(kept[0]["title"], "# Nacho parche izquierdo")
+        self.assertEqual(len(kept), FICHAS_TOPE - 1)
 
     def test_url_redactada(self):
         url = rest_url_redacted()

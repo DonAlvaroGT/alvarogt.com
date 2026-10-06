@@ -34,6 +34,10 @@ SCOPES = ("https://www.googleapis.com/auth/datastore", "https://www.googleapis.c
 SPORT_MIN = 9 * 60
 SPORT_MAX = 22 * 60 + 30
 SPORT_MARK = "*"
+PARCHE_MARK = "#"
+PARCHE_FROM = "2026-10-06"
+PARCHE_CICLO = ("izquierdo", "izquierdo", "derecho", "descanso")
+FICHAS_TOPE = 8
 MANANA_ANTES = 14 * 60
 ALLOW_CAL = {"Familia", "Casa"}
 CASA_QUIEN = "garcia timon"
@@ -74,6 +78,32 @@ def nacho_ropa(ymd: str) -> str:
     if wd in (1, 2, 5):
         return "chándal"
     return "uniforme"
+
+
+def nacho_parche(ymd: str) -> str:
+    if not YMD.match(ymd or ""):
+        return ""
+    day0 = datetime.strptime(PARCHE_FROM, "%Y-%m-%d").date()
+    day = datetime.strptime(ymd, "%Y-%m-%d").date()
+    lado = PARCHE_CICLO[(day - day0).days % 4]
+    return f"{PARCHE_MARK} Nacho parche {lado}"
+
+
+def is_parche_title(title: str) -> bool:
+    return fold(str(title or "")).startswith(fold(f"{PARCHE_MARK} nacho parche"))
+
+
+def cap_fichas(extras: list[dict], *, ropa: bool) -> list[dict]:
+    """Firmware: ropa + extras, tope 8. El parche no cae."""
+    room = FICHAS_TOPE - (1 if ropa else 0)
+    if room <= 0:
+        parche = [e for e in extras if is_parche_title(str(e.get("title") or ""))]
+        return parche[:1]
+    if len(extras) <= room:
+        return extras
+    parche = [e for e in extras if is_parche_title(str(e.get("title") or ""))]
+    rest = [e for e in extras if not is_parche_title(str(e.get("title") or ""))]
+    return (parche + rest)[:room]
 
 
 def minutes(hhmm: str) -> int | None:
@@ -946,6 +976,11 @@ def build_hoy(
         extras.append(sport_row)
     extras.sort(key=lambda e: (1 if e.get("_allday") else 0, e.get("_start") or "99:99"))
     manana_ex, tarde_ex = split_extraescolares(extras)
+    parche_txt = nacho_parche(ymd)
+    if parche_txt:
+        parche_row = {"title": parche_txt}
+        manana_ex = [parche_row] + [e for e in manana_ex if not is_parche_title(str(e.get("title") or ""))]
+        tarde_ex = [e for e in tarde_ex if not is_parche_title(str(e.get("title") or ""))]
     casa = trip_on(viajes, ymd)
     viaje = trip_line(casa, ymd)
     viaje_txt = trip_texto(casa, ymd)
@@ -967,6 +1002,10 @@ def build_hoy(
     menu = comedor_line(comedor, ymd) if es_laborable else ""
     comida_txt = f"Comida {comida}" if comida else ""
     cena_txt = f"Cena {cena}" if cena else ""
+    finde_ex = manana_ex + [e for e in tarde_ex if e not in manana_ex]
+    manana_ex = cap_fichas(manana_ex, ropa=bool(ropa))
+    tarde_ex = cap_fichas(tarde_ex, ropa=bool(ropa_tarde))
+    finde_ex = cap_fichas(finde_ex, ropa=False)
     manana = {
         "tiempo": tiempo_txt,
         "lluvia": lluvia_txt,
@@ -991,7 +1030,7 @@ def build_hoy(
         "tiempo": tiempo_txt,
         "lluvia": lluvia_txt,
         "rain_probability": rain_n,
-        "extraescolares": manana_ex + [e for e in tarde_ex if e not in manana_ex],
+        "extraescolares": finde_ex,
         "viaje": viaje,
         "deporte": deporte_txt,
         "mela": comida_txt,
