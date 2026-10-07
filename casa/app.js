@@ -400,6 +400,31 @@ function ensureGoFrame() {
   return frame;
 }
 
+function ensureTablonFrame() {
+  const scroller = document.querySelector('#scroller');
+  if (!scroller) return null;
+  const existing = scroller.querySelector('iframe[data-casa-view="tablon"]');
+  if (existing) {
+    refreshTablonQueueDot();
+    return existing;
+  }
+  const frame = document.createElement('iframe');
+  frame.setAttribute('data-casa-view', 'tablon');
+  frame.setAttribute('title', TITLES.tablon);
+  frame.src = srcFor('tablon');
+  if (frame.style) {
+    frame.style.position = 'absolute';
+    frame.style.inset = '0';
+    frame.style.width = '100%';
+    frame.style.height = '100%';
+    frame.style.border = '0';
+  }
+  scroller.appendChild(frame);
+  bindFrame(frame);
+  paintFrame(frame, lastTab() === 'tablon');
+  return frame;
+}
+
 function ensureDeporteFrame() {
   if (!deporteOn) return null;
   const scroller = document.querySelector('#scroller');
@@ -472,6 +497,7 @@ export function showShell() {
   hideExpiredOverlay();
   showView(lastTab());
   ensureGoFrame();
+  ensureTablonFrame();
   ensureDeporteFrame();
 }
 

@@ -93,16 +93,15 @@ def is_parche_title(title: str) -> bool:
     return fold(str(title or "")).startswith(fold(f"{PARCHE_MARK} nacho parche"))
 
 
-def cap_fichas(extras: list[dict], *, ropa: bool) -> list[dict]:
-    """Firmware: ropa + extras, tope 8. El parche no cae."""
-    room = FICHAS_TOPE - (1 if ropa else 0)
+def cap_fichas(extras: list[dict], *, ropa: bool, estrella: bool = False) -> list[dict]:
+    """Firmware: ropa + ★ anclada + extras, tope 8. Parche y ★ no caen."""
+    room = FICHAS_TOPE - (1 if ropa else 0) - (1 if estrella else 0)
+    parche = [e for e in extras if is_parche_title(str(e.get("title") or ""))]
+    rest = [e for e in extras if not is_parche_title(str(e.get("title") or ""))]
     if room <= 0:
-        parche = [e for e in extras if is_parche_title(str(e.get("title") or ""))]
         return parche[:1]
     if len(extras) <= room:
         return extras
-    parche = [e for e in extras if is_parche_title(str(e.get("title") or ""))]
-    rest = [e for e in extras if not is_parche_title(str(e.get("title") or ""))]
     return (parche + rest)[:room]
 
 
@@ -187,6 +186,26 @@ def events_from_reglas(payload: dict | None, ymd: str) -> list[dict]:
         out.append(row)
     out.sort(key=lambda e: e["_start"])
     return out
+
+
+def collapse_same_time(rows: list[dict]) -> list[dict]:
+    grouped: list[dict] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        if row.get("_skip_aviso"):
+            grouped.append(row)
+            continue
+        start = str(row.get("_start") or "")
+        if not start or time_sin_hora(start):
+            grouped.append(row)
+            continue
+        prev = grouped[-1] if grouped else None
+        if prev and not prev.get("_skip_aviso") and str(prev.get("_start") or "") == start:
+            prev["title"] = f"{prev['title']} · {row['title']}"
+            continue
+        grouped.append(dict(row))
+    return grouped
 
 
 def split_extraescolares(rows: list[dict]) -> tuple[list[dict], list[dict]]:
@@ -729,6 +748,15 @@ def is_favorito(event: dict | None) -> bool:
     return False
 
 
+def f1_en_panel(event: dict | None) -> bool:
+    if not isinstance(event, dict) or str(event.get("deporte") or "") != "f1":
+        return False
+    rival = fold(str(event.get("rival") or ""))
+    if "qualy" in rival:
+        return False
+    return "carrera" in rival or "sprint" in rival
+
+
 def sports_on_day(payload: dict | None, ymd: str) -> list[dict]:
     if not payload or not YMD.match(ymd or ""):
         return []
@@ -743,7 +771,10 @@ def sports_on_day(payload: dict | None, ymd: str) -> list[dict]:
             continue
         if str(event.get("deporte") or "") == "femenino":
             continue
-        if not is_favorito(event):
+        if str(event.get("deporte") or "") == "f1":
+            if not f1_en_panel(event):
+                continue
+        elif not is_favorito(event):
             continue
         mins = minutes(str(event.get("hora_madrid") or ""))
         if mins is None or mins < SPORT_MIN or mins > SPORT_MAX:
@@ -776,6 +807,25 @@ def sports_for_day(payload: dict | None, ymd: str) -> str:
 
 def sports_ficha(payload: dict | None, ymd: str) -> str:
     bits = sports_lines(payload, ymd)
+    if not bits:
+        return ""
+    return f"{SPORT_MARK} " + " · ".join(bits)
+
+
+def estrella_ficha(payload: dict | None, ymd: str, *, tarde: bool = False) -> str:
+    events = sports_on_day(payload, ymd)
+    if tarde:
+        kept: list[dict] = []
+        for event in events:
+            mins = minutes(str(event.get("hora_madrid") or ""))
+            if mins is not None and mins >= MANANA_ANTES:
+                kept.append(event)
+        events = kept
+    bits: list[str] = []
+    for event in events:
+        line = sports_bit(event)
+        if line:
+            bits.append(line)
     if not bits:
         return ""
     return f"{SPORT_MARK} " + " · ".join(bits)
@@ -970,14 +1020,16 @@ def build_hoy(
     extra_titles |= {norm_title(str(e.get("_skip_of") or "")) for e in extras if e.get("_skip_of")}
     extra_titles.discard("")
     extras = extras + calendar_rows(calendario, ymd, extra_titles)
-    src = deporte if deporte is not None else sports_day
-    sport_row = sports_extraescolar(src, ymd)
-    if sport_row:
-        extras.append(sport_row)
     extras.sort(key=lambda e: (1 if e.get("_allday") else 0, e.get("_start") or "99:99"))
+    extras = collapse_same_time(extras)
+    src = deporte if deporte is not None else sports_day
     manana_ex, tarde_ex = split_extraescolares(extras)
+    estrella_m = estrella_ficha(src, ymd, tarde=False)
+    estrella_t = estrella_ficha(src, ymd, tarde=True)
     parche_txt = nacho_parche(ymd)
+    parche_cara = ""
     if parche_txt:
+        parche_cara = parche_txt[2:].strip() if parche_txt.startswith(f"{PARCHE_MARK} ") else parche_txt
         parche_row = {"title": parche_txt}
         manana_ex = [parche_row] + [e for e in manana_ex if not is_parche_title(str(e.get("title") or ""))]
         tarde_ex = [e for e in tarde_ex if not is_parche_title(str(e.get("title") or ""))]
@@ -1003,14 +1055,16 @@ def build_hoy(
     comida_txt = f"Comida {comida}" if comida else ""
     cena_txt = f"Cena {cena}" if cena else ""
     finde_ex = manana_ex + [e for e in tarde_ex if e not in manana_ex]
-    manana_ex = cap_fichas(manana_ex, ropa=bool(ropa))
-    tarde_ex = cap_fichas(tarde_ex, ropa=bool(ropa_tarde))
-    finde_ex = cap_fichas(finde_ex, ropa=False)
+    manana_ex = cap_fichas(manana_ex, ropa=bool(ropa), estrella=bool(estrella_m))
+    tarde_ex = cap_fichas(tarde_ex, ropa=bool(ropa_tarde), estrella=bool(estrella_t))
+    finde_ex = cap_fichas(finde_ex, ropa=False, estrella=bool(estrella_m))
     manana = {
         "tiempo": tiempo_txt,
         "lluvia": lluvia_txt,
         "rain_probability": rain_n,
         "nacho_ropa": ropa,
+        "parche": parche_cara,
+        "estrella": estrella_m,
         "extraescolares": manana_ex,
         "viaje": viaje,
         "comedor": menu,
@@ -1021,6 +1075,7 @@ def build_hoy(
         "lluvia": lluvia_txt,
         "rain_probability": rain_n,
         "nacho_ropa": ropa_tarde,
+        "estrella": estrella_t,
         "extraescolares": tarde_ex,
         "viaje": viaje,
         "deporte": deporte_txt,
@@ -1030,6 +1085,8 @@ def build_hoy(
         "tiempo": tiempo_txt,
         "lluvia": lluvia_txt,
         "rain_probability": rain_n,
+        "parche": parche_cara,
+        "estrella": estrella_m,
         "extraescolares": finde_ex,
         "viaje": viaje,
         "deporte": deporte_txt,

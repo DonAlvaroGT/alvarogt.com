@@ -233,7 +233,7 @@ class JobTests(unittest.TestCase):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         js = (ROOT / "app.js").read_text(encoding="utf-8")
         py = (ROOT / "deporte_job.py").read_text(encoding="utf-8")
-        self.assertIn("deporte-build: 20261004a", html)
+        self.assertIn("deporte-build: 20261007a", html)
         self.assertIn("data-favorito-hoy", html)
         self.assertIn("hoyHasFavorito", html)
         self.assertIn("vista.mjs", html)

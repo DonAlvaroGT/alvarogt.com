@@ -26,6 +26,7 @@ const payload = {
   fuentes: { mlb: 'ok', wec: 'omitido' },
   partidos: [
     { deporte: 'mlb', fecha_madrid: '2026-10-06', hora_madrid: '20:10', rival: 'Cubs – Cardinals', tv: '', utc: '2026-10-06T18:10:00Z' },
+    { deporte: 'ncaa', fecha_madrid: '2026-10-06', hora_madrid: '18:00', rival: 'Ohio – Penn', tv: '', utc: '2026-10-06T16:00:00Z' },
     { deporte: 'mlb', fecha_madrid: '2026-10-06', hora_madrid: '21:15', rival: 'Brewers – Mets', tv: 'TBS', utc: '2026-10-06T19:15:00Z' },
     { deporte: 'nhl', fecha_madrid: '2026-10-06', hora_madrid: '02:00', rival: 'Rangers – Wings', tv: 'TNT', utc: '2026-10-06T00:00:00Z' },
     { deporte: 'futbol', fecha_madrid: '2026-10-10', hora_madrid: '21:00', rival: 'Villarreal – Real Madrid', tv: '', utc: '2026-10-10T19:00:00Z' },
@@ -37,11 +38,12 @@ const payload = {
   ],
 };
 
-test('Hoy filtra el día del navegador y Brewers primero', () => {
+test('Hoy filtra el día del navegador; ★ primero y NCAA al fondo', () => {
   const now = new Date('2026-10-06T12:00:00+02:00');
   assert.equal(ymdMadrid(now), '2026-10-06');
   const hoy = hoyList(payload, now);
-  assert.deepEqual(hoy.map((p) => p.rival), ['Brewers – Mets', 'Cubs – Cardinals']);
+  assert.deepEqual(hoy.map((p) => p.rival), ['Brewers – Mets', 'Cubs – Cardinals', 'Ohio – Penn']);
+  assert.equal(hoy.at(-1).deporte, 'ncaa');
   assert.equal(hoy.some((p) => p.deporte === 'nhl'), false);
 });
 
@@ -143,7 +145,7 @@ test('tags y pie de lista', () => {
   assert.equal(painted[0].rival.includes('Brewers'), true);
   assert.equal(painted[0].favorito, true);
   assert.equal(painted[1].favorito, false);
-  assert.equal(isBrewers(payload.partidos[1]), true);
+  assert.equal(isBrewers(payload.partidos.find((p) => /Brewers/.test(p.rival))), true);
   assert.match(cardHtml({ tag: TAGS.mlb, hora: '21:15', rival: 'Brewers', tv: '', favorito: true }, (s) => s), /casa-star.*★.*Brewers/s);
   assert.equal(cardHtml({ tag: TAGS.mlb, hora: '20:10', rival: 'Cubs', tv: '', favorito: false }, (s) => s).includes('★'), false);
   assert.ok(HOSTS.includes('alvarogt.com'));
@@ -158,7 +160,7 @@ test('app.js no trae correos', async () => {
     assert.equal(blob.includes('@gmail.com'), false);
     assert.equal(blob.includes('agarcia'), false);
   }
-  assert.match(html, /deporte-build: 20261004a/);
+  assert.match(html, /deporte-build: 20261007a/);
   assert.match(html, /data-favorito-hoy/);
   assert.match(html, /hoyHasFavorito/);
   assert.match(html, /vista\.mjs/);

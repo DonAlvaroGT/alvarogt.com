@@ -119,7 +119,7 @@ export function sortSemana(list) {
 
 export function hoyList(payload, now = new Date()) {
   const today = ymdMadrid(now);
-  return sortPartidos(partidosOf(payload).filter((p) => p.fecha_madrid === today && inWindow(p)));
+  return sortSemana(partidosOf(payload).filter((p) => p.fecha_madrid === today && inWindow(p)));
 }
 
 export function hoyHasFavorito(payload, now = new Date()) {
