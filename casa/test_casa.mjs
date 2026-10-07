@@ -176,30 +176,33 @@ test('sin login no hay iframe ni barra', () => {
   assert.equal(d.status.textContent, 'Sin sesión');
 });
 
-test('lazy: al entrar solo Go; Tablón y Viajes al toque; volver no recarga src', () => {
+test('Tablón listo al abrir; Viajes al toque; volver no recarga src', () => {
   const d = mockDom();
   showGate();
   showShell();
   assert.equal(d.gate.hidden, true);
   assert.equal(d.shell.hidden, false);
-  assert.equal(d.scroller.children.length, 1);
+  assert.equal(d.scroller.children.length, 2);
   const goFrame = d.scroller.children[0];
+  const tablonFrame = d.scroller.children[1];
   assert.equal(goFrame.getAttribute('data-casa-view'), 'go');
   assert.equal(goFrame.src, '/go/');
   assert.equal(goFrame.style.display, 'block');
   assert.equal(goFrame.style.visibility, 'visible');
+  assert.equal(tablonFrame.getAttribute('data-casa-view'), 'tablon');
+  assert.equal(tablonFrame.src, '/tablon/');
+  assert.equal(tablonFrame.style.display, 'none');
   assert.equal(d.go.getAttribute('aria-selected'), 'true');
+  assert.equal(d.scroller.children.some((f) => f.getAttribute('data-casa-view') === 'viajes'), false);
 
   showView('tablon');
   assert.equal(d.scroller.children.length, 2);
-  const tablonFrame = d.scroller.children[1];
   assert.equal(tablonFrame.src, '/tablon/');
   assert.equal(tablonFrame.style.display, 'block');
   assert.equal(goFrame.style.display, 'block');
   assert.equal(goFrame.style.visibility, 'hidden');
   assert.equal(d.tablon.getAttribute('aria-selected'), 'true');
   assert.equal(d.go.getAttribute('aria-selected'), 'false');
-  assert.equal(d.scroller.children.some((f) => f.getAttribute('data-casa-view') === 'viajes'), false);
 
   goFrame.src = '/go/?kept=1';
   showView('go');
@@ -288,12 +291,14 @@ test('restaura la última pestaña; si no hay valor, Go', () => {
   assert.equal(lastTab(), 'viajes');
   const d2 = mockDom({ keepTab: true });
   showShell();
-  assert.equal(d2.scroller.children.length, 2);
+  assert.equal(d2.scroller.children.length, 3);
   assert.equal(d2.scroller.children[0].getAttribute('data-casa-view'), 'viajes');
   assert.equal(d2.scroller.children[0].src, '/viajes/');
   assert.equal(d2.scroller.children[1].getAttribute('data-casa-view'), 'go');
   assert.equal(d2.scroller.children[1].style.display, 'block');
   assert.equal(d2.scroller.children[1].style.visibility, 'hidden');
+  assert.equal(d2.scroller.children[2].getAttribute('data-casa-view'), 'tablon');
+  assert.equal(d2.scroller.children[2].src, '/tablon/');
   assert.equal(d2.viajes.getAttribute('aria-selected'), 'true');
   rememberTab('disney');
   assert.equal(lastTab(), 'viajes');
@@ -335,8 +340,15 @@ test('punto de Tablón solo si #queue-list ya tiene cola', () => {
   assert.equal(readTablonQueueFromFrame(deadFrame), null);
   const d = mockDom();
   showShell();
+  assert.equal(d.scroller.children.some((f) => f.getAttribute('data-casa-view') === 'tablon'), true);
   assert.equal(refreshTablonQueueDot(), false);
   assert.equal(d.tablon.querySelector('.tab-dot').hidden, true);
+  const ready = d.scroller.children.find((f) => f.getAttribute('data-casa-view') === 'tablon');
+  ready.contentDocument = fullDoc;
+  ready.contentWindow = { location: { href: 'https://alvarogt.com/tablon/' } };
+  assert.equal(refreshTablonQueueDot(), true);
+  assert.equal(d.tablon.querySelector('.tab-dot').hidden, false);
+  assert.equal(d.go.getAttribute('aria-selected'), 'true');
 });
 
 test('punto de Viajes si Go marca viaje hoy o mañana (Gugus Madrid)', () => {

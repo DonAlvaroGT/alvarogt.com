@@ -69,6 +69,43 @@ export function eventsFromReglas(payload, ymd) {
   return out;
 }
 
+function clockKey(time) {
+  const match = String(time || '').match(/^(\d{1,2}:\d{2})/);
+  return match ? match[1] : '';
+}
+
+export function collapseSameTime(events) {
+  const grouped = [];
+  for (const event of events || []) {
+    if (!event || typeof event !== 'object') continue;
+    if (event.skipOf) {
+      grouped.push(event);
+      continue;
+    }
+    const key = clockKey(event.time);
+    if (!key) {
+      grouped.push({
+        time: event.time || '',
+        title: event.title,
+        location: event.location || '',
+        ...(event.skipOf ? { skipOf: event.skipOf } : {}),
+      });
+      continue;
+    }
+    const prev = grouped.at(-1);
+    if (prev && !prev.skipOf && clockKey(prev.time) === key) {
+      prev.title = `${prev.title} · ${event.title}`;
+      continue;
+    }
+    grouped.push({
+      time: event.time || '',
+      title: event.title,
+      location: event.location || '',
+    });
+  }
+  return grouped;
+}
+
 export function mergeEvents(fixed, calendar) {
   const skipOf = new Set();
   for (const event of fixed || []) {
@@ -88,5 +125,5 @@ export function mergeEvents(fixed, calendar) {
       location: event.location || '',
     });
   }
-  return out.sort((a, b) => String(a.time).localeCompare(String(b.time), 'es'));
+  return collapseSameTime(out.sort((a, b) => String(a.time).localeCompare(String(b.time), 'es')));
 }

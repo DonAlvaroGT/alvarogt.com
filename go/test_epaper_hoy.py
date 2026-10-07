@@ -32,6 +32,7 @@ REGLAS = {
         {"id": "futbol-nacho", "title": "Fútbol Nacho", "time": "16:30", "weekdays": [1, 3], "from": "2026-09-21"},
         {"id": "ingles-dom", "title": "Inglés con Dom", "time": "16:30", "weekdays": [2], "from": "2026-09-22"},
         {"id": "natacion-mollete", "title": "Natación Mollete", "time": "18:30", "end": "19:00", "weekdays": [3]},
+        {"id": "danza-molletito", "title": "Danza Molletito", "time": "16:30", "weekdays": [1, 3]},
         {"id": "piano-manana", "title": "Piano Luz", "time": "08:30", "weekdays": [1]},
     ],
 }
@@ -154,6 +155,8 @@ DEPORTE = {
             "deporte": "femenino",
         },
         {"fecha_madrid": "2026-10-03", "hora_madrid": "10:00", "rival": "Malasia · Qualy", "deporte": "f1"},
+        {"fecha_madrid": "2026-10-03", "hora_madrid": "14:00", "rival": "Singapur · Sprint", "deporte": "f1"},
+        {"fecha_madrid": "2026-10-03", "hora_madrid": "15:00", "rival": "Singapur · Qualy sprint", "deporte": "f1"},
         {"fecha_madrid": "2026-10-04", "hora_madrid": "09:00", "rival": "Malasia · Carrera", "deporte": "f1"},
     ],
 }
@@ -314,12 +317,13 @@ class EpaperHoyTests(unittest.TestCase):
                 "# Nacho parche izquierdo",
                 "Piano Luz",
                 "Cita Hospital Viamed Santa Elena",
-                "Fútbol Nacho",
-                "* 21:00 · Real Madrid – Valencia",
+                "Fútbol Nacho · Danza Molletito",
                 "Abuelos GT en Atenas",
             ],
         )
-        self.assertEqual(titles_t, ["Fútbol Nacho", "* 21:00 · Real Madrid – Valencia", "Abuelos GT en Atenas"])
+        self.assertEqual(titles_t, ["Fútbol Nacho · Danza Molletito", "Abuelos GT en Atenas"])
+        self.assertEqual(lunes["manana"]["estrella"], "* 21:00 · Real Madrid – Valencia")
+        self.assertEqual(lunes["tarde"]["estrella"], "* 21:00 · Real Madrid – Valencia")
         self.assertNotIn("Piano Luz", titles_t)
         self.assertNotIn("# Nacho parche izquierdo", titles_t)
         martes = doc("2026-09-22")
@@ -343,7 +347,7 @@ class EpaperHoyTests(unittest.TestCase):
         self.assertNotIn("Empanada", extras)
         self.assertNotIn("Lentejas", extras)
         titles_t = [e["title"] for e in lunes["tarde"]["extraescolares"]]
-        self.assertEqual(titles_t.count("Fútbol Nacho"), 1)
+        self.assertEqual(titles_t.count("Fútbol Nacho · Danza Molletito"), 1)
         cita = [e for e in lunes["manana"]["extraescolares"] if e["title"].startswith("Cita")][0]
         self.assertEqual(cita["time"], "10:40")
         abuelos = [e for e in lunes["manana"]["extraescolares"] if "Abuelos" in e["title"]][0]
@@ -399,23 +403,30 @@ class EpaperHoyTests(unittest.TestCase):
         )
         titles_f = [e["title"] for e in sabado["finde"]["extraescolares"]]
         titles_t = [e["title"] for e in sabado["tarde"]["extraescolares"]]
-        self.assertEqual(titles_f.count(ficha), 1)
-        self.assertEqual(titles_t.count(ficha), 1)
+        self.assertEqual(titles_f.count(ficha), 0)
+        self.assertEqual(titles_t.count(ficha), 0)
+        self.assertEqual(sabado["finde"]["estrella"], ficha)
+        self.assertEqual(sabado["tarde"]["estrella"], ficha)
         self.assertTrue(all("Sevilla" not in t for t in titles_f))
-        self.assertNotIn("time", [e for e in sabado["finde"]["extraescolares"] if e["title"] == ficha][0])
         lunes = doc("2026-09-21")
         titles_m = [e["title"] for e in lunes["manana"]["extraescolares"]]
         titles_t = [e["title"] for e in lunes["tarde"]["extraescolares"]]
         rm = "* 21:00 · Real Madrid – Valencia"
-        self.assertEqual(titles_m.count(rm), 1)
-        self.assertEqual(titles_t.count(rm), 1)
-        self.assertEqual(titles_t.count("Fútbol Nacho"), 1)
+        self.assertEqual(titles_m.count(rm), 0)
+        self.assertEqual(titles_t.count(rm), 0)
+        self.assertEqual(lunes["manana"]["estrella"], rm)
+        self.assertEqual(lunes["tarde"]["estrella"], rm)
+        self.assertEqual(titles_t.count("Fútbol Nacho · Danza Molletito"), 1)
         self.assertTrue(all("femenino" not in t.lower() and "Barcelona" not in t for t in titles_m if t.startswith("*")))
-        self.assertEqual(sports_ficha(DEPORTE, "2026-10-03"), "* 10:00 · Malasia · Qualy")
+        self.assertEqual(sports_ficha(DEPORTE, "2026-10-03"), "* 14:00 · Singapur · Sprint")
         self.assertEqual(sports_ficha(DEPORTE, "2026-10-04"), "* 09:00 · Malasia · Carrera")
         oct3 = doc("2026-10-03", reglas={"schema_version": 1, "timezone": "Europe/Madrid", "extraescolares": []}, calendario=[])
         titles_oct = [e["title"] for e in oct3["finde"]["extraescolares"]]
-        self.assertEqual(titles_oct, ["# Nacho parche izquierdo", "* 10:00 · Malasia · Qualy"])
+        self.assertEqual(titles_oct, ["# Nacho parche izquierdo"])
+        self.assertEqual(oct3["finde"]["estrella"], "* 14:00 · Singapur · Sprint")
+        self.assertNotIn("Qualy", oct3["finde"]["estrella"])
+        oct4 = doc("2026-10-04", reglas={"schema_version": 1, "timezone": "Europe/Madrid", "extraescolares": []}, calendario=[])
+        self.assertEqual(oct4["finde"]["estrella"], "* 09:00 · Malasia · Carrera")
         self.assertEqual(sports_lines(None, "2026-09-18"), [])
 
     def test_actualizado_solo_si_viene(self):
@@ -503,7 +514,8 @@ class EpaperHoyTests(unittest.TestCase):
         self.assertIn("Fútbol Nacho", titles_t)
         lun = doc("2026-09-21", reglas=reglas, calendario=[])
         titles_lun = [e["title"] for e in lun["tarde"]["extraescolares"]]
-        self.assertEqual(titles_lun, ["hoy no hay fútbol", "* 21:00 · Real Madrid – Valencia"])
+        self.assertEqual(titles_lun, ["hoy no hay fútbol"])
+        self.assertEqual(lun["tarde"]["estrella"], "* 21:00 · Real Madrid – Valencia")
         self.assertNotIn("Fútbol Nacho", titles_lun)
         mar = doc("2026-09-22", reglas=reglas, calendario=[])
         titles_mar = [e["title"] for e in mar["tarde"]["extraescolares"]]
@@ -660,6 +672,9 @@ class EpaperHoyTests(unittest.TestCase):
             self.assertEqual(titles_m[0], ficha, ymd)
             self.assertIn(ficha, titles_f)
             self.assertNotIn(ficha, titles_t)
+            self.assertEqual(payload["manana"]["parche"], f"Nacho parche {lado}", ymd)
+            self.assertEqual(payload["finde"]["parche"], f"Nacho parche {lado}", ymd)
+            self.assertNotIn("parche", payload["tarde"])
             self.assertNotIn("parche", json.dumps(payload["tarde"], ensure_ascii=False))
             self.assertNotEqual(ficha, f"Nacho {payload['manana'].get('nacho_ropa')}")
         sab = doc("2026-10-10", reglas=vacio, calendario=[], deporte={"partidos": []})
@@ -690,6 +705,22 @@ class EpaperHoyTests(unittest.TestCase):
         kept = cap_fichas(crowded, ropa=True)
         self.assertEqual(kept[0]["title"], "# Nacho parche izquierdo")
         self.assertEqual(len(kept), FICHAS_TOPE - 1)
+        kept_star = cap_fichas(crowded, ropa=True, estrella=True)
+        self.assertEqual(kept_star[0]["title"], "# Nacho parche izquierdo")
+        self.assertEqual(len(kept_star), FICHAS_TOPE - 2)
+        crowded_star = doc(
+            "2026-10-07",
+            reglas={"schema_version": 1, "timezone": "Europe/Madrid", "extraescolares": [
+                {"id": f"x{i}", "title": f"Extra {i}", "time": "08:00", "weekdays": [3]} for i in range(10)
+            ]},
+            calendario=[],
+            deporte={"partidos": [
+                {"fecha_madrid": "2026-10-07", "hora_madrid": "21:00", "rival": "Dolphins – Bills", "deporte": "nfl"}
+            ]},
+        )
+        self.assertEqual(crowded_star["manana"]["estrella"], "* 21:00 · Dolphins – Bills")
+        self.assertEqual(crowded_star["tarde"]["estrella"], "* 21:00 · Dolphins – Bills")
+        self.assertTrue(all(not str(e.get("title") or "").startswith("*") for e in crowded_star["manana"]["extraescolares"]))
 
     def test_url_redactada(self):
         url = rest_url_redacted()
