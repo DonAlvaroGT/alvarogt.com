@@ -146,7 +146,7 @@ class ViajesEmbeddedTests(unittest.TestCase):
             HTML,
         )
         self.assertIn("Creado por Álvaro GT y sus minions", HTML)
-        self.assertIn("viajes-build: 20261010b", HTML)
+        self.assertIn("viajes-build: 20261010c", HTML)
         self.assertIn("function calQuienColor", HTML)
         self.assertIn("quien === 'Gugus'", HTML)
         cal = HTML[HTML.index("function calQuienColor") : HTML.index("function monthPairTitle")]
@@ -202,6 +202,30 @@ class ViajesEmbeddedTests(unittest.TestCase):
         months = HTML[HTML.index("function renderMonths()") : HTML.index("let fsApi")]
         self.assertNotIn("togglePast", months)
         self.assertNotIn("past-toggle", months)
+
+    def test_admin_solo_casa_sin_setdoc(self):
+        self.assertIn('id="viajes-admin"', HTML)
+        self.assertIn("hidden>Admin</button>", HTML)
+        self.assertIn("let casaAdmin = false;", HTML)
+        self.assertIn("btn.hidden = !casaAdmin", HTML)
+        self.assertIn("claims.casa === true", HTML)
+        self.assertIn("manageViajesCasa", HTML)
+        self.assertIn("VIAJES_CASA_FN", HTML)
+        self.assertIn("Authorization: 'Bearer '", HTML)
+        self.assertIn("openDrawer", HTML)
+        self.assertIn("¿Borrar", HTML)
+        self.assertIn("target: 'viajes_casa'", HTML)
+        self.assertNotIn("setDoc", HTML)
+        self.assertNotIn("updateDoc", HTML)
+        self.assertNotIn("@gmail.com", HTML)
+        self.assertNotIn("Mari Luz", HTML)
+        self.assertIn("viajesVisibles", HTML)
+        self.assertIn("togglePast", HTML)
+        self.assertIn("function syncAdminButton", HTML)
+        start = HTML.index("async function startApp()")
+        end = HTML.index("}", start)
+        body = HTML[start:end]
+        self.assertIn("syncAdminButton()", body)
 
 
 class ViajesPrivadosTests(unittest.TestCase):
@@ -304,6 +328,20 @@ class ViajesPrivadosTests(unittest.TestCase):
         self.assertEqual(casa["quien"]["order"], ["SoloCasa"])
         self.assertIn("Lucita y Álvaro", pub["quien"]["order"])
         self.assertNotIn("Lucita y Álvaro", casa["quien"]["order"])
+
+    def test_function_casa_no_publico(self):
+        fn = (self.repo / "tablon" / "functions" / "src" / "viajes-casa.mjs").read_text(encoding="utf-8")
+        idx = (self.repo / "tablon" / "functions" / "src" / "index.mjs").read_text(encoding="utf-8")
+        self.assertIn("token.casa !== true", fn)
+        self.assertIn("VIAJES_PUBLIC_DOC", fn)
+        self.assertIn("No se toca el tablón público de viajes.", fn)
+        self.assertIn("privado = true", fn)
+        self.assertNotIn("@gmail.com", fn)
+        self.assertIn("manageViajesCasa", idx)
+        self.assertIn("casa_json/${VIAJES_CASA_DOC}", idx)
+        self.assertIn("tx.set(casaRef", idx)
+        self.assertNotIn("tx.set(publicRef", idx)
+        self.assertNotIn("@gmail.com", idx.split("manageViajesCasa")[-1][:2000])
 
 
 if __name__ == "__main__":

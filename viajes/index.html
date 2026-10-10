@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Viajes · Álvaro GT</title>
-  <!-- viajes-build: 20261010b -->
+  <!-- viajes-build: 20261010c -->
   <style>
     :root {
       color-scheme: light;
@@ -126,6 +126,17 @@
     html.embedded .access-row { display: none; }
     html.embedded #gate { min-height: 0; padding: 28px 16px; }
     body:not(.in-session) .jump { display: none; }
+    body:not(.in-session) #viajes-admin { display: none; }
+    #viajes-admin[hidden] { display: none; }
+    .trip-admin { display: flex; gap: 8px; margin-top: 8px; }
+    #viajes-drawer { border: 1px solid var(--line); background: var(--paper); color: var(--ink); box-shadow: var(--shadow); padding: 22px; max-width: 28rem; width: calc(100% - 32px); }
+    #viajes-drawer::backdrop { background: rgba(24, 38, 58, .28); }
+    #viajes-drawer h2 { color: var(--navy); font: 400 1.7rem/1.1 Georgia, serif; margin: 0 0 14px; }
+    #viajes-drawer label { display: grid; gap: 4px; color: var(--ink-soft); font-size: .78rem; margin: 0 0 10px; }
+    #viajes-drawer input, #viajes-drawer textarea { border: 1px solid var(--line); background: var(--cream); color: var(--navy); padding: 8px 10px; font: inherit; }
+    #viajes-drawer textarea { min-height: 72px; resize: vertical; }
+    #viajes-drawer .drawer-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    #vf-status { color: var(--ink-soft); font-size: .8rem; min-height: 1.2em; }
     html[data-viajes-vista="hoy"] #clocks { display: none; }
     html[data-viajes-vista="hoy"] article.day.hoy { padding: 28px 26px; }
     html[data-viajes-vista="hoy"] article.day.manana { padding: 14px 16px; }
@@ -142,6 +153,7 @@
             <button id="google-sign-in" class="demo" type="button">Entrar</button>
             <button id="google-sign-out" class="demo" type="button" hidden>Salir</button>
           </div>
+          <button id="viajes-admin" class="demo" type="button" hidden>Admin</button>
           <form class="jump" id="jump-form">
             <label>Ir a día <input id="jump-day" type="date" required></label>
             <button id="jump-today" class="demo" type="button">Hoy</button>
@@ -183,6 +195,25 @@
     </main>
   </div>
 
+  <dialog id="viajes-drawer">
+    <form id="viajes-form">
+      <h2 id="viajes-drawer-title">Viaje de casa</h2>
+      <input type="hidden" id="vf-id" value="">
+      <label>Título <input id="vf-titulo" name="titulo" required></label>
+      <label>Inicio <input id="vf-inicio" name="inicio" type="date" required></label>
+      <label>Fin <input id="vf-fin" name="fin" type="date" required></label>
+      <label>Quién <input id="vf-quien" name="quien" required></label>
+      <label>Sitio <input id="vf-sitio" name="sitio"></label>
+      <label>Notas <textarea id="vf-notas" name="notas"></textarea></label>
+      <p id="vf-status"></p>
+      <div class="drawer-actions">
+        <button class="demo" type="submit">Guardar</button>
+        <button id="vf-delete" class="demo" type="button" hidden>Borrar</button>
+        <button id="vf-close" class="demo" type="button">Cerrar</button>
+      </div>
+    </form>
+  </dialog>
+
 <script src="/pie.js?v=20260930b"></script>
 <script type="module">
 const embedded = (() => { try { return window.parent !== window && window.parent.location.origin === location.origin; } catch { return false; } })();
@@ -198,6 +229,10 @@ const clockFmt = tz => new Intl.DateTimeFormat('es-ES', {timeZone: tz, hour:'2-d
 const covers = (start, end, day) => day >= start && day <= end;
 const inRange = (est, day) => covers(est.desde, est.hasta, day);
 let chosenDate = null;
+let casaAdmin = false;
+let claimsCasa = false;
+let casaLoaded = false;
+let authService = null;
 const fechaParam = () => {
   const q = new URLSearchParams(location.search).get('fecha');
   return /^\d{4}-\d{2}-\d{2}$/.test(q || '') ? q : null;
@@ -578,6 +613,9 @@ async function renderTrips() {
       + ' – ' +
       new Intl.DateTimeFormat('es-ES', {day:'numeric', month:'short', timeZone: casa}).format(new Date(v.fin + 'T12:00:00Z'));
     const casaMark = esPrivado(v) ? ' <span class="solo-casa">solo casa</span>' : '';
+    const adminBtns = (casaAdmin && esPrivado(v))
+      ? `<div class="trip-admin"><button type="button" class="demo" data-edit-viaje="${esc(v.id)}">Editar</button></div>`
+      : '';
     return `<article class="trip">
       <div>
         <div class="eyebrow">${esc(dates)}</div>
@@ -585,6 +623,7 @@ async function renderTrips() {
         <p class="meta">${esc(v.quien)}</p>
         <p class="meta">${esc(cities)}</p>
         ${v.detalle ? `<p class="meta"><a href="${esc(v.detalle)}">Abrir detalle →</a></p>` : ''}
+        ${adminBtns}
       </div>
       <div>
         <p class="${cd.cls}">${esc(cd.text)}</p>
@@ -678,7 +717,19 @@ function mergeViajes(pub, casa) {
   });
 }
 async function loadViajesCasa() {
-  try { return await casaDoc('viajes_casa'); } catch { return null; }
+  try {
+    const doc = await casaDoc('viajes_casa');
+    casaLoaded = !!(doc && doc.schema_version === 1);
+    return doc;
+  } catch {
+    casaLoaded = false;
+    return null;
+  }
+}
+function syncAdminButton() {
+  casaAdmin = !!(casaLoaded || claimsCasa || parentOk());
+  const btn = document.querySelector('#viajes-admin');
+  if (btn) btn.hidden = !casaAdmin;
 }
 function readQuienFiltro() {
   try {
@@ -878,6 +929,7 @@ async function startApp() {
   const payload = await casaDoc('viajes');
   if (payload.schema_version !== 1 || !Array.isArray(payload.viajes)) throw new Error('schema');
   data = mergeViajes(payload, await loadViajesCasa());
+  syncAdminButton();
   quienFiltro = readQuienFiltro();
   syncQuienFiltro();
   document.body.classList.add('in-session');
@@ -901,6 +953,10 @@ const showGate = () => {
   document.querySelector('#gate').hidden = false;
   document.querySelector('#app').hidden = true;
   started = false;
+  casaAdmin = false;
+  casaLoaded = false;
+  claimsCasa = false;
+  syncAdminButton();
   signIn.hidden = false;
   signOut.hidden = true;
 };
@@ -909,6 +965,69 @@ const failLoad = () => {
   showGate();
   setStatus('No se ha podido cargar los viajes.');
 };
+const VIAJES_CASA_FN = 'https://europe-west1-tablongo.cloudfunctions.net/manageViajesCasa';
+async function bearerToken() {
+  if (authService?.currentUser) return authService.currentUser.getIdToken(true);
+  return parentIdToken();
+}
+async function callManageViajesCasa(body) {
+  const token = await bearerToken();
+  if (!token) throw new Error('Sesión no autenticada.');
+  const res = await fetch(VIAJES_CASA_FN, {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data: body }),
+    cache: 'no-store'
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json.error?.message || json.message || 'No se ha podido guardar.');
+  return json.result || json;
+}
+async function reloadViajes() {
+  const payload = await casaDoc('viajes');
+  if (payload.schema_version !== 1 || !Array.isArray(payload.viajes)) throw new Error('schema');
+  data = mergeViajes(payload, await loadViajesCasa());
+  syncAdminButton();
+  syncQuienFiltro();
+  renderMonths();
+  renderTripQuien();
+  await Promise.all([renderDays(), renderTrips()]);
+}
+function notasText(v) {
+  if (!v) return '';
+  if (Array.isArray(v.notas)) return v.notas.filter(Boolean).join('\n');
+  return String(v.notas || '');
+}
+function openDrawer(trip) {
+  if (!casaAdmin) return;
+  const drawer = document.querySelector('#viajes-drawer');
+  const del = document.querySelector('#vf-delete');
+  document.querySelector('#viajes-drawer-title').textContent = trip ? 'Editar viaje de casa' : 'Nuevo viaje de casa';
+  document.querySelector('#vf-id').value = trip ? trip.id : '';
+  document.querySelector('#vf-titulo').value = trip ? trip.titulo : '';
+  document.querySelector('#vf-inicio').value = trip ? trip.inicio : '';
+  document.querySelector('#vf-fin').value = trip ? trip.fin : '';
+  document.querySelector('#vf-quien').value = trip ? trip.quien : '';
+  document.querySelector('#vf-sitio').value = trip ? (trip.ciudades || trip.lugar_principal?.label || '') : '';
+  document.querySelector('#vf-notas').value = notasText(trip);
+  document.querySelector('#vf-status').textContent = '';
+  if (del) del.hidden = !trip;
+  if (drawer && !drawer.open) drawer.showModal();
+}
+function closeDrawer() {
+  const drawer = document.querySelector('#viajes-drawer');
+  if (drawer && drawer.open) drawer.close();
+}
+function formPayload() {
+  return {
+    titulo: document.querySelector('#vf-titulo').value.trim(),
+    inicio: document.querySelector('#vf-inicio').value,
+    fin: document.querySelector('#vf-fin').value,
+    quien: document.querySelector('#vf-quien').value.trim(),
+    sitio: document.querySelector('#vf-sitio').value.trim(),
+    notas: document.querySelector('#vf-notas').value.trim()
+  };
+}
 async function setupGoogle() {
   if (!['localhost', '127.0.0.1', 'alvarogt.com', 'www.alvarogt.com', 'tablongo.web.app', 'tablongo.firebaseapp.com'].includes(location.hostname)) {
     setStatus('Acceso · dominio no autorizado');
@@ -925,6 +1044,7 @@ async function setupGoogle() {
     ]);
     const app = initializeApp(config);
     const service = auth.getAuth(app);
+    authService = service;
     await auth.setPersistence(service, auth.browserLocalPersistence);
     fsApi = firestore;
     db = firestore.getFirestore(app);
@@ -940,6 +1060,10 @@ async function setupGoogle() {
         showGate();
         return;
       }
+      try {
+        const tokenResult = await user.getIdTokenResult(true);
+        claimsCasa = tokenResult.claims.casa === true;
+      } catch { claimsCasa = false; }
       setStatus(user.displayName || user.email);
       signIn.hidden = true;
       signOut.hidden = embedded;
@@ -1026,6 +1150,47 @@ document.querySelector('#trip-quien').addEventListener('click', e => {
   toggleQuien(chip.getAttribute('data-quien'));
 });
 document.querySelector('#past-toggle').addEventListener('click', togglePast);
+document.querySelector('#viajes-admin').addEventListener('click', () => openDrawer(null));
+document.querySelector('#vf-close').addEventListener('click', closeDrawer);
+document.querySelector('#viajes-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!casaAdmin) return;
+  const status = document.querySelector('#vf-status');
+  const id = document.querySelector('#vf-id').value.trim();
+  status.textContent = 'Guardando…';
+  try {
+    await callManageViajesCasa({ operation: id ? 'update' : 'create', id, payload: formPayload(), target: 'viajes_casa' });
+    closeDrawer();
+    await reloadViajes();
+  } catch (err) {
+    status.textContent = err.message || 'No se ha podido guardar.';
+  }
+});
+document.querySelector('#vf-delete').addEventListener('click', async () => {
+  if (!casaAdmin) return;
+  const id = document.querySelector('#vf-id').value.trim();
+  const titulo = document.querySelector('#vf-titulo').value.trim();
+  const inicio = document.querySelector('#vf-inicio').value;
+  const fin = document.querySelector('#vf-fin').value;
+  if (!id) return;
+  if (!confirm(`¿Borrar «${titulo}» (${inicio} – ${fin})?`)) return;
+  const status = document.querySelector('#vf-status');
+  status.textContent = 'Borrando…';
+  try {
+    await callManageViajesCasa({ operation: 'delete', id, target: 'viajes_casa' });
+    closeDrawer();
+    await reloadViajes();
+  } catch (err) {
+    status.textContent = err.message || 'No se ha podido borrar.';
+  }
+});
+document.querySelector('#app').addEventListener('click', e => {
+  const btn = e.target.closest('[data-edit-viaje]');
+  if (!btn || !casaAdmin) return;
+  const id = btn.getAttribute('data-edit-viaje');
+  const trip = (data.viajes || []).find(v => v && v.id === id && esPrivado(v));
+  if (trip) openDrawer(trip);
+});
 new MutationObserver(() => { if (data) renderDays(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-viajes-vista'] });
 </script>
 </body>
