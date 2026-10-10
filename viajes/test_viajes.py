@@ -91,7 +91,7 @@ class ViajesEmbeddedTests(unittest.TestCase):
         self.assertIn("${esc(h.quien)} · ${esc(h.titulo)}", HTML)
         self.assertIn("showDayHits(key, hits)", HTML)
         self.assertLess(HTML.index("showDayHits(key, hits)"), HTML.index("goToDay(key)"))
-        self.assertIn("tripsCovering(data.viajes || [], key)", HTML)
+        self.assertIn("tripsCovering(viajesVisibles(), key)", HTML)
         self.assertIn("pubTrips.filter(v => !esPrivado(v))", HTML)
         self.assertNotIn("@gmail.com", HTML)
 
@@ -146,7 +146,7 @@ class ViajesEmbeddedTests(unittest.TestCase):
             HTML,
         )
         self.assertIn("Creado por Álvaro GT y sus minions", HTML)
-        self.assertIn("viajes-build: 20261001a", HTML)
+        self.assertIn("viajes-build: 20261010a", HTML)
         self.assertIn("function calQuienColor", HTML)
         self.assertIn("quien === 'Gugus'", HTML)
         cal = HTML[HTML.index("function calQuienColor") : HTML.index("function monthPairTitle")]
@@ -156,6 +156,34 @@ class ViajesEmbeddedTests(unittest.TestCase):
         trips = HTML[HTML.index("async function renderTrips()") : HTML.index("function quienPalette")]
         self.assertNotIn("calQuienColor", days)
         self.assertNotIn("calQuienColor", trips)
+
+    def test_filtro_quien_resumen_y_mes(self):
+        self.assertIn("viajes.quien", HTML)
+        self.assertIn("function viajesVisibles", HTML)
+        self.assertIn("function toggleQuien", HTML)
+        self.assertIn("function quienChipsHtml", HTML)
+        self.assertIn('id="trip-quien"', HTML)
+        self.assertIn('class="quien-chip"', HTML)
+        self.assertIn('data-quien="todos"', HTML)
+        self.assertIn(">Todos</button>", HTML)
+        self.assertNotIn("Mari Luz", HTML)
+        self.assertNotIn("#9a3d5c", HTML)
+        months = HTML[HTML.index("function renderMonths()") : HTML.index("let fsApi")]
+        self.assertIn("viajesVisibles()", months)
+        self.assertIn("quienChipsHtml(true)", months)
+        trips = HTML[HTML.index("async function renderTrips()") : HTML.index("function quienPalette")]
+        self.assertIn("viajesVisibles()", trips)
+        self.assertNotIn("calQuienColor", trips)
+        chips = HTML[HTML.index("function quienChipsHtml") : HTML.index("function renderTripQuien")]
+        self.assertIn("calQuienColor", chips)
+        self.assertIn("quienColor(n, pal.dot)", chips)
+        start = HTML.index("async function startApp()")
+        end = HTML.index("}", start)
+        body = HTML[start:end]
+        self.assertIn("quienFiltro = readQuienFiltro();", body)
+        self.assertIn("renderTripQuien();", body)
+        self.assertLess(body.index("data = mergeViajes"), body.index("quienFiltro = readQuienFiltro();"))
+        self.assertLess(HTML.index("closest('[data-quien]')"), HTML.index("closest('.cal-day')"))
 
 
 class ViajesPrivadosTests(unittest.TestCase):
