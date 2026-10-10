@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Viajes · Álvaro GT</title>
-  <!-- viajes-build: 20261001a -->
+  <!-- viajes-build: 20261010a -->
   <style>
     :root {
       color-scheme: light;
@@ -95,8 +95,10 @@
     .month-nav { display: flex; gap: 8px; flex-shrink: 0; }
     .month-nav button { min-width: 44px; min-height: 44px; font-size: 1.25rem; line-height: 1; padding: 0; }
     .month-legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin: 0 0 16px; color: var(--ink-soft); font-size: .82rem; }
-    .month-legend span { display: inline-flex; align-items: center; gap: 8px; }
-    .month-legend i { width: 12px; height: 12px; display: inline-block; border: 1px solid var(--line); }
+    .month-legend span, .quien-chip { display: inline-flex; align-items: center; gap: 8px; }
+    .month-legend i, .quien-chip i { width: 12px; height: 12px; display: inline-block; border: 1px solid var(--line); flex-shrink: 0; }
+    .quien-chip { border: 1px solid var(--line); background: var(--paper); color: var(--ink-soft); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: .82rem; cursor: pointer; }
+    .quien-chip[aria-pressed="true"] { border-color: var(--navy); color: var(--navy); background: var(--sky); }
     .month-grids { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .month-box { background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow); padding: 18px 16px 16px; min-width: 0; }
     .month-box h3 { color: var(--navy); font: 400 1.45rem/1.1 Georgia, serif; margin: 0 0 12px; text-transform: capitalize; }
@@ -168,6 +170,7 @@
       <section class="trips">
         <p class="eyebrow">Próximos</p>
         <h2>Resumen de viajes</h2>
+        <div id="trip-quien" class="month-legend quien-chips"></div>
         <div id="trip-list">Cargando…</div>
       </section>
       <section class="trips" id="past-wrap" hidden>
@@ -401,6 +404,8 @@ function flightCard(v) {
 let data = null;
 let started = false;
 let monthOffset = 0;
+const QUIEN_LS = 'viajes.quien';
+let quienFiltro = null;
 function placeForClock(viaje, day) {
   const p = placeOn(viaje, day);
   if (p) return p;
@@ -558,7 +563,7 @@ function tripChrono(a, b) {
 }
 async function renderTrips() {
   const today = todayKey();
-  const abiertos = data.viajes.filter(v => today <= v.fin).slice().sort(tripChrono);
+  const abiertos = viajesVisibles().filter(v => today <= v.fin).slice().sort(tripChrono);
   const hechos = data.viajes.filter(v => today > v.fin).slice().sort(tripChrono);
   const card = async (v, past) => {
     const cd = countdown(v, today);
@@ -643,6 +648,66 @@ function mergeViajes(pub, casa) {
 async function loadViajesCasa() {
   try { return await casaDoc('viajes_casa'); } catch { return null; }
 }
+function readQuienFiltro() {
+  try {
+    const v = localStorage.getItem(QUIEN_LS);
+    return v && v !== 'todos' ? v : null;
+  } catch {
+    return null;
+  }
+}
+function writeQuienFiltro(name) {
+  try {
+    if (name) localStorage.setItem(QUIEN_LS, name);
+    else localStorage.removeItem(QUIEN_LS);
+  } catch {}
+}
+function quienNames() {
+  const pal = quienPalette();
+  const names = [...new Set((data.viajes || []).map(v => v.quien).filter(Boolean))];
+  names.sort((a, b) => {
+    const ia = pal.order.indexOf(a), ib = pal.order.indexOf(b);
+    if (ia === -1 && ib === -1) return a.localeCompare(b, 'es');
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
+  });
+  return names;
+}
+function syncQuienFiltro() {
+  const names = quienNames();
+  if (quienFiltro && !names.includes(quienFiltro)) quienFiltro = null;
+}
+function viajesVisibles() {
+  const all = data.viajes || [];
+  if (!quienFiltro) return all;
+  return all.filter(v => v.quien === quienFiltro);
+}
+function toggleQuien(name) {
+  if (!name || name === 'todos' || name === quienFiltro) quienFiltro = null;
+  else quienFiltro = name;
+  syncQuienFiltro();
+  writeQuienFiltro(quienFiltro);
+  hideDayHits();
+  renderMonths();
+  renderTripQuien();
+  void renderTrips();
+}
+function quienChipsHtml(soft) {
+  const pal = quienPalette();
+  const names = quienNames();
+  const todos = `<button type="button" class="quien-chip" data-quien="todos" aria-pressed="${!quienFiltro}">Todos</button>`;
+  const chips = names.map(n => {
+    const color = soft ? calQuienColor(n, pal.dot, 'dot') : quienColor(n, pal.dot);
+    return `<button type="button" class="quien-chip" data-quien="${esc(n)}" aria-pressed="${quienFiltro === n}"><i style="background:${esc(color)}"></i>${esc(n)}</button>`;
+  }).join('');
+  return todos + chips;
+}
+function renderTripQuien() {
+  const el = document.querySelector('#trip-quien');
+  if (!el) return;
+  el.innerHTML = quienChipsHtml(false);
+}
 function addMonth(y, m, n) {
   const d = new Date(Date.UTC(y, m - 1 + n, 1));
   return {y: d.getUTCFullYear(), m: d.getUTCMonth() + 1};
@@ -708,22 +773,14 @@ function renderMonths() {
   const months = [addMonth(ty, tm, monthOffset), addMonth(ty, tm, monthOffset + 1)];
   const heading = monthPairTitle(monthOffset);
   const pal = quienPalette();
-  const names = [...new Set((data.viajes || []).map(v => v.quien).filter(Boolean))];
-  names.sort((a, b) => {
-    const ia = pal.order.indexOf(a), ib = pal.order.indexOf(b);
-    if (ia === -1 && ib === -1) return a.localeCompare(b, 'es');
-    if (ia === -1) return 1;
-    if (ib === -1) return -1;
-    return ia - ib;
-  });
-  const legend = names.map(n => `<span><i style="background:${esc(calQuienColor(n, pal.dot, 'dot'))}"></i>${esc(n)}</span>`).join('');
+  const legend = quienChipsHtml(true);
   const dow = ['L','M','X','J','V','S','D'].map(d => `<div class="cal-dow">${d}</div>`).join('');
   const grids = months.map(({y, m}) => {
     const monthName = new Intl.DateTimeFormat('es-ES', {month:'long', timeZone:'UTC'}).format(new Date(Date.UTC(y, m - 1, 1)));
     const title = monthName.charAt(0).toUpperCase() + monthName.slice(1) + ' ' + y;
     const days = monthCells(y, m).map(c => {
       const key = `${c.y}-${String(c.m).padStart(2,'0')}-${String(c.d).padStart(2,'0')}`;
-      const hits = tripsCovering(data.viajes, key);
+      const hits = tripsCovering(viajesVisibles(), key);
       const cls = ['cal-day'];
       if (c.other) cls.push('other');
       if (key === realToday) cls.push('today');
@@ -789,6 +846,8 @@ async function startApp() {
   const payload = await casaDoc('viajes');
   if (payload.schema_version !== 1 || !Array.isArray(payload.viajes)) throw new Error('schema');
   data = mergeViajes(payload, await loadViajesCasa());
+  quienFiltro = readQuienFiltro();
+  syncQuienFiltro();
   document.body.classList.add('in-session');
   document.querySelector('#app').hidden = false;
   chosenDate = fechaParam();
@@ -797,6 +856,7 @@ async function startApp() {
   tick();
   setInterval(tick, 1000);
   renderMonths();
+  renderTripQuien();
   await Promise.all([renderDays(), renderTrips()]);
 }
 
@@ -904,6 +964,11 @@ document.querySelector('#jump-form').addEventListener('submit', e => {
 document.querySelector('#jump-day').addEventListener('change', e => goToDay(e.target.value));
 document.querySelector('#jump-today').addEventListener('click', () => goToDay(null));
 document.querySelector('#month-view').addEventListener('click', e => {
+  const chip = e.target.closest('[data-quien]');
+  if (chip) {
+    toggleQuien(chip.getAttribute('data-quien'));
+    return;
+  }
   const btn = e.target.closest('#month-prev, #month-next');
   if (btn) {
     monthOffset += btn.id === 'month-next' ? 1 : -1;
@@ -915,13 +980,18 @@ document.querySelector('#month-view').addEventListener('click', e => {
   if (!cell || !data) return;
   const key = cell.getAttribute('data-day');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(key || '')) return;
-  const hits = tripsCovering(data.viajes || [], key);
+  const hits = tripsCovering(viajesVisibles(), key);
   if (!hits.length) return;
   showDayHits(key, hits);
   document.documentElement.setAttribute('data-viajes-vista', 'hoy');
   goToDay(key);
   const days = document.querySelector('#days');
   if (days) days.scrollIntoView({ block: 'start' });
+});
+document.querySelector('#trip-quien').addEventListener('click', e => {
+  const chip = e.target.closest('[data-quien]');
+  if (!chip) return;
+  toggleQuien(chip.getAttribute('data-quien'));
 });
 new MutationObserver(() => { if (data) renderDays(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-viajes-vista'] });
 </script>
