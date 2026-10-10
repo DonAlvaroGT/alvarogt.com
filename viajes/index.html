@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Viajes · Álvaro GT</title>
-  <!-- viajes-build: 20261010a -->
+  <!-- viajes-build: 20261010b -->
   <style>
     :root {
       color-scheme: light;
@@ -81,6 +81,8 @@
     .map-wrap iframe { display: block; width: 100%; height: 180px; border: 0; }
     .map-wrap a { display: block; padding: 8px 12px; font-size: .75rem; color: var(--navy); text-decoration: none; }
     .trips h2 { color: var(--navy); font: 400 clamp(2rem, 5vw, 3.4rem)/.95 Georgia, serif; margin: 0 0 18px; }
+    .past-toggle { display: block; width: 100%; margin: 0; padding: 16px 18px; background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow); color: var(--navy); font: 400 1.45rem/1.15 Georgia, serif; cursor: pointer; text-align: left; }
+    .past-toggle[aria-expanded="true"] { margin-bottom: 12px; }
     .trip { background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow); padding: 20px 22px; margin: 0 0 12px; display: grid; grid-template-columns: 1.5fr .8fr; gap: 12px; }
     .trip h3 { color: var(--navy); font: 400 1.7rem/1.1 Georgia, serif; margin: 6px 0 8px; }
     .solo-casa { color: var(--gold); font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-left: 8px; font-family: Inter, ui-sans-serif, system-ui, sans-serif; vertical-align: middle; }
@@ -174,9 +176,8 @@
         <div id="trip-list">Cargando…</div>
       </section>
       <section class="trips" id="past-wrap" hidden>
-        <p class="eyebrow">Hechos</p>
-        <h2>Viajes terminados</h2>
-        <div id="past-list"></div>
+        <button type="button" id="past-toggle" class="past-toggle" aria-expanded="false">Terminados</button>
+        <div id="past-list" hidden></div>
       </section>
       <footer>Fuente de datos: viajes.json · Tiempo: Open-Meteo · Mapa: OpenStreetMap · Vuelos: Flightradar24 y FlightAware (enlaces, sin seguimiento en vivo).<br>Creado por Álvaro GT y sus minions</footer>
     </main>
@@ -405,6 +406,7 @@ let data = null;
 let started = false;
 let monthOffset = 0;
 const QUIEN_LS = 'viajes.quien';
+const PAST_LS = 'viajes.terminados';
 let quienFiltro = null;
 function placeForClock(viaje, day) {
   const p = placeOn(viaje, day);
@@ -564,7 +566,7 @@ function tripChrono(a, b) {
 async function renderTrips() {
   const today = todayKey();
   const abiertos = viajesVisibles().filter(v => today <= v.fin).slice().sort(tripChrono);
-  const hechos = data.viajes.filter(v => today > v.fin).slice().sort(tripChrono);
+  const hechos = viajesVisibles().filter(v => today > v.fin).slice().sort(tripChrono);
   const card = async (v, past) => {
     const cd = countdown(v, today);
     const place = covers(v.inicio, v.fin, today)
@@ -595,13 +597,43 @@ async function renderTrips() {
     : '<p class="meta">No hay viajes pendientes.</p>';
   const pastWrap = document.querySelector('#past-wrap');
   const pastList = document.querySelector('#past-list');
+  const pastToggle = document.querySelector('#past-toggle');
   if (!hechos.length) {
     pastWrap.hidden = true;
     pastList.innerHTML = '';
+    pastList.hidden = true;
+    if (pastToggle) {
+      pastToggle.textContent = 'Terminados (0)';
+      pastToggle.setAttribute('aria-expanded', 'false');
+    }
     return;
   }
   pastWrap.hidden = false;
+  if (pastToggle) pastToggle.textContent = `Terminados (${hechos.length})`;
   pastList.innerHTML = (await Promise.all(hechos.map(v => card(v, true)))).join('');
+  applyPastAbierto(readPastAbierto());
+}
+function readPastAbierto() {
+  try { return localStorage.getItem(PAST_LS) === '1'; } catch { return false; }
+}
+function writePastAbierto(on) {
+  try {
+    if (on) localStorage.setItem(PAST_LS, '1');
+    else localStorage.removeItem(PAST_LS);
+  } catch {}
+}
+function applyPastAbierto(on) {
+  const btn = document.querySelector('#past-toggle');
+  const list = document.querySelector('#past-list');
+  if (btn) btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+  if (list) list.hidden = !on;
+}
+function togglePast() {
+  const wrap = document.querySelector('#past-wrap');
+  if (!wrap || wrap.hidden) return;
+  const on = !readPastAbierto();
+  writePastAbierto(on);
+  applyPastAbierto(on);
 }
 
 function quienPalette() {
@@ -993,6 +1025,7 @@ document.querySelector('#trip-quien').addEventListener('click', e => {
   if (!chip) return;
   toggleQuien(chip.getAttribute('data-quien'));
 });
+document.querySelector('#past-toggle').addEventListener('click', togglePast);
 new MutationObserver(() => { if (data) renderDays(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-viajes-vista'] });
 </script>
 </body>
