@@ -146,7 +146,7 @@ class ViajesEmbeddedTests(unittest.TestCase):
             HTML,
         )
         self.assertIn("Creado por Álvaro GT y sus minions", HTML)
-        self.assertIn("viajes-build: 20261010a", HTML)
+        self.assertIn("viajes-build: 20261010b", HTML)
         self.assertIn("function calQuienColor", HTML)
         self.assertIn("quien === 'Gugus'", HTML)
         cal = HTML[HTML.index("function calQuienColor") : HTML.index("function monthPairTitle")]
@@ -184,6 +184,24 @@ class ViajesEmbeddedTests(unittest.TestCase):
         self.assertIn("renderTripQuien();", body)
         self.assertLess(body.index("data = mergeViajes"), body.index("quienFiltro = readQuienFiltro();"))
         self.assertLess(HTML.index("closest('[data-quien]')"), HTML.index("closest('.cal-day')"))
+        trips = HTML[HTML.index("async function renderTrips()") : HTML.index("function quienPalette")]
+        self.assertIn("viajesVisibles().filter(v => today > v.fin)", trips)
+        self.assertNotIn("data.viajes.filter(v => today > v.fin)", trips)
+
+    def test_terminados_colapsados(self):
+        self.assertIn('id="past-toggle"', HTML)
+        self.assertIn("Terminados", HTML)
+        self.assertIn("viajes.terminados", HTML)
+        self.assertIn("function togglePast", HTML)
+        self.assertIn("function readPastAbierto", HTML)
+        self.assertIn("applyPastAbierto(readPastAbierto())", HTML)
+        self.assertIn("aria-expanded=\"false\"", HTML)
+        self.assertIn('id="past-list" hidden', HTML)
+        self.assertNotIn("Viajes terminados", HTML)
+        self.assertIn("document.querySelector('#past-toggle').addEventListener('click', togglePast)", HTML)
+        months = HTML[HTML.index("function renderMonths()") : HTML.index("let fsApi")]
+        self.assertNotIn("togglePast", months)
+        self.assertNotIn("past-toggle", months)
 
 
 class ViajesPrivadosTests(unittest.TestCase):
