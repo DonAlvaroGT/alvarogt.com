@@ -8,6 +8,7 @@ import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { commandFor, applyCommand, awardPoints, createInstanceId, frequencyPeriods, canonicalInstanceStatus, resolveCommandPeriod, madridCalendarDate, periodKeyForTask } from './backend.contract.mjs';
 import { allowBoardToken, boardCorsOrigin } from './board-gate.mjs';
+import { applyViajesCasa, VIAJES_CASA_DOC } from './viajes-casa.mjs';
 
 if (!getApps().length) initializeApp();
 const auth = getAuth();
@@ -223,6 +224,55 @@ export const manageCatalog = onCall(CALLABLE_OPTIONS, async request => {
   if (operation === 'create') data.createdAt = FieldValue.serverTimestamp();
   await ref.set(data, { merge: operation === 'update' });
   return { ok: true, id: ref.id, ...clean, status: data.status };
+});
+
+function viajesCasaHttpError(error) {
+  const allowed = ['unauthenticated', 'permission-denied', 'invalid-argument', 'not-found', 'failed-precondition', 'already-exists'];
+  const code = allowed.includes(error.code) ? error.code : 'internal';
+  throw new HttpsError(code, error.message);
+}
+
+export const manageViajesCasa = onCall(CALLABLE_OPTIONS, async request => {
+  try {
+    const data = request.data || {};
+    const operation = String(data.operation || '');
+    const id = String(data.id || '');
+    const payload = data.payload || {};
+    const target = data.target || data.doc || VIAJES_CASA_DOC;
+    const hoy = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid' }).format(new Date());
+    const casaRef = db.doc(`casa_json/${VIAJES_CASA_DOC}`);
+    const publicRef = db.doc('casa_json/viajes');
+    return await db.runTransaction(async tx => {
+      const [casaSnap, publicSnap] = await tx.getAll(casaRef, publicRef);
+      let doc = { schema_version: 1, zona_casa: 'Europe/Madrid', quien: { order: [], color: {}, dot: {} }, viajes: [] };
+      if (casaSnap.exists) {
+        const body = casaSnap.data()?.body;
+        if (typeof body === 'string' && body) doc = JSON.parse(body);
+      }
+      let publicIds = [];
+      if (publicSnap.exists) {
+        try {
+          const pub = JSON.parse(publicSnap.data()?.body || '{}');
+          publicIds = (pub.viajes || []).map(v => v && v.id).filter(Boolean);
+        } catch { publicIds = []; }
+      }
+      const result = applyViajesCasa({
+        actor: request.auth,
+        operation,
+        id,
+        payload,
+        doc,
+        target,
+        publicIds,
+        hoy,
+      });
+      tx.set(casaRef, { body: JSON.stringify(result.doc) }, { merge: true });
+      return { ok: true, id: result.id, privado: true, operation };
+    });
+  } catch (error) {
+    if (error instanceof HttpsError) throw error;
+    viajesCasaHttpError(error);
+  }
 });
 
 export const createDailyInstances = onSchedule({ schedule: 'every day 00:10', timeZone: 'Europe/Madrid', region: 'europe-west1', retryCount: 1 }, async () => {
