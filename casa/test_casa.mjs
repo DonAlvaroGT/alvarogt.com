@@ -19,15 +19,15 @@ test('pista de adulto es un correo, no una allowlist', () => {
   assert.equal(isAdult(''), false);
 });
 
-test('cinco destinos, sin Deporte', () => {
+test('cuatro destinos, sin Deporte ni Mapa', () => {
   assert.equal(srcFor('go'), '/go/');
   assert.equal(srcFor('tablon'), '/tablon/');
   assert.equal(srcFor('viajes'), '/viajes/');
   assert.equal(srcFor('plantas'), '/plantas/');
-  assert.equal(srcFor('mapa'), '/mapa/');
+  assert.equal(srcFor('mapa'), '/go/');
   assert.equal(srcFor('deporte'), '/go/');
   assert.equal(srcFor('nope'), '/go/');
-  assert.deepEqual(VIEWS, { go: '/go/', tablon: '/tablon/', viajes: '/viajes/', plantas: '/plantas/', mapa: '/mapa/' });
+  assert.deepEqual(VIEWS, { go: '/go/', tablon: '/tablon/', viajes: '/viajes/', plantas: '/plantas/' });
 });
 
 test('la barra sigue el path del iframe', () => {
@@ -35,7 +35,7 @@ test('la barra sigue el path del iframe', () => {
   assert.equal(tabFromPath('/tablon/premiosganados/'), 'tablon');
   assert.equal(tabFromPath('/viajes/'), 'viajes');
   assert.equal(tabFromPath('/plantas/'), 'plantas');
-  assert.equal(tabFromPath('/mapa/'), 'mapa');
+  assert.equal(tabFromPath('/mapa/'), 'go');
   assert.equal(tabFromPath('/deporte/'), 'go');
 });
 
@@ -144,10 +144,7 @@ function mockDom(opts = {}) {
   const plantasDot = el({ hidden: true, className: 'tab-dot' });
   const plantas = el({ dataset: { view: 'plantas' }, attrs: { 'aria-selected': 'false', 'data-view': 'plantas' }, children: [plantasDot] });
   plantas.dataset.view = 'plantas';
-  const mapaDot = el({ hidden: true, className: 'tab-dot' });
-  const mapa = el({ dataset: { view: 'mapa' }, attrs: { 'aria-selected': 'false', 'data-view': 'mapa' }, children: [mapaDot] });
-  mapa.dataset.view = 'mapa';
-  const tabs = el({ children: [go, tablon, viajes, plantas, mapa] });
+  const tabs = el({ children: [go, tablon, viajes, plantas] });
   const nodes = {
     '#gate': gate,
     '#shell': shell,
@@ -160,8 +157,7 @@ function mockDom(opts = {}) {
     '#tabs button[data-view="go"]': go,
     '#tabs button[data-view="tablon"]': tablon,
     '#tabs button[data-view="viajes"]': viajes,
-    '#tabs button[data-view="plantas"]': plantas,
-    '#tabs button[data-view="mapa"]': mapa
+    '#tabs button[data-view="plantas"]': plantas
   };
   globalThis.document = {
     createElement(tag) {
@@ -178,7 +174,7 @@ function mockDom(opts = {}) {
     },
     visibilityState: 'visible'
   };
-  return { gate, shell, scroller, overlay, egg, status, go, tablon, viajes, plantas, mapa };
+  return { gate, shell, scroller, overlay, egg, status, go, tablon, viajes, plantas };
 }
 
 test('sin login no hay iframe ni barra', () => {
@@ -306,7 +302,7 @@ test('resume no recarga si la visible sigue viva', () => {
 
 test('restaura la última pestaña; si no hay valor, Go', () => {
   assert.equal(TAB_KEY, 'casa.lastTab');
-  assert.deepEqual(TAB_NAMES, ['go', 'tablon', 'viajes', 'plantas', 'mapa']);
+  assert.deepEqual(TAB_NAMES, ['go', 'tablon', 'viajes', 'plantas']);
   const d = mockDom();
   assert.equal(lastTab(), 'go');
   showShell();
@@ -583,7 +579,7 @@ test('login_hint del último adulto, sin select_account', () => {
   assert.equal(isStandaloneDisplay(), true);
 });
 
-test('Deporte no abre iframe ni se restaura', () => {
+test('Deporte y Mapa no abren iframe ni se restauran', () => {
   const d = mockDom();
   showShell();
   showView('deporte');
@@ -593,4 +589,11 @@ test('Deporte no abre iframe ni se restaura', () => {
   assert.equal(lastTab(), 'go');
   rememberTab('deporte');
   assert.equal(localStorage.getItem(TAB_KEY), 'deporte');
+  showView('mapa');
+  assert.equal(d.scroller.children.some((f) => f.getAttribute('data-casa-view') === 'mapa'), false);
+  assert.equal(d.go.getAttribute('aria-selected'), 'true');
+  localStorage.setItem(TAB_KEY, 'mapa');
+  assert.equal(lastTab(), 'go');
+  rememberTab('mapa');
+  assert.equal(localStorage.getItem(TAB_KEY), 'mapa');
 });

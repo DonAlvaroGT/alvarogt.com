@@ -1,7 +1,7 @@
 import { estado, camposPlanta } from '../plantas/logic.mjs?v=20261016f';
 import { fetchTiempo } from '../go/tiempo.mjs?v=20261016f';
 
-export const VIEWS = { go: '/go/', tablon: '/tablon/', viajes: '/viajes/', plantas: '/plantas/', mapa: '/mapa/' };
+export const VIEWS = { go: '/go/', tablon: '/tablon/', viajes: '/viajes/', plantas: '/plantas/' };
 export const HOSTS = [
   'localhost',
   '127.0.0.1',
@@ -12,9 +12,9 @@ export const HOSTS = [
 ];
 export const HINT_KEY = 'casa.lastAdult';
 export const TAB_KEY = 'casa.lastTab';
-export const TAB_NAMES = ['go', 'tablon', 'viajes', 'plantas', 'mapa'];
-export const OPEN_TABS = ['go', 'tablon', 'viajes', 'plantas', 'mapa'];
-const TITLES = { go: 'Go', tablon: 'Tablón', viajes: 'Viajes', plantas: 'Plantas', mapa: 'Mapa' };
+export const TAB_NAMES = ['go', 'tablon', 'viajes', 'plantas'];
+export const OPEN_TABS = ['go', 'tablon', 'viajes', 'plantas'];
+const TITLES = { go: 'Go', tablon: 'Tablón', viajes: 'Viajes', plantas: 'Plantas' };
 
 export function isAdult(email) {
   return String(email || '').includes('@');
@@ -29,7 +29,6 @@ export function tabFromPath(pathname) {
   if (path.startsWith('/tablon/')) return 'tablon';
   if (path.startsWith('/viajes/')) return 'viajes';
   if (path.startsWith('/plantas/')) return 'plantas';
-  if (path.startsWith('/mapa/')) return 'mapa';
   if (path.startsWith('/go/')) return 'go';
   return 'go';
 }
@@ -699,7 +698,6 @@ async function setupGoogle(setStatus, markLogin, wasLogin, clearLogin) {
   }
 }
 
-if (typeof window !== 'undefined') window.__casaShowView = showView;
 if (typeof document !== 'undefined' && document.querySelector('#gate-sign-in')) {
   boot();
 }
