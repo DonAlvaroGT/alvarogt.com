@@ -7,6 +7,8 @@ import {
   lastTab, rememberTab, TAB_KEY, TAB_NAMES,
   queueHasPending, setTablonQueueDot, readTablonQueueFromFrame, refreshTablonQueueDot,
   setViajesTripDot, readTripSoonFromGoFrame, refreshViajesTripDot, applyViajesHoy,
+  plantasNeedDot, setPlantasAlertaDot, cardsNeedDot, readPlantasAlertaFromFrame,
+  refreshPlantasAlertaDot, applyPlantasSnapshot,
   showMonoEgg, hideMonoEgg, onGoTabTap, dismissMonoEgg
 } from './app.js';
 import assert from 'node:assert/strict';
@@ -85,6 +87,12 @@ function el(init = {}) {
       }
       if (sel === '#list') {
         return this.children.find((c) => c.id === 'list' || c.getAttribute('id') === 'list') || null;
+      }
+      if (sel === '.card.amarillo') {
+        return this.children.find((c) => String(c.className || '').split(/\s+/).includes('amarillo')) || null;
+      }
+      if (sel === '.card.rojo') {
+        return this.children.find((c) => String(c.className || '').split(/\s+/).includes('rojo')) || null;
       }
       if (sel === '.casa-star') {
         return this.children.find((c) => c.className === 'casa-star') || null;
@@ -422,6 +430,69 @@ test('Viajes con punto abre Hoy; sin punto no fuerza Hoy', () => {
   viajesFrame.contentDocument = { body: {}, documentElement: other };
   assert.equal(applyViajesHoy(viajesFrame), false);
   assert.equal(other.getAttribute('data-viajes-vista'), null);
+});
+
+test('punto de Plantas si hay tarjeta amarilla o roja; gris/verde no; Firestore si no hay iframe', () => {
+  applyPlantasSnapshot([]);
+  const now = new Date('2026-10-16T12:00:00+02:00');
+  const base = { riego_verano_dias: 10, riego_invierno_dias: 20 };
+  assert.equal(plantasNeedDot([], now), false);
+  assert.equal(plantasNeedDot([{ ...base, ultimo_riego: null }], now), false);
+  assert.equal(plantasNeedDot([{ ...base, ultimo_riego: '2026-10-06T10:00:00+02:00' }], now), false);
+  assert.equal(plantasNeedDot([{ ...base, ultimo_riego: '2026-09-26T10:00:00+02:00' }], now), true);
+  assert.equal(plantasNeedDot([{ ...base, ultimo_riego: '2026-09-23T10:00:00+02:00' }], now), true);
+
+  const d = mockDom();
+  showShell();
+  assert.equal(d.plantas.querySelector('.tab-dot').hidden, true);
+  applyPlantasSnapshot([{ ...base, ultimo_riego: '2026-09-26T10:00:00+02:00' }], now);
+  assert.equal(d.plantas.classList.contains('has-plantas'), true);
+  assert.equal(d.plantas.querySelector('.tab-dot').hidden, false);
+  applyPlantasSnapshot([{ ...base, ultimo_riego: '2026-10-06T10:00:00+02:00' }], now);
+  assert.equal(d.plantas.querySelector('.tab-dot').hidden, true);
+
+  const amarilla = el({ className: 'card amarillo' });
+  const listOn = el({ children: [amarilla] });
+  listOn.querySelector = (sel) => {
+    if (sel === '.card.amarillo') return amarilla;
+    if (sel === '.card.rojo') return null;
+    return null;
+  };
+  const docCards = {
+    body: {},
+    documentElement: { getAttribute() { return null; } },
+    querySelector(sel) { return sel === '#list' ? listOn : null; }
+  };
+  assert.equal(cardsNeedDot(docCards), true);
+  const verde = el({ className: 'card verde' });
+  const listOff = el({ children: [verde] });
+  listOff.querySelector = (sel) => {
+    if (sel === '.card.amarillo' || sel === '.card.rojo') return null;
+    return null;
+  };
+  const docVerde = {
+    body: {},
+    documentElement: { getAttribute() { return null; } },
+    querySelector(sel) { return sel === '#list' ? listOff : null; }
+  };
+  assert.equal(cardsNeedDot(docVerde), false);
+
+  const htmlOn = { getAttribute(name) { return name === 'data-plantas-alerta' ? '1' : null; } };
+  const htmlOff = { getAttribute(name) { return name === 'data-plantas-alerta' ? '0' : null; } };
+  showView('plantas');
+  const frame = d.scroller.children.find((f) => f.getAttribute('data-casa-view') === 'plantas');
+  frame.contentDocument = { body: {}, documentElement: htmlOn, querySelector() { return null; } };
+  frame.contentWindow = { location: { href: 'https://alvarogt.com/plantas/' } };
+  assert.equal(readPlantasAlertaFromFrame(frame), true);
+  assert.equal(refreshPlantasAlertaDot(), true);
+  assert.equal(d.plantas.querySelector('.tab-dot').hidden, false);
+  frame.contentDocument = { body: {}, documentElement: htmlOff, querySelector() { return null; } };
+  assert.equal(readPlantasAlertaFromFrame(frame), false);
+  assert.equal(refreshPlantasAlertaDot(), false);
+  assert.equal(d.plantas.querySelector('.tab-dot').hidden, true);
+  const dead = el({ attrs: { 'data-casa-view': 'plantas' }, contentWindow: null, contentDocument: null });
+  assert.equal(readPlantasAlertaFromFrame(dead), null);
+  setPlantasAlertaDot(false);
 });
 
 test('Go no pone punto por interés 5', () => {

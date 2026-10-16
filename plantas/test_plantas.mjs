@@ -103,4 +103,6 @@ test('sin emails y login de casa', () => {
   assert.match(html, /html\.embedded/);
   assert.match(html, /html\.embedded \.access/);
   assert.match(html, /#f4f0e8/);
+  assert.match(html, /object-position:\s*50%\s*20%/);
+  assert.match(app, /data-plantas-alerta/);
 });
