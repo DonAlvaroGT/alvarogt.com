@@ -160,20 +160,13 @@ test('app.js no trae correos', async () => {
     assert.equal(blob.includes('@gmail.com'), false);
     assert.equal(blob.includes('agarcia'), false);
   }
-  assert.match(html, /deporte-build: 20261007a/);
-  assert.match(html, /data-favorito-hoy/);
-  assert.match(html, /hoyHasFavorito/);
-  assert.match(html, /vista\.mjs/);
-  assert.match(html, /lastVista/);
-  assert.match(html, /rememberVista/);
-  assert.match(html, /casa-star/);
+  assert.match(html, /deporte-build: 20261016d/);
+  assert.match(html, /No disponible/);
+  assert.equal(html.toLowerCase().includes('firebase'), false);
+  assert.equal(html.toLowerCase().includes('partido'), false);
+  assert.equal(html.includes('hoyHasFavorito'), false);
+  assert.equal(html.includes('vista.mjs'), false);
   assert.match(js, /★/);
-  assert.match(html, />Semana</);
-  assert.match(html, /h2 class="dia"/);
   assert.match(js, /details class="noche"/);
-  assert.equal(html.includes('En ventana'), false);
-  assert.equal(html.includes('Fuera de ventana'), false);
   assert.match(html, /Creado por Álvaro GT y sus minions/);
-  assert.match(html, /Sin sesión no hay partidos/);
-  assert.match(html, /id="app"[^>]*hidden/);
 });
