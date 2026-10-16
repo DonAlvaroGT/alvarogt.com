@@ -9,7 +9,7 @@ import {
   textoProximo,
   plantaValida,
   camposPlanta,
-} from './logic.mjs?v=20261016c';
+} from './logic.mjs?v=20261016d';
 
 export const HOSTS = [
   'localhost',
@@ -78,9 +78,16 @@ function fromSnap(doc) {
   return camposPlanta({ ...data, id: data.id || doc.id }, doc.id);
 }
 
+function fotoSrc(url) {
+  if (/^https:/i.test(url) && !/[?&]v=/.test(url)) {
+    return `${url}${url.includes('?') ? '&' : '?'}v=20261016d`;
+  }
+  return url;
+}
+
 function fotoHtml(p) {
   if (p.foto && /^(https:|data:image\/)/i.test(p.foto)) {
-    return `<img class="foto" src="${esc(p.foto)}" alt="">`;
+    return `<img class="foto" src="${esc(fotoSrc(p.foto))}" alt="">`;
   }
   return `<div class="foto pixel" aria-hidden="true"></div>`;
 }
