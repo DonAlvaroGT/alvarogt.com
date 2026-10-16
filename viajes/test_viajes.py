@@ -146,7 +146,7 @@ class ViajesEmbeddedTests(unittest.TestCase):
             HTML,
         )
         self.assertIn("Creado por Álvaro GT y sus minions", HTML)
-        self.assertIn("viajes-build: 20261010c", HTML)
+        self.assertIn("viajes-build: 20261016h", HTML)
         self.assertIn("function calQuienColor", HTML)
         self.assertIn("quien === 'Gugus'", HTML)
         cal = HTML[HTML.index("function calQuienColor") : HTML.index("function monthPairTitle")]
@@ -202,6 +202,19 @@ class ViajesEmbeddedTests(unittest.TestCase):
         months = HTML[HTML.index("function renderMonths()") : HTML.index("let fsApi")]
         self.assertNotIn("togglePast", months)
         self.assertNotIn("past-toggle", months)
+
+    def test_mapa_cajon_bajo_meses_top(self):
+        header = HTML[HTML.index("<header>") : HTML.index("</header>")]
+        self.assertNotIn("/mapa/", header)
+        self.assertNotIn("to-mapa", header)
+        self.assertNotIn("__casaShowView", HTML)
+        months = HTML[HTML.index("function renderMonths()") : HTML.index("let fsApi")]
+        self.assertIn('class="mapa-cajon"', months)
+        self.assertIn('href="/mapa/"', months)
+        self.assertIn('target="_top"', months)
+        self.assertIn('id="to-mapa"', months)
+        self.assertLess(months.index("month-grids"), months.index("mapa-cajon"))
+        self.assertIn("Este mes y el siguiente", HTML)
 
     def test_admin_solo_casa_sin_setdoc(self):
         self.assertIn('id="viajes-admin"', HTML)
