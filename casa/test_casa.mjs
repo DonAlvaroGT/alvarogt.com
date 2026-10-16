@@ -18,19 +18,21 @@ test('pista de adulto es un correo, no una allowlist', () => {
   assert.equal(isAdult(''), false);
 });
 
-test('cuatro destinos, Deporte lazy', () => {
+test('cinco destinos, Deporte lazy', () => {
   assert.equal(srcFor('go'), '/go/');
   assert.equal(srcFor('tablon'), '/tablon/');
   assert.equal(srcFor('viajes'), '/viajes/');
+  assert.equal(srcFor('plantas'), '/plantas/');
   assert.equal(srcFor('deporte'), '/deporte/');
   assert.equal(srcFor('nope'), '/go/');
-  assert.deepEqual(VIEWS, { go: '/go/', tablon: '/tablon/', viajes: '/viajes/', deporte: '/deporte/' });
+  assert.deepEqual(VIEWS, { go: '/go/', tablon: '/tablon/', viajes: '/viajes/', plantas: '/plantas/', deporte: '/deporte/' });
 });
 
 test('la barra sigue el path del iframe', () => {
   assert.equal(tabFromPath('/go/'), 'go');
   assert.equal(tabFromPath('/tablon/premiosganados/'), 'tablon');
   assert.equal(tabFromPath('/viajes/'), 'viajes');
+  assert.equal(tabFromPath('/plantas/'), 'plantas');
   assert.equal(tabFromPath('/deporte/'), 'deporte');
 });
 
@@ -220,6 +222,15 @@ test('Tablón listo al abrir; Viajes al toque; volver no recarga src', () => {
   assert.equal(goFrame.style.display, 'block');
   assert.equal(goFrame.style.visibility, 'hidden');
   assert.equal(tablonFrame.style.display, 'none');
+
+  showView('plantas');
+  assert.equal(d.scroller.children.length, 4);
+  const plantasFrame = d.scroller.children[3];
+  assert.equal(plantasFrame.src, '/plantas/');
+  assert.equal(plantasFrame.style.display, 'block');
+  assert.equal(plantasFrame.style.position, 'absolute');
+  assert.equal(viajesFrame.style.display, 'none');
+  assert.equal(localStorage.getItem(TAB_KEY), 'plantas');
 });
 
 test('sesión caducada: overlay, sin vaciar iframes ni el gate', () => {
@@ -281,7 +292,7 @@ test('resume no recarga si la visible sigue viva', () => {
 
 test('restaura la última pestaña; si no hay valor, Go', () => {
   assert.equal(TAB_KEY, 'casa.lastTab');
-  assert.deepEqual(TAB_NAMES, ['go', 'tablon', 'viajes', 'deporte']);
+  assert.deepEqual(TAB_NAMES, ['go', 'tablon', 'viajes', 'plantas', 'deporte']);
   const d = mockDom();
   assert.equal(lastTab(), 'go');
   showShell();

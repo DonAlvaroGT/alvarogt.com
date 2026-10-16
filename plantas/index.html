@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Plantas</title>
-  <!-- plantas-build: 20261016a -->
+  <!-- plantas-build: 20261016b -->
   <style>
     :root {
       color-scheme: light;
@@ -94,6 +94,13 @@
     }
     .check { display: flex; gap: 8px; align-items: center; font-size: .9rem; color: var(--ink); }
     footer { padding: 28px 0 36px; color: var(--muted); font-size: .8rem; }
+    html.embedded body { background: #f4f0e8; }
+    html.embedded #google-sign-out,
+    html.embedded #google-sign-in,
+    html.embedded #gate-sign-in { display: none !important; }
+    html.embedded #gate { min-height: 0; padding: 28px 16px; }
+    html.embedded .top { padding: 16px 0 12px; }
+    html.embedded .top h1 { font-size: clamp(2.1rem, 9vw, 3.4rem); }
     @media (max-width: 560px) { .top { flex-direction: column; align-items: start; } }
   </style>
 </head>
@@ -148,6 +155,6 @@
   </main>
   <footer class="shell">Creado por Álvaro GT y sus minions</footer>
   <script src="/pie.js?v=20260930a"></script>
-  <script type="module" src="./app.js?v=20261016a"></script>
+  <script type="module" src="./app.js?v=20261016b"></script>
 </body>
 </html>

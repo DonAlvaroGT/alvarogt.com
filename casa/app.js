@@ -1,4 +1,4 @@
-export const VIEWS = { go: '/go/', tablon: '/tablon/', viajes: '/viajes/', deporte: '/deporte/' };
+export const VIEWS = { go: '/go/', tablon: '/tablon/', viajes: '/viajes/', plantas: '/plantas/', deporte: '/deporte/' };
 export const HOSTS = [
   'localhost',
   '127.0.0.1',
@@ -9,9 +9,9 @@ export const HOSTS = [
 ];
 export const HINT_KEY = 'casa.lastAdult';
 export const TAB_KEY = 'casa.lastTab';
-export const TAB_NAMES = ['go', 'tablon', 'viajes', 'deporte'];
-export const OPEN_TABS = ['go', 'tablon', 'viajes'];
-const TITLES = { go: 'Go', tablon: 'Tablón', viajes: 'Viajes', deporte: 'Deporte' };
+export const TAB_NAMES = ['go', 'tablon', 'viajes', 'plantas', 'deporte'];
+export const OPEN_TABS = ['go', 'tablon', 'viajes', 'plantas'];
+const TITLES = { go: 'Go', tablon: 'Tablón', viajes: 'Viajes', plantas: 'Plantas', deporte: 'Deporte' };
 let deporteOn = false;
 
 export function isAdult(email) {
@@ -26,6 +26,7 @@ export function tabFromPath(pathname) {
   const path = String(pathname || '');
   if (path.startsWith('/tablon/')) return 'tablon';
   if (path.startsWith('/viajes/')) return 'viajes';
+  if (path.startsWith('/plantas/')) return 'plantas';
   if (path.startsWith('/deporte/')) return 'deporte';
   if (path.startsWith('/go/')) return 'go';
   return 'go';
