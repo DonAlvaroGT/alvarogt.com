@@ -9,6 +9,7 @@ HOME_JS = (ROOT / "home.js").read_text(encoding="utf-8")
 GO = (ROOT / "go" / "index.html").read_text(encoding="utf-8")
 VIAJES = (ROOT / "viajes" / "index.html").read_text(encoding="utf-8")
 TABLON = (ROOT / "tablon" / "index.html").read_text(encoding="utf-8")
+PLANTAS = (ROOT / "plantas" / "index.html").read_text(encoding="utf-8")
 PREMIOS = (ROOT / "tablon" / "premiosganados" / "index.html").read_text(encoding="utf-8")
 CASA = (ROOT / "casa" / "index.html").read_text(encoding="utf-8")
 DISNEY = (ROOT / "disney" / "index.html").read_text(encoding="utf-8")
@@ -104,6 +105,10 @@ class PiePaginasTests(unittest.TestCase):
             with self.subTest(name=name):
                 self.assertIn(PIE_NORMAL, html)
                 self.assertIn(PIE_SRC, html)
+
+    def test_plantas_pie(self):
+        self.assertIn(PIE_NORMAL, PLANTAS)
+        self.assertIn(PIE_SRC, PLANTAS)
 
     def test_casa_sin_pie_script(self):
         self.assertNotIn("pie.js", CASA)

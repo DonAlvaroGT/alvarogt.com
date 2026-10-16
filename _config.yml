@@ -46,3 +46,6 @@ exclude:
   - go/condiciones.json
   - go/reglas.json
   - go/favoritos.json
+  - plantas/test_plantas.py
+  - plantas/test_plantas.mjs
+  - plantas/seed_planta.py

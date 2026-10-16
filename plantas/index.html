@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Plantas</title>
+  <!-- plantas-build: 20261016a -->
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17324d;
+      --muted: #64748b;
+      --card: #fffdf8;
+      --line: #e5dfd1;
+      --accent: #e76f51;
+      --ok: #16834b;
+      --warn: #c9a227;
+      --no: #c62828;
+      --shadow: 0 12px 30px #17324d14;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(145deg, #f7efe1, #e9f3f4);
+      color: var(--ink);
+      font: 16px/1.45 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    .shell { width: min(920px, calc(100% - 28px)); margin: auto; }
+    .top { padding: 28px 0 18px; display: flex; justify-content: space-between; gap: 18px; align-items: end; }
+    .eyebrow { font-size: .72rem; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); font-weight: 800; }
+    .top h1 { font: 400 clamp(2.6rem, 8vw, 5.4rem)/.9 Georgia, serif; letter-spacing: -.065em; margin: 10px 0 0; }
+    .pixel-row { display: flex; gap: 10px; align-items: center; }
+    .sprout {
+      width: 42px; height: 42px; image-rendering: pixelated;
+      background:
+        linear-gradient(#3a7a32,#3a7a32) 18px 4px / 6px 10px no-repeat,
+        linear-gradient(#4caf50,#4caf50) 10px 10px / 10px 8px no-repeat,
+        linear-gradient(#4caf50,#4caf50) 22px 10px / 10px 8px no-repeat,
+        linear-gradient(#7a4a1e,#7a4a1e) 18px 20px / 6px 14px no-repeat,
+        linear-gradient(#c47a3a,#c47a3a) 12px 32px / 18px 8px no-repeat;
+    }
+    .access { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .access-status { color: var(--muted); font-size: .76rem; }
+    button.demo, .filters button {
+      background: #fff4ce; border: 1px solid #f0d685; color: #745b16;
+      border-radius: 999px; padding: 9px 13px; font: inherit; font-size: .76rem; cursor: pointer;
+    }
+    button.demo[hidden], #gate[hidden], #app[hidden], #alta[hidden], .undo[hidden] { display: none !important; }
+    #gate { min-height: 36vh; display: grid; place-items: center; text-align: center; padding: 36px 16px; }
+    #gate h2 { font: 400 2.2rem/1 Georgia, serif; margin: 0 0 10px; }
+    #gate p { color: var(--muted); max-width: 380px; margin: 0 auto 18px; }
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 16px; }
+    .filters button[aria-selected="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+      box-shadow: var(--shadow); overflow: hidden; border-top: 8px solid var(--line);
+    }
+    .card.verde { border-top-color: var(--ok); }
+    .card.amarillo { border-top-color: var(--warn); }
+    .card.rojo { border-top-color: var(--no); }
+    .card.gris { border-top-color: #9aa3ad; }
+    .foto { width: 100%; height: 150px; object-fit: cover; background: #e8f3ea; display: block; }
+    .foto.pixel {
+      background:
+        linear-gradient(#f7efe1, #e8f3ea),
+        repeating-linear-gradient(90deg, #d7ecd8 0 8px, #cfe6d1 8px 16px);
+    }
+    .body { padding: 14px 16px 16px; }
+    .card h2 { font: 700 1.15rem/1.25 ui-sans-serif, system-ui, sans-serif; margin: 0 0 4px; }
+    .latin { margin: 0 0 8px; color: var(--muted); font-style: italic; font-size: .85rem; }
+    .tox { color: var(--no); font-size: .78rem; font-weight: 800; }
+    .estado { font-weight: 800; margin: 0 0 8px; }
+    .card.rojo .estado { color: var(--no); }
+    .consejo, .nota { margin: 0 0 8px; font-size: .92rem; }
+    .meta { margin: 0 0 4px; color: var(--muted); font-size: .85rem; }
+    .regar {
+      margin-top: 12px; width: 100%; padding: 14px 16px; border: 0; border-radius: 16px;
+      background: #3a7bd5; color: #fff; font: 800 1.05rem/1 ui-sans-serif, system-ui, sans-serif; cursor: pointer;
+    }
+    .undo {
+      margin-top: 8px; width: 100%; padding: 8px; border: 0; background: transparent;
+      color: var(--muted); font: inherit; cursor: pointer; text-decoration: underline;
+    }
+    .empty { color: var(--muted); padding: 12px 0 28px; }
+    form.alta {
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+      padding: 16px; margin: 12px 0 24px; display: grid; gap: 10px;
+    }
+    form.alta label { display: grid; gap: 4px; font-size: .78rem; color: var(--muted); }
+    form.alta input, form.alta select, form.alta textarea {
+      padding: 8px; border: 1px solid var(--line); border-radius: 10px; font: inherit; color: var(--ink);
+    }
+    .check { display: flex; gap: 8px; align-items: center; font-size: .9rem; color: var(--ink); }
+    footer { padding: 28px 0 36px; color: var(--muted); font-size: .8rem; }
+    @media (max-width: 560px) { .top { flex-direction: column; align-items: start; } }
+  </style>
+</head>
+<body>
+  <header class="shell top">
+    <div>
+      <div class="pixel-row"><span class="sprout" aria-hidden="true"></span><div class="eyebrow">Casa · Plantas</div></div>
+      <h1>Plantas</h1>
+    </div>
+    <div class="access">
+      <span id="google-status" class="access-status">Acceso · comprobando</span>
+      <button id="google-sign-in" class="demo" type="button">Entrar</button>
+      <button id="google-sign-out" class="demo" type="button" hidden>Salir</button>
+    </div>
+  </header>
+  <section id="gate">
+    <div class="shell">
+      <h2>Entra con Google</h2>
+      <p>Sin sesión no hay plantas.</p>
+      <button id="gate-sign-in" class="demo" type="button">Continuar con Google</button>
+    </div>
+  </section>
+  <main id="app" hidden>
+    <div class="shell">
+      <div class="filters" role="tablist">
+        <button type="button" data-filtro="todas" aria-selected="true">Todas</button>
+        <button type="button" data-filtro="terraza" aria-selected="false">Terraza</button>
+        <button type="button" data-filtro="salon" aria-selected="false">Salón</button>
+      </div>
+      <div id="list" class="grid"></div>
+      <p><button id="btn-alta" class="demo" type="button">➕ Añadir planta</button></p>
+      <form id="alta" class="alta" hidden>
+        <label>Nombre <input name="nombre" required></label>
+        <label>Latín <input name="latin"></label>
+        <label>Zona
+          <select name="zona" required>
+            <option value="salon">Salón</option>
+            <option value="terraza">Terraza</option>
+          </select>
+        </label>
+        <label>Foto (URL) <input name="foto" type="url" placeholder="https://"></label>
+        <label>O un archivo <input id="foto-file" type="file" accept="image/*"></label>
+        <label class="check"><input name="toxica" type="checkbox"> Tóxica</label>
+        <label>Nota tóxica <input name="nota_toxica"></label>
+        <label>Riego verano (días) <input name="riego_verano_dias" type="number" min="1" required></label>
+        <label>Riego invierno (días) <input name="riego_invierno_dias" type="number" min="1" required></label>
+        <label>Consejo <textarea name="consejo" rows="3"></textarea></label>
+        <button class="regar" type="submit">Guardar</button>
+        <p id="alta-status" class="meta"></p>
+      </form>
+    </div>
+  </main>
+  <footer class="shell">Creado por Álvaro GT y sus minions</footer>
+  <script src="/pie.js?v=20260930a"></script>
+  <script type="module" src="./app.js?v=20261016a"></script>
+</body>
+</html>

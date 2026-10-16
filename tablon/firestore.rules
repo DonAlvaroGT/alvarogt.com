@@ -130,5 +130,9 @@ service cloud.firestore {
       allow get: if true;
       allow list, write: if false;
     }
+
+    match /plantas_casa/{id} {
+      allow read, write: if casaReader();
+    }
   }
 }
