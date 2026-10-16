@@ -54,6 +54,7 @@ class PlantasPageTests(unittest.TestCase):
         self.assertIn("html.embedded", HTML)
         self.assertIn("html.embedded .access", HTML)
         self.assertIn("#f4f0e8", HTML)
+        self.assertIn("object-position: 50% 20%", HTML)
 
     def test_rules_solo_plantas(self):
         self.assertIn("match /plantas_casa/{id}", RULES)

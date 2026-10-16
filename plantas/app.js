@@ -122,10 +122,21 @@ export function renderList(list, zona, now) {
   return rows.map(cardHtml).join('') || '<p class="empty">No hay plantas en este filtro.</p>';
 }
 
+function setAlertaAttr() {
+  try {
+    const on = plantas.some((p) => {
+      const k = estado(p);
+      return k === 'amarillo' || k === 'rojo';
+    });
+    document.documentElement.setAttribute('data-plantas-alerta', on ? '1' : '0');
+  } catch {}
+}
+
 function paint() {
   const box = $('#list');
   if (!box) return;
   box.innerHTML = renderList(plantas, filtro);
+  setAlertaAttr();
 }
 
 function listenPlantas() {
@@ -263,6 +274,7 @@ function showApp(label) {
 function showGate(msg) {
   if (unsub) { unsub(); unsub = null; }
   plantas = [];
+  try { document.documentElement.setAttribute('data-plantas-alerta', '0'); } catch {}
   $('#app').hidden = true;
   $('#gate').hidden = false;
   $('#google-sign-in').hidden = false;

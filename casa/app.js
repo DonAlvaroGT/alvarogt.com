@@ -1,3 +1,5 @@
+import { estado, camposPlanta } from '../plantas/logic.mjs?v=20261016e';
+
 export const VIEWS = { go: '/go/', tablon: '/tablon/', viajes: '/viajes/', plantas: '/plantas/' };
 export const HOSTS = [
   'localhost',
@@ -159,6 +161,71 @@ export function applyViajesHoy(frame) {
   }
 }
 
+export function plantasNeedDot(list, now) {
+  const when = now || new Date();
+  return (list || []).some((raw) => {
+    const p = camposPlanta(raw || {}, (raw && raw.id) || '');
+    const k = estado(p, when);
+    return k === 'amarillo' || k === 'rojo';
+  });
+}
+
+export function setPlantasAlertaDot(on) {
+  const btn = document.querySelector('#tabs button[data-view="plantas"]');
+  if (!btn) return false;
+  btn.classList.toggle('has-plantas', !!on);
+  const dot = btn.querySelector('.tab-dot');
+  if (dot) dot.hidden = !on;
+  return !!on;
+}
+
+export function cardsNeedDot(doc) {
+  try {
+    const html = doc && doc.documentElement;
+    if (html && typeof html.getAttribute === 'function') {
+      const flag = html.getAttribute('data-plantas-alerta');
+      if (flag === '1') return true;
+      if (flag === '0') return false;
+    }
+    const list = doc && doc.querySelector('#list');
+    if (!list || typeof list.querySelector !== 'function') return false;
+    return !!(list.querySelector('.card.amarillo') || list.querySelector('.card.rojo'));
+  } catch {
+    return false;
+  }
+}
+
+export function readPlantasAlertaFromFrame(frame) {
+  try {
+    if (!frame || isFrameDead(frame)) return null;
+    const doc = frame.contentDocument;
+    if (!doc) return null;
+    const html = doc.documentElement;
+    if (html && typeof html.getAttribute === 'function' && html.getAttribute('data-plantas-alerta') != null) {
+      return html.getAttribute('data-plantas-alerta') === '1';
+    }
+    if (!doc.querySelector('#list')) return null;
+    return cardsNeedDot(doc);
+  } catch {
+    return null;
+  }
+}
+
+let lastPlantasAlerta = false;
+
+export function applyPlantasSnapshot(docs, now) {
+  lastPlantasAlerta = plantasNeedDot(docs, now);
+  return refreshPlantasAlertaDot();
+}
+
+export function refreshPlantasAlertaDot() {
+  const scroller = document.querySelector('#scroller');
+  const frame = scroller && scroller.querySelector('iframe[data-casa-view="plantas"]');
+  const fromFrame = readPlantasAlertaFromFrame(frame);
+  if (fromFrame !== null) return setPlantasAlertaDot(fromFrame);
+  return setPlantasAlertaDot(lastPlantasAlerta);
+}
+
 export function googleParams() {
   const hint = lastAdultHint();
   return hint ? { login_hint: hint } : {};
@@ -249,6 +316,7 @@ function bindFrame(frame) {
       watchGoTripSoon(frame);
     }
     if (frame.getAttribute('data-casa-view') === 'viajes') applyViajesHoy(frame);
+    if (frame.getAttribute('data-casa-view') === 'plantas') watchPlantasAlerta(frame);
   });
 }
 
@@ -278,6 +346,23 @@ function watchGoTripSoon(frame) {
     const obs = new MutationObserver(() => { refreshViajesTripDot(); });
     obs.observe(html, { attributes: true, attributeFilter: ['data-trip-soon'] });
     frame.__casaTripObs = obs;
+  } catch {}
+}
+
+function watchPlantasAlerta(frame) {
+  refreshPlantasAlertaDot();
+  try {
+    const doc = frame && frame.contentDocument;
+    const html = doc && doc.documentElement;
+    const list = doc && doc.querySelector('#list');
+    if (typeof MutationObserver === 'undefined') return;
+    if (frame.__casaPlantasObs) {
+      try { frame.__casaPlantasObs.disconnect(); } catch {}
+    }
+    const obs = new MutationObserver(() => { refreshPlantasAlertaDot(); });
+    if (html) obs.observe(html, { attributes: true, attributeFilter: ['data-plantas-alerta'] });
+    if (list) obs.observe(list, { childList: true, subtree: true });
+    frame.__casaPlantasObs = obs;
   } catch {}
 }
 
@@ -376,6 +461,7 @@ export function showView(name) {
   markTab(view);
   if (view === 'tablon') refreshTablonQueueDot();
   refreshViajesTripDot();
+  refreshPlantasAlertaDot();
   if (view === 'viajes') applyViajesHoy(frame);
   return src;
 }
@@ -490,6 +576,7 @@ async function setupGoogle(setStatus, markLogin, wasLogin, clearLogin) {
     await auth.setPersistence(service, auth.browserLocalPersistence);
     const db = firestore.getFirestore(app);
     let casaOk = false;
+    let plantasWatch = false;
     window.__casaAuth = {
       email: () => String((service.currentUser && service.currentUser.email) || '').toLowerCase(),
       idToken: async () => (service.currentUser ? service.currentUser.getIdToken() : null),
@@ -506,6 +593,22 @@ async function setupGoogle(setStatus, markLogin, wasLogin, clearLogin) {
       }
     };
 
+    const watchPlantasCasa = () => {
+      if (plantasWatch) return;
+      plantasWatch = true;
+      try {
+        firestore.onSnapshot(firestore.collection(db, 'plantas_casa'), (snap) => {
+          const rows = snap.docs.map((d) => {
+            const data = d.data() || {};
+            return camposPlanta({ ...data, id: data.id || d.id }, d.id);
+          });
+          applyPlantasSnapshot(rows);
+        }, () => {
+          applyPlantasSnapshot([]);
+        });
+      } catch {}
+    };
+
     const enter = async (user) => {
       if (await houseAllowed()) {
         casaOk = true;
@@ -513,6 +616,7 @@ async function setupGoogle(setStatus, markLogin, wasLogin, clearLogin) {
         rememberAdult(user.email);
         setStatus(user.displayName || user.email);
         showShell();
+        watchPlantasCasa();
         return;
       }
       casaOk = false;
