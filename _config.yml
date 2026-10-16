@@ -49,3 +49,5 @@ exclude:
   - plantas/test_plantas.py
   - plantas/test_plantas.mjs
   - plantas/seed_planta.py
+  - mapa/test_mapa.py
+  - mapa/test_mapa.mjs
