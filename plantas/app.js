@@ -9,7 +9,7 @@ import {
   textoProximo,
   plantaValida,
   camposPlanta,
-} from './logic.mjs?v=20261016b';
+} from './logic.mjs?v=20261016c';
 
 export const HOSTS = [
   'localhost',
@@ -39,6 +39,11 @@ const $ = (sel) => document.querySelector(sel);
 function parentEmail() {
   if (!embedded) return '';
   try { return String(window.parent.__casaAuth?.email?.() || '').toLowerCase(); } catch { return ''; }
+}
+
+async function parentIdToken() {
+  if (!embedded) return null;
+  try { return await window.parent.__casaAuth?.idToken?.() || null; } catch { return null; }
 }
 
 function parentOk() {
