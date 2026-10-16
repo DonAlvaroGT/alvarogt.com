@@ -28,6 +28,8 @@ export function daysBetweenYmd(fromYmd, toYmd) {
   return Math.round((b - a) / 86400000);
 }
 
+export const UMBRAL_CALOR_C = 30;
+
 export function isVerano(date) {
   const ymd = ymdMadrid(date);
   const m = Number(ymd.slice(5, 7));
@@ -38,8 +40,21 @@ export function isVerano(date) {
   return false;
 }
 
-export function diasRiego(planta, date) {
-  const n = Number(isVerano(date) ? planta.riego_verano_dias : planta.riego_invierno_dias);
+export function maxMadrid(tiempo, date) {
+  if (!tiempo || typeof tiempo !== 'object') return null;
+  const day = tiempo[ymdMadrid(date)];
+  const max = day && day.max;
+  return typeof max === 'number' && Number.isFinite(max) ? max : null;
+}
+
+export function usaRiegoVerano(date, tiempo) {
+  const max = maxMadrid(tiempo, date);
+  if (max != null && max >= UMBRAL_CALOR_C) return true;
+  return isVerano(date);
+}
+
+export function diasRiego(planta, date, tiempo) {
+  const n = Number(usaRiegoVerano(date, tiempo) ? planta.riego_verano_dias : planta.riego_invierno_dias);
   return Number.isFinite(n) && n >= 1 ? Math.trunc(n) : null;
 }
 
@@ -62,17 +77,17 @@ export function parseTs(value) {
   return null;
 }
 
-export function proximoRiego(planta, now) {
+export function proximoRiego(planta, now, tiempo) {
   const last = parseTs(planta.ultimo_riego);
-  const days = diasRiego(planta, now || new Date());
+  const days = diasRiego(planta, now || new Date(), tiempo);
   if (!last || days == null) return null;
   return addDaysYmd(ymdMadrid(last), days);
 }
 
-export function estado(planta, now) {
+export function estado(planta, now, tiempo) {
   const when = now || new Date();
   if (!parseTs(planta.ultimo_riego)) return 'gris';
-  const next = proximoRiego(planta, when);
+  const next = proximoRiego(planta, when, tiempo);
   if (!next) return 'gris';
   const left = daysBetweenYmd(ymdMadrid(when), next);
   if (left < 0) return 'rojo';
@@ -86,11 +101,11 @@ export function etiquetaEstado(kind) {
   return '';
 }
 
-export function ordenarPlantas(list, now) {
+export function ordenarPlantas(list, now, tiempo) {
   const when = now || new Date();
   return [...list].sort((a, b) => {
-    const ea = estado(a, when);
-    const eb = estado(b, when);
+    const ea = estado(a, when, tiempo);
+    const eb = estado(b, when, tiempo);
     const d = (ORDEN[ea] ?? 9) - (ORDEN[eb] ?? 9);
     if (d) return d;
     return String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es');
@@ -155,8 +170,8 @@ export function textoRegada(planta, now) {
   return `Regada hace ${n} días`;
 }
 
-export function textoProximo(planta, now) {
-  const next = proximoRiego(planta, now || new Date());
+export function textoProximo(planta, now, tiempo) {
+  const next = proximoRiego(planta, now || new Date(), tiempo);
   if (!next) return '';
   const [y, m, d] = next.split('-').map(Number);
   const label = new Intl.DateTimeFormat('es-ES', {

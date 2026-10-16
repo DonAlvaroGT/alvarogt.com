@@ -14,6 +14,9 @@ import {
   textoRegada,
   plantaValida,
   camposPlanta,
+  diasRiego,
+  usaRiegoVerano,
+  UMBRAL_CALOR_C,
 } from './logic.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -34,6 +37,8 @@ test('verano 1 may–30 sep Madrid', () => {
 test('estados riego', () => {
   const now = madrid('2026-10-16T12:00:00+02:00');
   const base = { riego_verano_dias: 10, riego_invierno_dias: 20 };
+  assert.equal(base.riego_verano_dias, 10);
+  assert.equal(base.riego_invierno_dias, 20);
   assert.equal(estado({ ...base }, now), 'gris');
   assert.equal(estado({ ...base, ultimo_riego: '2026-10-06T10:00:00+02:00' }, now), 'verde');
   assert.equal(estado({ ...base, ultimo_riego: '2026-09-26T10:00:00+02:00' }, now), 'amarillo');
@@ -74,6 +79,30 @@ test('alta valida sin ultimo riego', () => {
   assert.equal(textoRegada(p, new Date()), '');
 });
 
+test('calor ≥30 usa verano aunque sea invierno; Open-Meteo falla → calendario; lluvia no salta', () => {
+  const now = madrid('2026-10-16T12:00:00+02:00');
+  const p = {
+    zona: 'salon',
+    riego_verano_dias: 10,
+    riego_invierno_dias: 20,
+    ultimo_riego: '2026-10-06T10:00:00+02:00',
+  };
+  assert.equal(UMBRAL_CALOR_C, 30);
+  assert.equal(isVerano(now), false);
+  assert.equal(diasRiego(p, now, null), 20);
+  assert.equal(estado(p, now, null), 'verde');
+  assert.equal(usaRiegoVerano(now, { '2026-10-16': { max: 31, rain_probability: 100 } }), true);
+  assert.equal(diasRiego(p, now, { '2026-10-16': { max: 31, rain_probability: 100 } }), 10);
+  assert.equal(estado(p, now, { '2026-10-16': { max: 31, rain_probability: 100 } }), 'amarillo');
+  assert.equal(diasRiego(p, now, { '2026-10-16': { max: 29.9, rain_probability: 100 } }), 20);
+  assert.equal(estado(p, now, { '2026-10-16': { max: 22, rain_probability: 100 } }), 'verde');
+  assert.equal(diasRiego(p, now, { '2026-10-16': { max: 30 } }), 10);
+  const julio = madrid('2026-07-01T12:00:00+02:00');
+  assert.equal(diasRiego(p, julio, { '2026-07-01': { max: 18, rain_probability: 90 } }), 10);
+  assert.equal(p.riego_verano_dias, 10);
+  assert.equal(p.riego_invierno_dias, 20);
+});
+
 test('html sin plantas ni semilla', () => {
   assert.match(html, /id="app"[^>]*hidden/);
   assert.match(html, /id="gate"/);
@@ -105,4 +134,11 @@ test('sin emails y login de casa', () => {
   assert.match(html, /#f4f0e8/);
   assert.match(html, /object-position:\s*50%\s*20%/);
   assert.match(app, /data-plantas-alerta/);
+  assert.match(app, /fetchTiempo/);
+  assert.match(app, /go\/tiempo\.mjs/);
+  assert.match(app, /void loadTiempo\(\)/);
+  assert.doesNotMatch(app, /cloudfunctions/i);
+  assert.doesNotMatch(app, /functions\.https/i);
+  assert.doesNotMatch(logic, /precipitation|rain_probability|lluvia/);
+  assert.doesNotMatch(app, /precipitation|rain_probability|saltar/);
 });
