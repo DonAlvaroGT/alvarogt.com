@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Viajes · Álvaro GT</title>
-  <!-- viajes-build: 20261010c -->
+  <!-- viajes-build: 20261016g -->
   <style>
     :root {
       color-scheme: light;
@@ -123,6 +123,20 @@
       nav { padding-bottom: 28px; }
       .clocks, .days, .trip, .flight-card .legs, .month-grids { grid-template-columns: 1fr; }
     }
+    .pixel-row { display: flex; gap: 10px; align-items: center; margin: 14px 0 0; }
+    .pin-logo {
+      width: 28px; height: 32px; image-rendering: pixelated; flex-shrink: 0;
+      background:
+        linear-gradient(#e23d3d,#e23d3d) 8px 2px / 12px 12px no-repeat,
+        linear-gradient(#c62828,#c62828) 6px 6px / 16px 12px no-repeat,
+        linear-gradient(#18263a,#18263a) 12px 16px / 4px 14px no-repeat,
+        linear-gradient(#fff,#fff) 10px 6px / 4px 4px no-repeat;
+    }
+    .mapa-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--navy); font-size: .82rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase; text-decoration: none;
+    }
     html.embedded .access-row { display: none; }
     html.embedded #gate { min-height: 0; padding: 28px 16px; }
     body:not(.in-session) .jump { display: none; }
@@ -162,6 +176,7 @@
       </nav>
       <p class="eyebrow">Casa · familia</p>
       <h1>Viajes</h1>
+      <p class="pixel-row"><a class="mapa-link" href="/mapa/" id="to-mapa"><span class="pin-logo" aria-hidden="true"></span>Mapa</a></p>
     </div>
   </header>
 
@@ -218,6 +233,15 @@
 <script type="module">
 const embedded = (() => { try { return window.parent !== window && window.parent.location.origin === location.origin; } catch { return false; } })();
 if (embedded) document.documentElement.classList.add('embedded');
+document.getElementById('to-mapa')?.addEventListener('click', (e) => {
+  if (!embedded) return;
+  try {
+    if (typeof window.parent.__casaShowView === 'function') {
+      e.preventDefault();
+      window.parent.__casaShowView('mapa');
+    }
+  } catch {}
+});
 const prod = ['alvarogt.com', 'www.alvarogt.com'].includes(location.hostname);
 const casa = 'Europe/Madrid';
 const weatherName = code => ({0:'despejado',1:'casi despejado',2:'parcialmente nuboso',3:'nuboso',45:'niebla',48:'niebla',51:'llovizna',53:'llovizna',55:'llovizna',61:'lluvia',63:'lluvia',65:'lluvia',71:'nieve',73:'nieve',75:'nieve',80:'chubascos',81:'chubascos',82:'chubascos',95:'tormenta',96:'tormenta',99:'tormenta'}[code] || 'tiempo variable');
