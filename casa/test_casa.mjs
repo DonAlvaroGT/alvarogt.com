@@ -7,8 +7,7 @@ import {
   lastTab, rememberTab, TAB_KEY, TAB_NAMES,
   queueHasPending, setTablonQueueDot, readTablonQueueFromFrame, refreshTablonQueueDot,
   setViajesTripDot, readTripSoonFromGoFrame, refreshViajesTripDot, applyViajesHoy,
-  showMonoEgg, hideMonoEgg, onGoTabTap, dismissMonoEgg, setDeporteTab,
-  setDeporteStarDot, readFavoritoHoyFromFrame, refreshDeporteStarDot
+  showMonoEgg, hideMonoEgg, onGoTabTap, dismissMonoEgg
 } from './app.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -18,14 +17,14 @@ test('pista de adulto es un correo, no una allowlist', () => {
   assert.equal(isAdult(''), false);
 });
 
-test('cinco destinos, Deporte lazy', () => {
+test('cuatro destinos, sin Deporte', () => {
   assert.equal(srcFor('go'), '/go/');
   assert.equal(srcFor('tablon'), '/tablon/');
   assert.equal(srcFor('viajes'), '/viajes/');
   assert.equal(srcFor('plantas'), '/plantas/');
-  assert.equal(srcFor('deporte'), '/deporte/');
+  assert.equal(srcFor('deporte'), '/go/');
   assert.equal(srcFor('nope'), '/go/');
-  assert.deepEqual(VIEWS, { go: '/go/', tablon: '/tablon/', viajes: '/viajes/', plantas: '/plantas/', deporte: '/deporte/' });
+  assert.deepEqual(VIEWS, { go: '/go/', tablon: '/tablon/', viajes: '/viajes/', plantas: '/plantas/' });
 });
 
 test('la barra sigue el path del iframe', () => {
@@ -33,7 +32,7 @@ test('la barra sigue el path del iframe', () => {
   assert.equal(tabFromPath('/tablon/premiosganados/'), 'tablon');
   assert.equal(tabFromPath('/viajes/'), 'viajes');
   assert.equal(tabFromPath('/plantas/'), 'plantas');
-  assert.equal(tabFromPath('/deporte/'), 'deporte');
+  assert.equal(tabFromPath('/deporte/'), 'go');
 });
 
 function el(init = {}) {
@@ -135,10 +134,7 @@ function mockDom(opts = {}) {
   const plantasDot = el({ hidden: true, className: 'tab-dot' });
   const plantas = el({ dataset: { view: 'plantas' }, attrs: { 'aria-selected': 'false', 'data-view': 'plantas' }, children: [plantasDot] });
   plantas.dataset.view = 'plantas';
-  const deporteDot = el({ hidden: true, className: 'tab-dot' });
-  const deporte = el({ hidden: true, dataset: { view: 'deporte' }, attrs: { 'aria-selected': 'false', 'data-view': 'deporte', hidden: '' }, children: [deporteDot] });
-  deporte.dataset.view = 'deporte';
-  const tabs = el({ children: [go, tablon, viajes, plantas, deporte] });
+  const tabs = el({ children: [go, tablon, viajes, plantas] });
   const nodes = {
     '#gate': gate,
     '#shell': shell,
@@ -151,8 +147,7 @@ function mockDom(opts = {}) {
     '#tabs button[data-view="go"]': go,
     '#tabs button[data-view="tablon"]': tablon,
     '#tabs button[data-view="viajes"]': viajes,
-    '#tabs button[data-view="plantas"]': plantas,
-    '#tabs button[data-view="deporte"]': deporte
+    '#tabs button[data-view="plantas"]': plantas
   };
   globalThis.document = {
     createElement(tag) {
@@ -169,8 +164,7 @@ function mockDom(opts = {}) {
     },
     visibilityState: 'visible'
   };
-  setDeporteTab(false);
-  return { gate, shell, scroller, overlay, egg, status, go, tablon, viajes, plantas, deporte };
+  return { gate, shell, scroller, overlay, egg, status, go, tablon, viajes, plantas };
 }
 
 test('sin login no hay iframe ni barra', () => {
@@ -298,7 +292,7 @@ test('resume no recarga si la visible sigue viva', () => {
 
 test('restaura la última pestaña; si no hay valor, Go', () => {
   assert.equal(TAB_KEY, 'casa.lastTab');
-  assert.deepEqual(TAB_NAMES, ['go', 'tablon', 'viajes', 'plantas', 'deporte']);
+  assert.deepEqual(TAB_NAMES, ['go', 'tablon', 'viajes', 'plantas']);
   const d = mockDom();
   assert.equal(lastTab(), 'go');
   showShell();
@@ -508,53 +502,14 @@ test('login_hint del último adulto, sin select_account', () => {
   assert.equal(isStandaloneDisplay(), true);
 });
 
-test('Deporte solo si el probe deja la pestaña', () => {
+test('Deporte no abre iframe ni se restaura', () => {
   const d = mockDom();
   showShell();
-  assert.equal(d.deporte.hidden, true);
   showView('deporte');
   assert.equal(d.scroller.children.some((f) => f.getAttribute('data-casa-view') === 'deporte'), false);
-  setDeporteTab(true);
-  assert.equal(d.deporte.hidden, false);
-  showView('deporte');
-  const frame = d.scroller.children.find((f) => f.getAttribute('data-casa-view') === 'deporte');
-  assert.equal(frame.src, '/deporte/');
-  setDeporteTab(false);
-  assert.equal(d.deporte.hidden, true);
-});
-
-test('punto de Deporte si hoy hay ★; Lucita sin pestaña ni badge', () => {
-  const d = mockDom();
-  showShell();
-  assert.equal(d.deporte.hidden, true);
-  assert.equal(d.deporte.querySelector('.tab-dot').hidden, true);
-  assert.equal(d.scroller.children.some((f) => f.getAttribute('data-casa-view') === 'deporte'), false);
-  setDeporteTab(true);
-  assert.equal(d.deporte.hidden, false);
-  const frame = d.scroller.children.find((f) => f.getAttribute('data-casa-view') === 'deporte');
-  assert.equal(frame.src, '/deporte/');
-  const htmlOn = {
-    getAttribute(name) { return name === 'data-favorito-hoy' ? '1' : null; }
-  };
-  const htmlOff = {
-    getAttribute(name) { return name === 'data-favorito-hoy' ? '0' : null; }
-  };
-  frame.contentDocument = { body: {}, documentElement: htmlOn, querySelector() { return null; } };
-  frame.contentWindow = { location: { href: 'https://alvarogt.com/deporte/' } };
-  assert.equal(readFavoritoHoyFromFrame(frame), true);
-  assert.equal(refreshDeporteStarDot(), true);
-  assert.equal(d.deporte.classList.contains('has-star'), true);
-  assert.equal(d.deporte.querySelector('.tab-dot').hidden, false);
-  frame.contentDocument = { body: {}, documentElement: htmlOff, querySelector() { return null; } };
-  assert.equal(readFavoritoHoyFromFrame(frame), false);
-  assert.equal(refreshDeporteStarDot(), false);
-  assert.equal(d.deporte.classList.contains('has-star'), false);
-  assert.equal(d.deporte.querySelector('.tab-dot').hidden, true);
-  setDeporteStarDot(true);
-  setDeporteTab(false);
-  assert.equal(d.deporte.hidden, true);
-  assert.equal(d.deporte.classList.contains('has-star'), false);
-  assert.equal(d.deporte.querySelector('.tab-dot').hidden, true);
-  const dead = el({ attrs: { 'data-casa-view': 'deporte' }, contentWindow: null, contentDocument: null });
-  assert.equal(readFavoritoHoyFromFrame(dead), null);
+  assert.equal(d.go.getAttribute('aria-selected'), 'true');
+  localStorage.setItem(TAB_KEY, 'deporte');
+  assert.equal(lastTab(), 'go');
+  rememberTab('deporte');
+  assert.equal(localStorage.getItem(TAB_KEY), 'deporte');
 });
