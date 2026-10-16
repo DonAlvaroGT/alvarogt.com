@@ -1,4 +1,5 @@
-import { estado, camposPlanta } from '../plantas/logic.mjs?v=20261016e';
+import { estado, camposPlanta } from '../plantas/logic.mjs?v=20261016f';
+import { fetchTiempo } from '../go/tiempo.mjs?v=20261016f';
 
 export const VIEWS = { go: '/go/', tablon: '/tablon/', viajes: '/viajes/', plantas: '/plantas/' };
 export const HOSTS = [
@@ -161,11 +162,12 @@ export function applyViajesHoy(frame) {
   }
 }
 
-export function plantasNeedDot(list, now) {
+export function plantasNeedDot(list, now, tiempo) {
   const when = now || new Date();
+  const t = tiempo === undefined ? plantasTiempo : tiempo;
   return (list || []).some((raw) => {
     const p = camposPlanta(raw || {}, (raw && raw.id) || '');
-    const k = estado(p, when);
+    const k = estado(p, when, t);
     return k === 'amarillo' || k === 'rojo';
   });
 }
@@ -212,9 +214,13 @@ export function readPlantasAlertaFromFrame(frame) {
 }
 
 let lastPlantasAlerta = false;
+let lastPlantasDocs = [];
+let plantasTiempo = null;
 
-export function applyPlantasSnapshot(docs, now) {
-  lastPlantasAlerta = plantasNeedDot(docs, now);
+export function applyPlantasSnapshot(docs, now, tiempo) {
+  lastPlantasDocs = docs || [];
+  if (tiempo !== undefined) plantasTiempo = tiempo;
+  lastPlantasAlerta = plantasNeedDot(lastPlantasDocs, now, plantasTiempo);
   return refreshPlantasAlertaDot();
 }
 
@@ -597,6 +603,11 @@ async function setupGoogle(setStatus, markLogin, wasLogin, clearLogin) {
       if (plantasWatch) return;
       plantasWatch = true;
       try {
+        void fetchTiempo().then((t) => {
+          plantasTiempo = t;
+          lastPlantasAlerta = plantasNeedDot(lastPlantasDocs);
+          refreshPlantasAlertaDot();
+        });
         firestore.onSnapshot(firestore.collection(db, 'plantas_casa'), (snap) => {
           const rows = snap.docs.map((d) => {
             const data = d.data() || {};

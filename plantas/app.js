@@ -9,7 +9,8 @@ import {
   textoProximo,
   plantaValida,
   camposPlanta,
-} from './logic.mjs?v=20261016d';
+} from './logic.mjs?v=20261016f';
+import { fetchTiempo } from '../go/tiempo.mjs?v=20261016f';
 
 export const HOSTS = [
   'localhost',
@@ -33,6 +34,7 @@ let unsub = null;
 let plantas = [];
 let filtro = 'todas';
 let undos = new Map();
+let tiempo = null;
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -92,14 +94,14 @@ function fotoHtml(p) {
   return `<div class="foto pixel" aria-hidden="true"></div>`;
 }
 
-function cardHtml(p) {
-  const kind = estado(p);
+function cardHtml(p, now, t) {
+  const kind = estado(p, now, t);
   const tag = etiquetaEstado(kind);
   const tox = p.toxica ? `<span class="tox">⚠️ tóxica</span>` : '';
   const nota = p.toxica && p.nota_toxica ? `<p class="nota">${esc(p.nota_toxica)}</p>` : '';
   const latin = p.latin ? `<p class="latin">${esc(p.latin)}</p>` : '';
-  const regada = textoRegada(p);
-  const next = textoProximo(p);
+  const regada = textoRegada(p, now);
+  const next = textoProximo(p, now, t);
   const pending = undos.has(p.id);
   return `<article class="card ${kind}" data-id="${esc(p.id)}">
     ${fotoHtml(p)}
@@ -117,19 +119,25 @@ function cardHtml(p) {
   </article>`;
 }
 
-export function renderList(list, zona, now) {
-  const rows = ordenarPlantas(filtrarZona(list, zona), now);
-  return rows.map(cardHtml).join('') || '<p class="empty">No hay plantas en este filtro.</p>';
+export function renderList(list, zona, now, t) {
+  const wx = t === undefined ? tiempo : t;
+  const rows = ordenarPlantas(filtrarZona(list, zona), now, wx);
+  return rows.map((p) => cardHtml(p, now, wx)).join('') || '<p class="empty">No hay plantas en este filtro.</p>';
 }
 
 function setAlertaAttr() {
   try {
     const on = plantas.some((p) => {
-      const k = estado(p);
+      const k = estado(p, undefined, tiempo);
       return k === 'amarillo' || k === 'rojo';
     });
     document.documentElement.setAttribute('data-plantas-alerta', on ? '1' : '0');
   } catch {}
+}
+
+async function loadTiempo() {
+  tiempo = await fetchTiempo();
+  paint();
 }
 
 function paint() {
@@ -396,4 +404,5 @@ function wireUi() {
 
 showGate('Acceso · comprobando');
 wireUi();
+void loadTiempo();
 boot();

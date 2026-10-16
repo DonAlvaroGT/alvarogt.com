@@ -441,6 +441,10 @@ test('punto de Plantas si hay tarjeta amarilla o roja; gris/verde no; Firestore 
   assert.equal(plantasNeedDot([{ ...base, ultimo_riego: '2026-10-06T10:00:00+02:00' }], now), false);
   assert.equal(plantasNeedDot([{ ...base, ultimo_riego: '2026-09-26T10:00:00+02:00' }], now), true);
   assert.equal(plantasNeedDot([{ ...base, ultimo_riego: '2026-09-23T10:00:00+02:00' }], now), true);
+  assert.equal(plantasNeedDot([{ ...base, ultimo_riego: '2026-10-06T10:00:00+02:00' }], now, { '2026-10-16': { max: 31, rain_probability: 100 } }), true);
+  assert.equal(plantasNeedDot([{ ...base, ultimo_riego: '2026-10-06T10:00:00+02:00' }], now, { '2026-10-16': { max: 22, rain_probability: 100 } }), false);
+  assert.equal(base.riego_verano_dias, 10);
+  assert.equal(base.riego_invierno_dias, 20);
 
   const d = mockDom();
   showShell();
