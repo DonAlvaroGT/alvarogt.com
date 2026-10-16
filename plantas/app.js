@@ -9,7 +9,7 @@ import {
   textoProximo,
   plantaValida,
   camposPlanta,
-} from './logic.mjs?v=20261016a';
+} from './logic.mjs?v=20261016b';
 
 export const HOSTS = [
   'localhost',
@@ -21,6 +21,11 @@ export const HOSTS = [
 ];
 
 const UNDO_MS = 10000;
+const embedded = (() => {
+  try { return window.parent !== window && window.parent.location.origin === location.origin; }
+  catch { return false; }
+})();
+if (typeof document !== 'undefined' && embedded) document.documentElement.classList.add('embedded');
 let fsApi = null;
 let db = null;
 let colRef = null;
@@ -30,6 +35,26 @@ let filtro = 'todas';
 let undos = new Map();
 
 const $ = (sel) => document.querySelector(sel);
+
+function parentEmail() {
+  if (!embedded) return '';
+  try { return String(window.parent.__casaAuth?.email?.() || '').toLowerCase(); } catch { return ''; }
+}
+
+function parentOk() {
+  if (!embedded) return false;
+  try { return !!window.parent.__casaAuth?.ok?.(); } catch { return false; }
+}
+
+function hideEmbeddedChrome() {
+  if (!embedded) return;
+  const signIn = $('#google-sign-in');
+  const signOut = $('#google-sign-out');
+  const gateBtn = $('#gate-sign-in');
+  if (signIn) signIn.hidden = true;
+  if (signOut) signOut.hidden = true;
+  if (gateBtn) gateBtn.hidden = true;
+}
 
 export async function loadFirebaseConfig() {
   const res = await fetch('/tablon/firebase.public.json', { cache: 'no-store' });
@@ -217,7 +242,8 @@ function showApp(label) {
   $('#gate').hidden = true;
   $('#app').hidden = false;
   $('#google-sign-in').hidden = true;
-  $('#google-sign-out').hidden = false;
+  $('#google-sign-out').hidden = embedded ? true : false;
+  hideEmbeddedChrome();
   $('#google-status').textContent = label || 'sesión';
   listenPlantas();
 }
@@ -258,6 +284,10 @@ async function boot() {
     provider.setCustomParameters({ prompt: 'select_account' });
     const enter = async (user) => {
       if (!(await houseAllowed())) {
+        if (parentOk()) {
+          showApp(parentEmail() || 'sesión');
+          return;
+        }
         auth.signOut(service);
         setStatus('Cuenta no autorizada');
         showGate('Cuenta no autorizada');
@@ -265,19 +295,30 @@ async function boot() {
       }
       showApp(user.displayName || 'sesión');
     };
+    const enterFromParent = () => {
+      if (!parentOk()) return false;
+      hideEmbeddedChrome();
+      showApp(parentEmail() || 'sesión');
+      return true;
+    };
     auth.onAuthStateChanged(service, (user) => {
       if (!user) {
+        if (enterFromParent()) return;
         showGate('Sin sesión');
         return;
       }
       void enter(user);
     });
+    if (auth.authStateReady) await auth.authStateReady(service);
+    if (!service.currentUser) enterFromParent();
     const login = async () => {
+      if (embedded && parentOk()) return;
       try {
         setStatus('Google · entrando…');
         await auth.signInWithPopup(service, provider);
       } catch (e) {
         const code = e && e.code;
+        if (enterFromParent()) return;
         if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment') {
           try {
             await auth.signInWithRedirect(service, provider);
@@ -292,9 +333,13 @@ async function boot() {
     };
     $('#google-sign-in').addEventListener('click', login);
     $('#gate-sign-in').addEventListener('click', login);
-    $('#google-sign-out').addEventListener('click', () => auth.signOut(service));
+    $('#google-sign-out').addEventListener('click', () => { if (embedded) return; auth.signOut(service); });
   } catch (e) {
     console.error(e);
+    if (parentOk()) {
+      showApp(parentEmail() || 'sesión');
+      return;
+    }
     setStatus('Acceso · configuración no disponible');
     showGate('Acceso · configuración no disponible');
   }

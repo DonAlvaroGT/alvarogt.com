@@ -97,4 +97,8 @@ test('sin emails y login de casa', () => {
   assert.match(app, /casa_json/);
   assert.match(app, /signInWithPopup/);
   assert.match(app, /houseAllowed/);
+  assert.match(app, /__casaAuth/);
+  assert.match(app, /classList\.add\('embedded'\)/);
+  assert.match(html, /html\.embedded/);
+  assert.match(html, /#f4f0e8/);
 });
