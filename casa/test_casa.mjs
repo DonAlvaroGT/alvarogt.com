@@ -132,10 +132,13 @@ function mockDom(opts = {}) {
   const viajesDot = el({ hidden: true, className: 'tab-dot' });
   const viajes = el({ dataset: { view: 'viajes' }, attrs: { 'aria-selected': 'false', 'data-view': 'viajes' }, children: [viajesDot] });
   viajes.dataset.view = 'viajes';
+  const plantasDot = el({ hidden: true, className: 'tab-dot' });
+  const plantas = el({ dataset: { view: 'plantas' }, attrs: { 'aria-selected': 'false', 'data-view': 'plantas' }, children: [plantasDot] });
+  plantas.dataset.view = 'plantas';
   const deporteDot = el({ hidden: true, className: 'tab-dot' });
   const deporte = el({ hidden: true, dataset: { view: 'deporte' }, attrs: { 'aria-selected': 'false', 'data-view': 'deporte', hidden: '' }, children: [deporteDot] });
   deporte.dataset.view = 'deporte';
-  const tabs = el({ children: [go, tablon, viajes, deporte] });
+  const tabs = el({ children: [go, tablon, viajes, plantas, deporte] });
   const nodes = {
     '#gate': gate,
     '#shell': shell,
@@ -148,6 +151,7 @@ function mockDom(opts = {}) {
     '#tabs button[data-view="go"]': go,
     '#tabs button[data-view="tablon"]': tablon,
     '#tabs button[data-view="viajes"]': viajes,
+    '#tabs button[data-view="plantas"]': plantas,
     '#tabs button[data-view="deporte"]': deporte
   };
   globalThis.document = {
@@ -166,7 +170,7 @@ function mockDom(opts = {}) {
     visibilityState: 'visible'
   };
   setDeporteTab(false);
-  return { gate, shell, scroller, overlay, egg, status, go, tablon, viajes, deporte };
+  return { gate, shell, scroller, overlay, egg, status, go, tablon, viajes, plantas, deporte };
 }
 
 test('sin login no hay iframe ni barra', () => {
@@ -229,7 +233,9 @@ test('Tablón listo al abrir; Viajes al toque; volver no recarga src', () => {
   assert.equal(plantasFrame.src, '/plantas/');
   assert.equal(plantasFrame.style.display, 'block');
   assert.equal(plantasFrame.style.position, 'absolute');
+  assert.equal(plantasFrame.style.inset, '0');
   assert.equal(viajesFrame.style.display, 'none');
+  assert.equal(d.plantas.getAttribute('aria-selected'), 'true');
   assert.equal(localStorage.getItem(TAB_KEY), 'plantas');
 });
 
@@ -311,8 +317,16 @@ test('restaura la última pestaña; si no hay valor, Go', () => {
   assert.equal(d2.scroller.children[2].getAttribute('data-casa-view'), 'tablon');
   assert.equal(d2.scroller.children[2].src, '/tablon/');
   assert.equal(d2.viajes.getAttribute('aria-selected'), 'true');
+  rememberTab('plantas');
+  assert.equal(lastTab(), 'plantas');
+  const d3 = mockDom({ keepTab: true });
+  showShell();
+  assert.equal(d3.scroller.children[0].getAttribute('data-casa-view'), 'plantas');
+  assert.equal(d3.scroller.children[0].src, '/plantas/');
+  assert.equal(d3.scroller.children[0].style.position, 'absolute');
+  assert.equal(d3.plantas.getAttribute('aria-selected'), 'true');
   rememberTab('disney');
-  assert.equal(lastTab(), 'viajes');
+  assert.equal(lastTab(), 'plantas');
   localStorage.setItem(TAB_KEY, 'nope');
   assert.equal(lastTab(), 'go');
 });

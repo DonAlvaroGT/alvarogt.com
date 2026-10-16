@@ -49,8 +49,10 @@ class PlantasPageTests(unittest.TestCase):
         self.assertIn("plantas_casa", APP)
         self.assertIn("houseAllowed", APP)
         self.assertIn("__casaAuth", APP)
+        self.assertIn("parentIdToken", APP)
         self.assertIn("classList.add('embedded')", APP)
         self.assertIn("html.embedded", HTML)
+        self.assertIn("html.embedded .access", HTML)
         self.assertIn("#f4f0e8", HTML)
 
     def test_rules_solo_plantas(self):
