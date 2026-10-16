@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Mapa · Álvaro GT</title>
+  <!-- mapa-build: 20261016a -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17324d;
+      --muted: #64748b;
+      --card: #fffdf8;
+      --line: #e5dfd1;
+      --accent: #e76f51;
+      --sky: #cfe8f4;
+      --ok: #3a7bd5;
+      --now: #e23d3d;
+      --past: #8a9098;
+      --shadow: 0 12px 30px #17324d14;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(145deg, #f7efe1, #e9f3f4);
+      color: var(--ink);
+      font: 16px/1.45 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    .shell { width: min(1100px, calc(100% - 28px)); margin: auto; }
+    .top { padding: 22px 0 12px; display: flex; justify-content: space-between; gap: 18px; align-items: end; }
+    .eyebrow { font-size: .72rem; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); font-weight: 800; }
+    .top h1 { font: 400 clamp(2.4rem, 8vw, 4.8rem)/.9 Georgia, serif; letter-spacing: -.065em; margin: 10px 0 0; }
+    .pixel-row { display: flex; gap: 10px; align-items: center; }
+    .pin-logo {
+      width: 36px; height: 40px; image-rendering: pixelated;
+      background:
+        linear-gradient(#e23d3d,#e23d3d) 12px 4px / 12px 12px no-repeat,
+        linear-gradient(#c62828,#c62828) 10px 8px / 16px 12px no-repeat,
+        linear-gradient(#17324d,#17324d) 16px 20px / 4px 14px no-repeat,
+        linear-gradient(#fff,#fff) 14px 8px / 4px 4px no-repeat;
+    }
+    .access { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .access-status { color: var(--muted); font-size: .76rem; }
+    button.demo, .filters button {
+      background: #fff4ce; border: 1px solid #f0d685; color: #745b16;
+      border-radius: 999px; padding: 9px 13px; font: inherit; font-size: .76rem; cursor: pointer;
+    }
+    button.demo[hidden], #gate[hidden], #app[hidden] { display: none !important; }
+    #gate { min-height: 36vh; display: grid; place-items: center; text-align: center; padding: 36px 16px; }
+    #gate h2 { font: 400 2.2rem/1 Georgia, serif; margin: 0 0 10px; }
+    #gate p { color: var(--muted); max-width: 380px; margin: 0 auto 18px; }
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 10px; }
+    .filters button[aria-selected="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+    #map-wrap {
+      flex: 1;
+      min-height: 52vh;
+      border: 4px solid #17324d;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background:
+        repeating-linear-gradient(90deg, #b9e4c9 0 8px, #a8dcc0 8px 16px),
+        repeating-linear-gradient(0deg, #9fd0e8 0 8px, #8ec4e0 8px 16px);
+      image-rendering: pixelated;
+    }
+    #map { width: 100%; height: min(70vh, 640px); background: #9fd0e8; }
+    .leaflet-container { font: inherit; }
+    .pin {
+      width: 18px; height: 24px; image-rendering: pixelated;
+    }
+    .pin span {
+      display: block; width: 12px; height: 12px; margin: 0 auto;
+      box-shadow: 0 12px 0 -4px currentColor;
+    }
+    .pin.gris span { background: #8a9098; color: #8a9098; }
+    .pin.azul span { background: #3a7bd5; color: #3a7bd5; }
+    .pin.rojo span { background: #e23d3d; color: #e23d3d; }
+    .pin.rojo { animation: parpadea .9s ease-in-out infinite; }
+    @keyframes parpadea {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .35; }
+    }
+    .leaflet-popup-content { margin: 10px 12px; }
+    .leaflet-popup-content .pop-title { font-weight: 800; margin: 0 0 4px; }
+    .leaflet-popup-content p { margin: 0 0 4px; }
+    .leaflet-popup-content .estado { color: var(--accent); font-weight: 800; }
+    .leaflet-popup-content a { color: var(--ok); }
+    footer { padding: 18px 0 28px; color: var(--muted); font-size: .8rem; }
+    html.embedded body { background: #f4f0e8; }
+    html.embedded .access { display: none; }
+    html.embedded #google-sign-out,
+    html.embedded #google-sign-in,
+    html.embedded #gate-sign-in { display: none !important; }
+    html.embedded #gate { min-height: 0; padding: 28px 16px; }
+    html.embedded .top { padding: 16px 0 12px; }
+    html.embedded .top h1 { font-size: clamp(2.1rem, 9vw, 3.4rem); }
+    html.embedded #map { height: min(62vh, 560px); }
+    @media (max-width: 560px) { .top { flex-direction: column; align-items: start; } }
+  </style>
+</head>
+<body>
+  <header class="shell top">
+    <div>
+      <div class="pixel-row"><span class="pin-logo" aria-hidden="true"></span><div class="eyebrow">Casa · Mapa</div></div>
+      <h1>Mapa</h1>
+    </div>
+    <div class="access">
+      <span id="google-status" class="access-status">Acceso · comprobando</span>
+      <button id="google-sign-in" class="demo" type="button">Entrar</button>
+      <button id="google-sign-out" class="demo" type="button" hidden>Salir</button>
+    </div>
+  </header>
+  <section id="gate">
+    <div class="shell">
+      <h2>Inicia sesión</h2>
+      <p>Sin sesión el mapa está vacío.</p>
+      <button id="gate-sign-in" class="demo" type="button">Continuar con Google</button>
+    </div>
+  </section>
+  <main id="app" hidden>
+    <div class="shell">
+      <div class="filters" id="filtro-estado" role="tablist" aria-label="Estado">
+        <button type="button" data-filtro="todos" aria-selected="true">Todos</button>
+        <button type="button" data-filtro="pasados" aria-selected="false">Pasados</button>
+        <button type="button" data-filtro="proximos" aria-selected="false">Próximos</button>
+      </div>
+      <div class="filters" id="filtro-anio" role="tablist" aria-label="Año"></div>
+      <div id="map-wrap"><div id="map" role="application" aria-label="Mapa de viajes"></div></div>
+    </div>
+  </main>
+  <footer class="shell">Creado por Álvaro GT y sus minions</footer>
+  <script src="/pie.js?v=20260930a"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script type="module" src="./app.js?v=20261016a"></script>
+</body>
+</html>
