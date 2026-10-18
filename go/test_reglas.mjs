@@ -39,6 +39,12 @@ assert.deepEqual(eventsFromReglas(reglas, '2026-10-01'), [
 ]);
 assert.deepEqual(eventsFromReglas(reglas, '2026-10-08'), []);
 assert.deepEqual(eventsFromReglas(reglas, '2026-10-12'), []);
+assert.deepEqual(eventsFromReglas(reglas, '2026-10-22'), [
+  { time: '', title: 'Zoo Madrid Nacho', location: '' },
+]);
+assert.deepEqual(eventsFromReglas(reglas, '2026-10-23'), [
+  { time: '', title: 'Cumple Cecilia Luz', location: '' },
+]);
 
 const merged = mergeEvents(
   eventsFromReglas(reglas, '2026-09-16'),

@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "timezone": "Europe/Madrid",
+  "curso": "2026-27",
+  "festivos": [
+    {
+      "fecha": "2026-10-12",
+      "nombre": "Fiesta Nacional / no lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-11-02",
+      "nombre": "Traslado de Todos los Santos",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2026-11-02",
+      "nombre": "No lectivo (coincide festivo laboral)",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-11-09",
+      "nombre": "Almudena",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2026-11-09",
+      "nombre": "No lectivo (coincide festivo laboral)",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-12-07",
+      "nombre": "Día de la Constitución (lunes)",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2026-12-07",
+      "nombre": "No lectivo (coincide festivo laboral)",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-12-08",
+      "nombre": "Inmaculada Concepción",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2026-12-08",
+      "nombre": "No lectivo (coincide festivo laboral)",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-12-23",
+      "nombre": "Vacaciones de Navidad",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-12-24",
+      "nombre": "Vacaciones de Navidad",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-12-25",
+      "nombre": "Navidad",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2026-12-25",
+      "nombre": "No lectivo (coincide festivo laboral)",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-12-26",
+      "nombre": "Vacaciones de Navidad",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-12-27",
+      "nombre": "Vacaciones de Navidad",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-12-28",
+      "nombre": "Vacaciones de Navidad",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-12-29",
+      "nombre": "Vacaciones de Navidad",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-12-30",
+      "nombre": "Vacaciones de Navidad",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-12-31",
+      "nombre": "Vacaciones de Navidad",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-01-01",
+      "nombre": "Año Nuevo",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-01-01",
+      "nombre": "No lectivo (coincide festivo laboral)",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-01-02",
+      "nombre": "Vacaciones de Navidad",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-01-03",
+      "nombre": "Vacaciones de Navidad",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-01-04",
+      "nombre": "Vacaciones de Navidad",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-01-05",
+      "nombre": "Vacaciones de Navidad",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-01-06",
+      "nombre": "Epifanía",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-01-06",
+      "nombre": "No lectivo (coincide festivo laboral)",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-01-07",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-01-08",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-02-12",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-02-15",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-19",
+      "nombre": "San José",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-03-19",
+      "nombre": "No lectivo (coincide festivo laboral)",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-20",
+      "nombre": "Semana Santa",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-21",
+      "nombre": "Semana Santa",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-22",
+      "nombre": "Semana Santa",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-23",
+      "nombre": "Semana Santa",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-24",
+      "nombre": "Semana Santa",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-25",
+      "nombre": "Jueves Santo",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-03-25",
+      "nombre": "No lectivo (coincide festivo laboral)",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-26",
+      "nombre": "Viernes Santo",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-03-26",
+      "nombre": "No lectivo (coincide festivo laboral)",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-27",
+      "nombre": "Semana Santa",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-28",
+      "nombre": "Semana Santa",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-29",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-05-01",
+      "nombre": "Fiesta del Trabajo",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-05-15",
+      "nombre": "San Isidro",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-08-16",
+      "nombre": "Asunción (traslado)",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-10-12",
+      "nombre": "Fiesta Nacional de España",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-11-01",
+      "nombre": "Todos los Santos",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-11-09",
+      "nombre": "Almudena",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-12-06",
+      "nombre": "Día de la Constitución",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-12-08",
+      "nombre": "Inmaculada Concepción",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-12-25",
+      "nombre": "Navidad",
+      "tipo": "festivo"
+    }
+  ],
+  "fuente": "Calendario escolar Madrid 2026-27 (Álvaro) y festivos laborales Madrid capital (BOCM/BOE vía Grok Bot 2026-10-18)"
+}
