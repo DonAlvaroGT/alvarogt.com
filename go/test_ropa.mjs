@@ -13,6 +13,10 @@ assert.equal(isFestivo('2026-10-12'), true);
 assert.equal(isLaborable('2026-10-12'), false);
 assert.equal(isFestivo('2026-10-13'), false);
 assert.equal(isLaborable('2026-10-13'), true);
+assert.equal(isFestivo('2026-12-25'), true);
+assert.equal(isLaborable('2026-12-25'), false);
+assert.equal(isFestivo('2027-03-29'), true);
+assert.equal(isLaborable('2027-03-18'), true);
 
 assert.equal(nachoRopa('2026-09-21'), 'chándal');
 assert.equal(nachoRopa('2026-09-22'), 'chándal');

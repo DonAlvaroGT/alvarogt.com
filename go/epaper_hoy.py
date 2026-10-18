@@ -11,7 +11,7 @@ import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -19,6 +19,7 @@ ZONE = "Europe/Madrid"
 PROJECT = "tablongo"
 SA = Path.home() / ".hermes/gabinete/secrets/tablongo-firebase-adminsdk.json"
 TOKEN_PATH = Path.home() / ".hermes/gabinete/secrets/epaper-token.txt"
+MELA_WEBCAL = Path.home() / ".hermes/gabinete/secrets/mela-webcal.url"
 CAL = Path.home() / ".hermes/scripts/cal_read"
 REPO = Path(__file__).resolve().parent.parent
 TIEMPO_URL = (
@@ -29,7 +30,26 @@ TIEMPO_URL = (
 TIEMPO_FALTA = "Previsión no disponible."
 HHMM = re.compile(r"^(\d{1,2}):(\d{2})")
 YMD = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-FESTIVOS = frozenset({"2026-10-12"})
+FALLBACK_FESTIVOS = frozenset({"2026-10-12", "2026-11-02", "2026-11-09", "2026-12-07", "2026-12-08", "2026-12-23", "2026-12-24", "2026-12-25", "2026-12-26", "2026-12-27", "2026-12-28", "2026-12-29", "2026-12-30", "2026-12-31", "2027-01-01", "2027-01-02", "2027-01-03", "2027-01-04", "2027-01-05", "2027-01-06", "2027-01-07", "2027-01-08", "2027-02-12", "2027-02-15", "2027-03-19", "2027-03-20", "2027-03-21", "2027-03-22", "2027-03-23", "2027-03-24", "2027-03-25", "2027-03-26", "2027-03-27", "2027-03-28", "2027-03-29"})
+
+
+def load_festivos() -> frozenset[str]:
+    path = Path(__file__).with_name("festivos.json")
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        dates = {
+            str(row.get("fecha") or "")
+            for row in (doc.get("festivos") or [])
+            if isinstance(row, dict) and YMD.match(str(row.get("fecha") or ""))
+        }
+        if dates:
+            return frozenset(dates)
+    except (OSError, json.JSONDecodeError, TypeError, AttributeError):
+        pass
+    return FALLBACK_FESTIVOS
+
+
+FESTIVOS = load_festivos()
 SCOPES = ("https://www.googleapis.com/auth/datastore", "https://www.googleapis.com/auth/cloud-platform")
 SPORT_MIN = 9 * 60
 SPORT_MAX = 22 * 60 + 30
@@ -47,6 +67,24 @@ COMEDOR_SKIP = ("pan", "fruta", "yogur", "ensalada")
 
 def ymd_madrid(now: datetime | None = None) -> str:
     return (now or datetime.now(ZoneInfo(ZONE))).date().isoformat()
+
+
+def parse_ahora_arg(raw: str, ymd: str) -> datetime:
+    zone = ZoneInfo(ZONE)
+    raw = (raw or "").strip()
+    if not raw:
+        return datetime.now(zone)
+    if re.fullmatch(r"\d{1,2}:\d{2}", raw):
+        hh, mm = map(int, raw.split(":"))
+        day = datetime.strptime(ymd, "%Y-%m-%d")
+        return datetime(day.year, day.month, day.day, hh, mm, tzinfo=zone)
+    for fmt in ("%Y-%m-%d %H:%M", "%Y-%m-%dT%H:%M"):
+        try:
+            dt = datetime.strptime(raw, fmt)
+            return dt.replace(tzinfo=zone)
+        except ValueError:
+            continue
+    raise SystemExit("ahora no válido")
 
 
 def next_ymd(ymd: str) -> str:
@@ -181,6 +219,8 @@ def events_from_reglas(payload: dict | None, ymd: str) -> list[dict]:
             continue
         end = str(item.get("end") or "").strip()
         row = {"time": f"{time}–{end}" if end else time, "title": title, "_start": time}
+        if end and not time_sin_hora(end):
+            row["_end"] = end
         if loc_s:
             row["location"] = loc_s
         out.append(row)
@@ -206,6 +246,43 @@ def collapse_same_time(rows: list[dict]) -> list[dict]:
             continue
         grouped.append(dict(row))
     return grouped
+
+
+def extra_hora_corte(row: dict) -> int | None:
+    """Minutos de fin si hay; si no, de inicio. None = sin hora (no tirar)."""
+    if row.get("_allday"):
+        return None
+    end_m = minutes(str(row.get("_end") or ""))
+    if end_m is not None:
+        return end_m
+    raw = str(row.get("time") or "").strip()
+    if not time_sin_hora(raw):
+        parts = [p.strip() for p in re.split(r"[–-]", raw) if p.strip()]
+        if len(parts) >= 2:
+            end_m = minutes(parts[-1])
+            if end_m is not None:
+                return end_m
+        start_m = minutes(parts[0] if parts else raw)
+        if start_m is not None:
+            return start_m
+    return minutes(str(row.get("_start") or ""))
+
+
+def extra_ya_pasado(row: dict, ahora: datetime | None, ymd: str) -> bool:
+    if ahora is None or not YMD.match(ymd or ""):
+        return False
+    if ahora.date().isoformat() != ymd:
+        return False
+    cut = extra_hora_corte(row)
+    if cut is None:
+        return False
+    return cut < ahora.hour * 60 + ahora.minute
+
+
+def extraescolares_vigentes(rows: list[dict], ahora: datetime | None, ymd: str) -> list[dict]:
+    if ahora is None:
+        return rows
+    return [row for row in rows if not extra_ya_pasado(row, ahora, ymd)]
 
 
 def split_extraescolares(rows: list[dict]) -> tuple[list[dict], list[dict]]:
@@ -373,7 +450,24 @@ def fecha_corta_es(ymd: str) -> str:
     return f"{d} {meses[m - 1]}"
 
 
+def trip_inicio(viaje: dict) -> str:
+    val = viaje.get("inicio")
+    if isinstance(val, str) and YMD.match(val):
+        return val
+    start, _end = trip_bounds(viaje)
+    return start
+
+
+def days_between(a: str, b: str) -> int | None:
+    if not YMD.match(a or "") or not YMD.match(b or ""):
+        return None
+    d0 = datetime.strptime(a, "%Y-%m-%d").date()
+    d1 = datetime.strptime(b, "%Y-%m-%d").date()
+    return (d1 - d0).days
+
+
 def trip_siguiente(viajes, day: str) -> dict | None:
+    """Siguiente viaje de casa por inicio. El más cercano, no el lejano."""
     if not YMD.match(day or ""):
         return None
     today = trip_on(viajes, day)
@@ -382,13 +476,28 @@ def trip_siguiente(viajes, day: str) -> dict | None:
     for viaje in house_trips(viajes):
         if today_id and trip_id(viaje) == today_id:
             continue
-        start, _end = trip_bounds(viaje)
+        start = trip_inicio(viaje)
         if start and start > day:
             cands.append((start, viaje))
     if not cands:
         return None
     cands.sort(key=lambda row: row[0])
     return cands[0][1]
+
+
+def viaje_faltan_linea(viajes, ymd: str) -> str:
+    """Una línea «faltan N · título» del siguiente viaje de casa (inicio/fin)."""
+    sig = trip_siguiente(viajes, ymd)
+    if not sig:
+        return ""
+    start = trip_inicio(sig)
+    n = days_between(ymd, start)
+    if n is None or n < 1:
+        return ""
+    titulo = str(sig.get("titulo") or "").strip()
+    if not titulo:
+        return ""
+    return f"faltan {n} · {titulo}"
 
 
 def trip_card(viaje: dict | None, day: str, *, with_date: bool = False) -> str:
@@ -914,6 +1023,8 @@ def calendar_rows(events: list[dict] | None, ymd: str, extra_titles: set[str]) -
             row["_allday"] = True
         else:
             row["time"] = start.strftime("%H:%M")
+            if end is not None:
+                row["_end"] = end.strftime("%H:%M")
         out.append(row)
     out.sort(key=lambda e: (0 if e.get("_allday") else 1, e.get("_start") or ""))
     return out
@@ -924,6 +1035,124 @@ def short_dish(title: str) -> str:
     if "," in title:
         title = title.split(",", 1)[0].strip()
     return title
+
+
+def _ics_unfold(text: str) -> list[str]:
+    lines: list[str] = []
+    for raw in (text or "").replace("\r\n", "\n").replace("\r", "\n").split("\n"):
+        if raw.startswith(" ") or raw.startswith("\t"):
+            if lines:
+                lines[-1] += raw[1:]
+            continue
+        lines.append(raw)
+    return lines
+
+
+def _ics_unescape(value: str) -> str:
+    out: list[str] = []
+    i = 0
+    s = value or ""
+    while i < len(s):
+        if s[i] == "\\" and i + 1 < len(s):
+            nxt = s[i + 1]
+            out.append("\n" if nxt == "n" else nxt)
+            i += 2
+            continue
+        out.append(s[i])
+        i += 1
+    return "".join(out)
+
+
+def _ics_dt(left: str, value: str) -> datetime | None:
+    value = (value or "").strip()
+    if not value or "T" not in value:
+        return None
+    utc = value.endswith("Z")
+    raw = value[:-1] if utc else value
+    try:
+        if len(raw) >= 15:
+            dt = datetime.strptime(raw[:15], "%Y%m%dT%H%M%S")
+        elif len(raw) >= 13:
+            dt = datetime.strptime(raw[:13], "%Y%m%dT%H%M")
+        else:
+            return None
+    except ValueError:
+        return None
+    madrid = ZoneInfo(ZONE)
+    if utc:
+        return dt.replace(tzinfo=timezone.utc).astimezone(madrid).replace(tzinfo=None)
+    tzid = ""
+    for part in (left or "").split(";"):
+        if part.startswith("TZID="):
+            tzid = part.split("=", 1)[1].strip().strip('"')
+            break
+    if tzid and tzid != ZONE:
+        try:
+            return dt.replace(tzinfo=ZoneInfo(tzid)).astimezone(madrid).replace(tzinfo=None)
+        except Exception:
+            return dt
+    return dt
+
+
+def mela_events_from_ics(text: str) -> list[dict]:
+    events: list[dict] = []
+    cur: dict[str, tuple[str, str]] | None = None
+    for line in _ics_unfold(text):
+        if line == "BEGIN:VEVENT":
+            cur = {}
+            continue
+        if line == "END:VEVENT":
+            block = cur
+            cur = None
+            if block is None:
+                continue
+            ds = block.get("DTSTART")
+            start = _ics_dt(ds[0], ds[1]) if ds else None
+            if start is None:
+                continue
+            summary = _ics_unescape(block.get("SUMMARY", ("", ""))[1]).strip()
+            if not short_dish(summary):
+                continue
+            row = {
+                "start": start.strftime("%Y-%m-%d %H:%M"),
+                "title": summary,
+                "calendar": "Mela",
+            }
+            de = block.get("DTEND")
+            end = _ics_dt(de[0], de[1]) if de else None
+            if end is not None:
+                row["end"] = end.strftime("%Y-%m-%d %H:%M")
+            events.append(row)
+            continue
+        if cur is None or ":" not in line:
+            continue
+        left, value = line.split(":", 1)
+        name = left.split(";", 1)[0]
+        if name in {"DTSTART", "DTEND", "SUMMARY"}:
+            cur[name] = (left, value)
+    return events
+
+
+def fetch_mela_ics() -> list[dict]:
+    if not MELA_WEBCAL.is_file():
+        return []
+    raw = MELA_WEBCAL.read_text(encoding="utf-8").strip()
+    if raw.startswith("webcal://"):
+        raw = "https://" + raw[len("webcal://") :]
+    if not raw.startswith("https://"):
+        return []
+    req = urllib.request.Request(raw, headers={"User-Agent": "casa-epaper", "Accept": "text/calendar"})
+    try:
+        with urllib.request.urlopen(req, timeout=40) as res:
+            text = res.read().decode("utf-8", errors="replace")
+    except (OSError, urllib.error.URLError, TimeoutError, ValueError):
+        return []
+    return mela_events_from_ics(text)
+
+
+def overlay_mela(events: list[dict] | None, mela: list[dict] | None) -> list[dict]:
+    base = [e for e in (events or []) if str(e.get("calendar") or "").strip() != "Mela"]
+    return base + list(mela or [])
 
 
 def mela_meals(events: list[dict] | None, ymd: str) -> tuple[str, str]:
@@ -1013,6 +1242,7 @@ def build_hoy(
     calendario: list[dict] | None = None,
     comedor: dict | None = None,
     actualizado: str | None = None,
+    ahora: datetime | None = None,
 ) -> dict:
     del sports_week
     extras = events_from_reglas(reglas, ymd)
@@ -1024,6 +1254,7 @@ def build_hoy(
     extras = collapse_same_time(extras)
     src = deporte if deporte is not None else sports_day
     manana_ex, tarde_ex = split_extraescolares(extras)
+    tarde_ex = extraescolares_vigentes(tarde_ex, ahora, ymd)
     estrella_m = estrella_ficha(src, ymd, tarde=False)
     estrella_t = estrella_ficha(src, ymd, tarde=True)
     parche_txt = nacho_parche(ymd)
@@ -1039,6 +1270,8 @@ def build_hoy(
     manana_ymd = next_ymd(ymd)
     viaje_hoy = viaje_cuadro(viajes, calendario, ymd)
     viaje_man = viaje_cuadro(viajes, calendario, manana_ymd) if manana_ymd else ""
+    if not viaje_hoy and not viaje_man:
+        viaje_hoy = viaje_faltan_linea(viajes, ymd)
     day_w = (tiempo or {}).get(ymd) if isinstance(tiempo, dict) else None
     tiempo_txt = weather_copy(day_w)
     lluvia_txt = lluvia_line(day_w)
@@ -1172,7 +1405,7 @@ def load_sources() -> tuple[dict | None, dict | None, dict | None, list[dict], d
         deporte = _read_json(REPO / "deporte" / "deporte.json")
     if comedor is None:
         comedor = _read_json(REPO / "go" / "comedor.json")
-    return reglas, viajes, deporte, read_calendar(), comedor
+    return reglas, viajes, deporte, overlay_mela(read_calendar(), fetch_mela_ics()), comedor
 
 
 def put_epaper(body: str) -> None:
@@ -1214,11 +1447,13 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dump", action="store_true", help="pinta el JSON (sin token, sin subir)")
     parser.add_argument("--ymd", default="")
+    parser.add_argument("--ahora", default="", help="HH:MM o YYYY-MM-DD HH:MM (Europe/Madrid)")
     args = parser.parse_args()
     ymd = args.ymd or ymd_madrid()
     reglas, viajes, deporte, calendario, comedor = load_sources()
     tiempo = fetch_tiempo()
-    ahora = datetime.now(ZoneInfo(ZONE)).strftime("%Y-%m-%d %H:%M")
+    ahora_dt = parse_ahora_arg(args.ahora, ymd)
+    ahora = ahora_dt.strftime("%Y-%m-%d %H:%M")
     doc = build_hoy(
         ymd,
         reglas=reglas,
@@ -1228,6 +1463,7 @@ def main() -> None:
         calendario=calendario,
         comedor=comedor,
         actualizado=ahora,
+        ahora=ahora_dt,
     )
     body = json.dumps(doc, ensure_ascii=False, separators=(",", ":"))
     if args.dump:

@@ -21,6 +21,22 @@ EXPECTED = [
     },
     {"id": "natacion-mollete", "title": "Natación Mollete", "time": "18:30", "end": "19:00", "weekdays": [3]},
     {"id": "danza-molletito", "title": "Danza Molletito", "time": "16:30", "weekdays": [1, 3]},
+    {
+        "id": "zoo-nacho",
+        "title": "Zoo Madrid Nacho",
+        "time": "sin hora",
+        "weekdays": [4],
+        "from": "2026-10-22",
+        "until": "2026-10-22",
+    },
+    {
+        "id": "cumple-cecilia-luz",
+        "title": "Cumple Cecilia Luz",
+        "time": "sin hora",
+        "weekdays": [5],
+        "from": "2026-10-23",
+        "until": "2026-10-23",
+    },
 ]
 
 
@@ -28,7 +44,7 @@ def validate_reglas(payload: dict) -> dict:
     if payload.get("schema_version") != 1 or payload.get("timezone") != ZONE:
         raise ValueError("reglas-schema")
     items = payload.get("extraescolares")
-    if not isinstance(items, list) or len(items) != 5:
+    if not isinstance(items, list) or len(items) != 7:
         raise ValueError("reglas-schema")
     return payload
 

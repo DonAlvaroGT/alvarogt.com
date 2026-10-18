@@ -19,6 +19,7 @@ DOCS = {
     "go/comedor.json": "go_comedor",
     "go/reglas.json": "go_reglas",
     "go/favoritos.json": "go_favoritos",
+    "go/festivos.json": "go_festivos",
     "viajes/viajes.json": "viajes",
     "viajes/viajes_casa.json": "viajes_casa",
     "deporte/deporte.json": "deporte",

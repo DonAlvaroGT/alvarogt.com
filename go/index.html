@@ -171,7 +171,7 @@
   import { nachoRopa } from './ropa.mjs?v=20260929a';
   import { fetchTiempo } from './tiempo.mjs?v=20260929a';
   import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20261007a';
-  import { ymdInZone, nextYmd, weekYmds, nextWeekYmds, isFestivo } from './fechas.mjs?v=20261018a';
+  import { ymdInZone, nextYmd, weekYmds, nextWeekYmds, isFestivo, applyFestivosFromDoc } from './fechas.mjs?v=20261018b';
   import { lastVista, rememberVista, datesForVista, dayLabel, headingParts } from './vista.mjs?v=20260929a';
   const embedded=(()=>{try{return window.parent!==window&&window.parent.location.origin===location.origin}catch{return false}})();
   if(embedded)document.documentElement.classList.add('embedded');
@@ -261,13 +261,15 @@
     paintHouse(true);
     todayYmd=ymdInZone(new Date(),zone);
     const dates=[...weekYmds(todayYmd),...nextWeekYmds(todayYmd)];
-    const [weather,data,reglas,viajesDoc,comedorDoc]=await Promise.all([
+    const [weather,data,reglas,viajesDoc,comedorDoc,festivosDoc]=await Promise.all([
       fetchTiempo(),
       casaDocOpt('go_data'),
       casaDocOpt('go_reglas'),
       casaDocOpt('viajes'),
       casaDocOpt('go_comedor'),
+      casaDocOpt('go_festivos'),
     ]);
+    applyFestivosFromDoc(festivosDoc);
     viajesList=(viajesDoc&&viajesDoc.schema_version===1&&Array.isArray(viajesDoc.viajes))?viajesDoc.viajes:[];
     comedorPayload=(comedorDoc&&comedorDoc.schema_version===1&&comedorDoc.timezone===zone&&comedorDoc.dias&&typeof comedorDoc.dias==='object')?comedorDoc:null;
     const fromCal=calendarEvents(data);

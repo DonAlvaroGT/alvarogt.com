@@ -4,9 +4,13 @@ from __future__ import annotations
 
 import json
 import unittest
+from datetime import datetime
+from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from epaper_hoy import (
     FICHAS_TOPE,
+    MELA_WEBCAL,
     PARCHE_MARK,
     TIEMPO_FALTA,
     build_hoy,
@@ -16,8 +20,11 @@ from epaper_hoy import (
     is_favorito,
     laborable,
     lluvia_line,
+    mela_events_from_ics,
+    mela_meals,
     nacho_parche,
     nacho_ropa,
+    overlay_mela,
     rest_url_redacted,
     skip_aviso,
     sports_ficha,
@@ -203,6 +210,7 @@ def doc(ymd, **kwargs):
         tiempo=kwargs.get("tiempo", TIEMPO),
         calendario=kwargs.get("calendario", CAL),
         comedor=kwargs.get("comedor", COMEDOR),
+        ahora=kwargs.get("ahora"),
     )
 
 
@@ -307,6 +315,56 @@ class EpaperHoyTests(unittest.TestCase):
         self.assertNotIn("cole", json.dumps(viernes, ensure_ascii=False).lower())
         self.assertNotIn("cole", json.dumps(sabado, ensure_ascii=False).lower())
 
+    def test_tarde_18h_sin_extras_pasados(self):
+        zone = ZoneInfo("Europe/Madrid")
+        cal = [
+            {"start": "2026-09-23 20:00", "end": "2026-09-23 21:00", "title": "Merluza al horno, pisto", "calendar": "Mela"},
+        ]
+        sin = doc("2026-09-23", calendario=cal)
+        tardio = doc("2026-09-23", calendario=cal, ahora=datetime(2026, 9, 23, 18, 1, tzinfo=zone))
+        manana_ok = doc("2026-09-23", calendario=cal, ahora=datetime(2026, 9, 23, 8, 0, tzinfo=zone))
+        titles_t = [e["title"] for e in tardio["tarde"]["extraescolares"]]
+        titles_m = [e["title"] for e in tardio["manana"]["extraescolares"]]
+        titles_f = [e["title"] for e in tardio["finde"]["extraescolares"]]
+        self.assertEqual(titles_t, ["Natación Mollete"])
+        self.assertIn("Fútbol Nacho · Danza Molletito", titles_m)
+        self.assertIn("Natación Mollete", titles_m)
+        self.assertEqual(titles_m, [e["title"] for e in sin["manana"]["extraescolares"]])
+        self.assertEqual(titles_f, [e["title"] for e in sin["finde"]["extraescolares"]])
+        self.assertIn("Fútbol Nacho · Danza Molletito", [e["title"] for e in sin["tarde"]["extraescolares"]])
+        self.assertIn("Fútbol Nacho · Danza Molletito", [e["title"] for e in manana_ok["tarde"]["extraescolares"]])
+        self.assertEqual(tardio["tarde"]["mela"], "Cena Merluza al horno")
+        self.assertEqual(tardio["manana"]["mela"], "")
+        lunes = doc("2026-09-21", ahora=datetime(2026, 9, 21, 18, 1, tzinfo=zone))
+        titles_lun_t = [e["title"] for e in lunes["tarde"]["extraescolares"]]
+        self.assertNotIn("Fútbol Nacho · Danza Molletito", titles_lun_t)
+        self.assertIn("Abuelos GT en Atenas", titles_lun_t)
+        self.assertEqual(lunes["tarde"]["mela"], "Cena Empanada de merluza")
+        self.assertIn("Fútbol Nacho · Danza Molletito", [e["title"] for e in lunes["manana"]["extraescolares"]])
+        sin_hora = {
+            "schema_version": 1,
+            "timezone": "Europe/Madrid",
+            "extraescolares": [
+                {"id": "quedada", "title": "Quedada sin hora", "time": "sin hora", "weekdays": [3]},
+                {"id": "natacion-mollete", "title": "Natación Mollete", "time": "18:30", "end": "19:00", "weekdays": [3]},
+                {"id": "futbol-nacho", "title": "Fútbol Nacho", "time": "16:30", "weekdays": [3], "from": "2026-09-21"},
+            ],
+        }
+        # sin hora no va a tarde; si un extra de tarde no trae time, no se tira
+        allday_tarde = doc(
+            "2026-09-23",
+            reglas=sin_hora,
+            calendario=[
+                {"start": "2026-09-23 00:00", "end": "2026-09-24 00:00", "title": "Primo en casa", "calendar": "Familia"},
+            ],
+            ahora=datetime(2026, 9, 23, 18, 1, tzinfo=zone),
+        )
+        titles_sh = [e["title"] for e in allday_tarde["tarde"]["extraescolares"]]
+        self.assertIn("Primo en casa", titles_sh)
+        self.assertIn("Natación Mollete", titles_sh)
+        self.assertNotIn("Fútbol Nacho", " · ".join(titles_sh))
+        self.assertIn("Quedada sin hora", [e["title"] for e in allday_tarde["manana"]["extraescolares"]])
+
     def test_extraescolares_manana_todo_el_dia_tarde_desde_14(self):
         lunes = doc("2026-09-21")
         titles_m = [e["title"] for e in lunes["manana"]["extraescolares"]]
@@ -376,6 +434,39 @@ class EpaperHoyTests(unittest.TestCase):
         self.assertEqual(finde["finde"]["mela"], "Comida Paella")
         self.assertNotIn("Pizza", finde["finde"]["mela"])
         self.assertNotIn("14:00", finde["finde"]["mela"])
+
+    def test_mela_ics_fixture_sin_secreto(self):
+        src = Path(__file__).with_name("epaper_hoy.py").read_text(encoding="utf-8")
+        ics_path = Path(__file__).with_name("testdata") / "mela.ics"
+        ics = ics_path.read_text(encoding="utf-8")
+        self.assertTrue(str(MELA_WEBCAL).endswith("gabinete/secrets/mela-webcal.url"))
+        self.assertIn("mela-webcal.url", src)
+        self.assertIn("fetch_mela_ics", src)
+        self.assertNotIn("icloud.com", src.lower())
+        self.assertNotIn("icloud.com", ics.lower())
+        self.assertNotIn("https://", ics.lower())
+        self.assertNotIn("webcal://", ics.lower())
+        events = mela_events_from_ics(ics)
+        titles = [e["title"] for e in events]
+        self.assertNotIn("Todo el día", titles)
+        self.assertIn("Perritos cumpleañeros", titles)
+        comida, cena = mela_meals(events, "2026-09-21")
+        self.assertEqual(comida, "Lentejas de la abuela")
+        self.assertEqual(cena, "Empanada de merluza")
+        payload = doc("2026-09-21", calendario=events)
+        self.assertEqual(payload["tarde"]["mela"], "Cena Empanada de merluza")
+        self.assertNotIn("20:00", payload["tarde"]["mela"])
+        oct7_comida, oct7_cena = mela_meals(events, "2026-10-07")
+        self.assertEqual(oct7_comida, "Antes de las cuatro")
+        self.assertEqual(oct7_cena, "Justo a las cuatro")
+        oct7 = doc("2026-10-07", calendario=events)
+        self.assertEqual(oct7["tarde"]["mela"], "Cena Justo a las cuatro")
+        mixed = overlay_mela(
+            [{"start": "2026-10-07 20:00", "title": "EventKit viejo", "calendar": "Mela"}],
+            [e for e in events if "Perritos" in e["title"]],
+        )
+        self.assertEqual(mela_meals(mixed, "2026-10-07")[1], "Perritos cumpleañeros")
+        self.assertNotIn("EventKit viejo", json.dumps(mixed, ensure_ascii=False))
 
     def test_deporte_ventana_sin_inventar(self):
         self.assertFalse(is_favorito({"deporte": "futbol", "rival": "Sevilla – Barcelona"}))
@@ -618,9 +709,10 @@ class EpaperHoyTests(unittest.TestCase):
         self.assertNotIn("Abuelos Grecia", disney["viaje_hoy"])
         self.assertNotIn("EMT", disney["viaje_manana"])
         viernes = doc("2026-09-18", viajes=viajes)
-        self.assertEqual(viernes["viaje_hoy"], "")
+        self.assertEqual(viernes["viaje_hoy"], "faltan 98 · Lisboa")
         self.assertEqual(viernes["viaje_manana"], "")
-        self.assertNotIn("Lisboa", json.dumps(viernes, ensure_ascii=False))
+        self.assertEqual(viernes["viaje_siguiente"], "")
+        self.assertNotIn("Lisboa", viernes["viaje_manana"])
         lunes = doc("2026-09-21", viajes=viajes)
         self.assertEqual(
             lunes["viaje_hoy"],
@@ -647,6 +739,37 @@ class EpaperHoyTests(unittest.TestCase):
         self.assertTrue(ultimo["viaje_hoy"])
         self.assertEqual(ultimo["viaje_manana"], "")
         self.assertNotIn("Lisboa", ultimo["viaje_manana"])
+        self.assertFalse(ultimo["viaje_hoy"].startswith("faltan"))
+
+    def test_viaje_faltan_el_mas_cercano_no_lisboa(self):
+        lisboa = {
+            "id": "lisboa-dic",
+            "titulo": "Lisboa",
+            "quien": "García Timón",
+            "inicio": "2026-12-25",
+            "fin": "2026-12-28",
+        }
+        roma = {
+            "id": "roma-casa",
+            "titulo": "Roma",
+            "quien": "García Timón",
+            "inicio": "2026-10-20",
+            "fin": "2026-10-24",
+        }
+        mix = {"viajes": VIAJES["viajes"] + [lisboa, roma]}
+        idle = doc("2026-09-18", viajes=mix)
+        self.assertEqual(idle["viaje_hoy"], "faltan 32 · Roma")
+        self.assertEqual(idle["viaje_manana"], "")
+        self.assertEqual(idle["viaje_siguiente"], "")
+        self.assertNotIn("Lisboa", idle["viaje_hoy"])
+        manana_hay = doc("2026-10-19", viajes={"viajes": [roma, lisboa]})
+        self.assertEqual(manana_hay["viaje_hoy"], "")
+        self.assertIn("Roma", manana_hay["viaje_manana"])
+        self.assertFalse(manana_hay["viaje_hoy"].startswith("faltan"))
+        self.assertNotIn("Lisboa", manana_hay["viaje_manana"])
+        src = Path(__file__).with_name("epaper_hoy.py").read_text(encoding="utf-8")
+        self.assertNotIn("viajes_casa", src)
+        self.assertIn('firestore_get_casa("viajes"', src)
 
     def test_nacho_parche_ciclo_manana_y_finde(self):
         self.assertEqual(PARCHE_MARK, "#")
