@@ -6,7 +6,7 @@ const disney = {
   titulo: 'Disney París',
   inicio: '2026-09-11',
   fin: '2026-09-14',
-  quien: 'Olivas Holgado',
+  quien: 'Familia Norte',
   lugar_principal: { label: 'Disneyland Paris' },
   estancias: [{ desde: '2026-09-11', hasta: '2026-09-14', donde: 'Disneyland Paris' }],
   dias: [

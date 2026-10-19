@@ -42,14 +42,14 @@ REGLAS = {
         {"id": "danza-molletito", "title": "Danza Molletito", "time": "16:30", "weekdays": [1, 3]},
         {"id": "piano-manana", "title": "Piano Luz", "time": "08:30", "weekdays": [1]},
     ],
-    "ropa": {"chandal_weekdays": [1, 2, 5], "excepciones": {"2026-10-22": "chandal"}},
+    "ropa": {"chandal_weekdays": [2, 4], "excepciones": {"2026-10-22": "chandal"}},
 }
 VIAJES = {
     "viajes": [
         {
             "id": "disney-paris",
             "titulo": "Disney París",
-            "quien": "García Timón",
+            "quien": "garcia timon",
             "inicio": "2026-09-11",
             "fin": "2026-09-14",
             "lugar_principal": {"label": "Disneyland Paris"},
@@ -278,7 +278,7 @@ class EpaperHoyTests(unittest.TestCase):
                 {
                     "id": "disney-paris",
                     "titulo": "Disney París",
-                    "quien": "García Timón",
+                    "quien": "garcia timon",
                     "inicio": "2026-09-11",
                     "fin": "2026-09-14",
                     "lugar_principal": {"label": "Disneyland Paris"},
@@ -295,21 +295,21 @@ class EpaperHoyTests(unittest.TestCase):
         sabado = doc("2026-09-19")
         self.assertTrue(viernes["laborable"])
         self.assertFalse(sabado["laborable"])
-        self.assertEqual(viernes["manana"]["nacho_ropa"], "chándal")
+        self.assertEqual(viernes["manana"]["nacho_ropa"], "uniforme")
         self.assertEqual(viernes["tarde"]["nacho_ropa"], "")
         self.assertEqual(sabado["manana"]["nacho_ropa"], "")
         self.assertEqual(sabado["tarde"]["nacho_ropa"], "")
         self.assertEqual(nacho_ropa("2026-09-22", REGLAS), "chándal")
         self.assertEqual(nacho_ropa("2026-09-23", REGLAS), "uniforme")
         lunes = doc("2026-09-21")
-        self.assertEqual(lunes["manana"]["nacho_ropa"], "chándal")
+        self.assertEqual(lunes["manana"]["nacho_ropa"], "uniforme")
         self.assertEqual(lunes["tarde"]["nacho_ropa"], "chándal")
         martes = doc("2026-09-22")
         self.assertEqual(martes["manana"]["nacho_ropa"], "chándal")
         self.assertEqual(martes["tarde"]["nacho_ropa"], "uniforme")
         miercoles = doc("2026-09-23")
         self.assertEqual(miercoles["manana"]["nacho_ropa"], "uniforme")
-        self.assertEqual(miercoles["tarde"]["nacho_ropa"], "uniforme")
+        self.assertEqual(miercoles["tarde"]["nacho_ropa"], "chándal")
         self.assertNotIn("nacho_ropa", viernes["finde"])
         self.assertNotIn("nacho_ropa", sabado["finde"])
         self.assertNotIn("uniforme", json.dumps(sabado["finde"], ensure_ascii=False))
@@ -691,7 +691,7 @@ class EpaperHoyTests(unittest.TestCase):
                 {
                     "id": "lisboa-dic",
                     "titulo": "Lisboa",
-                    "quien": "García Timón",
+                    "quien": "garcia timon",
                     "inicio": "2026-12-25",
                     "fin": "2026-12-28",
                     "lugar_principal": {"label": "Lisboa"},
@@ -746,14 +746,14 @@ class EpaperHoyTests(unittest.TestCase):
         lisboa = {
             "id": "lisboa-dic",
             "titulo": "Lisboa",
-            "quien": "García Timón",
+            "quien": "garcia timon",
             "inicio": "2026-12-25",
             "fin": "2026-12-28",
         }
         roma = {
             "id": "roma-casa",
             "titulo": "Roma",
-            "quien": "García Timón",
+            "quien": "garcia timon",
             "inicio": "2026-10-20",
             "fin": "2026-10-24",
         }
