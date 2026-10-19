@@ -60,7 +60,6 @@ PARCHE_CICLO = ("izquierdo", "izquierdo", "derecho", "descanso")
 FICHAS_TOPE = 8
 MANANA_ANTES = 14 * 60
 ALLOW_CAL = {"Familia", "Casa"}
-CASA_QUIEN = "garcia timon"
 MELA_CENA_FROM = 16 * 60
 COMEDOR_SKIP = ("pan", "fruta", "yogur", "ensalada")
 
@@ -336,10 +335,17 @@ def covers_day(viaje: dict, day: str) -> bool:
 
 
 def is_house_trip(viaje: dict) -> bool:
-    quien = viaje.get("quien")
-    if not isinstance(quien, str):
+    if not isinstance(viaje, dict):
         return False
-    return CASA_QUIEN in fold(quien)
+    if viaje.get("privado") is True:
+        return True
+    vis = str(viaje.get("visible") or "").strip().lower()
+    if vis in ("casa", "privado"):
+        return True
+    quien = viaje.get("quien")
+    if isinstance(quien, str) and fold(quien) == "casa":
+        return True
+    return False
 
 
 def trip_on(viajes: list | dict | None, day: str) -> dict | None:

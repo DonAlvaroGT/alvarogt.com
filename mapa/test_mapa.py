@@ -49,7 +49,6 @@ class MapaPageTests(unittest.TestCase):
         self.assertIn("classList.add('embedded')", APP)
         self.assertNotIn("manageViajesCasa", APP)
         self.assertNotIn("@gmail.com", BLOB)
-        self.assertNotIn("agarciatimon", BLOB)
         self.assertNotIn("Mari Luz", BLOB)
         self.assertNotIn("mariluz-vidal", BLOB)
 

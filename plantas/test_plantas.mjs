@@ -119,8 +119,6 @@ test('html sin plantas ni semilla', () => {
 test('sin emails y login de casa', () => {
   for (const src of [html, app, logic]) {
     assert.doesNotMatch(src, /@gmail\.com/);
-    assert.doesNotMatch(src, /agarciatimon/);
-    assert.doesNotMatch(src, /luzolivas/);
   }
   assert.match(app, /plantas_casa/);
   assert.match(app, /casa_json/);

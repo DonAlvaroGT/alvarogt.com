@@ -23,6 +23,14 @@ SKIP_CAL = {"Trabajo"}
 
 
 def load_reglas():
+    try:
+        from epaper_hoy import SA, _creds, firestore_get_casa
+        if SA.is_file():
+            doc = firestore_get_casa("go_reglas", _creds())
+            if isinstance(doc, dict) and doc.get("schema_version") == 1:
+                return doc
+    except Exception:
+        pass
     path = Path(__file__).with_name("reglas.json")
     try:
         data = json.loads(path.read_text(encoding="utf-8"))

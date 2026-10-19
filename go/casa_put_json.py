@@ -72,9 +72,7 @@ def main() -> None:
     payload = json.loads(raw)
 
     def _privado(v: object) -> bool:
-        return isinstance(v, dict) and (
-            v.get("privado") is True or v.get("visible") in ("casa", "privado")
-        )
+        return isinstance(v, dict) and v.get("privado") is True
 
     trips = payload.get("viajes") if isinstance(payload, dict) else None
     if args.name == "viajes/viajes.json" and isinstance(trips, list):

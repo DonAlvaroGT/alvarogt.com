@@ -49,7 +49,8 @@ VIAJES = {
         {
             "id": "disney-paris",
             "titulo": "Disney París",
-            "quien": "garcia timon",
+            "quien": "casa",
+            "visible": "casa",
             "inicio": "2026-09-11",
             "fin": "2026-09-14",
             "lugar_principal": {"label": "Disneyland Paris"},
@@ -278,7 +279,8 @@ class EpaperHoyTests(unittest.TestCase):
                 {
                     "id": "disney-paris",
                     "titulo": "Disney París",
-                    "quien": "garcia timon",
+                    "quien": "casa",
+                    "visible": "casa",
                     "inicio": "2026-09-11",
                     "fin": "2026-09-14",
                     "lugar_principal": {"label": "Disneyland Paris"},
@@ -691,7 +693,8 @@ class EpaperHoyTests(unittest.TestCase):
                 {
                     "id": "lisboa-dic",
                     "titulo": "Lisboa",
-                    "quien": "garcia timon",
+                    "quien": "casa",
+                    "visible": "casa",
                     "inicio": "2026-12-25",
                     "fin": "2026-12-28",
                     "lugar_principal": {"label": "Lisboa"},
@@ -746,14 +749,16 @@ class EpaperHoyTests(unittest.TestCase):
         lisboa = {
             "id": "lisboa-dic",
             "titulo": "Lisboa",
-            "quien": "garcia timon",
+            "quien": "casa",
+            "visible": "casa",
             "inicio": "2026-12-25",
             "fin": "2026-12-28",
         }
         roma = {
             "id": "roma-casa",
             "titulo": "Roma",
-            "quien": "garcia timon",
+            "quien": "casa",
+            "visible": "casa",
             "inicio": "2026-10-20",
             "fin": "2026-10-24",
         }

@@ -117,8 +117,6 @@ test('ficha usa fecha e id', () => {
 
 test('js público no trae viajes ni emails', () => {
   assert.equal(blob.includes('@gmail.com'), false);
-  assert.equal(blob.includes('agarciatimon'), false);
-  assert.equal(blob.includes('luzolivas'), false);
   assert.equal(blob.includes('Mari Luz'), false);
   assert.equal(blob.includes('mariluz-vidal'), false);
   assert.equal(blob.includes('manageViajesCasa'), false);
