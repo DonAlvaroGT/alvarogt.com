@@ -42,6 +42,7 @@ REGLAS = {
         {"id": "danza-molletito", "title": "Danza Molletito", "time": "16:30", "weekdays": [1, 3]},
         {"id": "piano-manana", "title": "Piano Luz", "time": "08:30", "weekdays": [1]},
     ],
+    "ropa": {"chandal_weekdays": [1, 2, 5], "excepciones": {"2026-10-22": "chandal"}},
 }
 VIAJES = {
     "viajes": [
@@ -298,8 +299,8 @@ class EpaperHoyTests(unittest.TestCase):
         self.assertEqual(viernes["tarde"]["nacho_ropa"], "")
         self.assertEqual(sabado["manana"]["nacho_ropa"], "")
         self.assertEqual(sabado["tarde"]["nacho_ropa"], "")
-        self.assertEqual(nacho_ropa("2026-09-22"), "chándal")
-        self.assertEqual(nacho_ropa("2026-09-23"), "uniforme")
+        self.assertEqual(nacho_ropa("2026-09-22", REGLAS), "chándal")
+        self.assertEqual(nacho_ropa("2026-09-23", REGLAS), "uniforme")
         lunes = doc("2026-09-21")
         self.assertEqual(lunes["manana"]["nacho_ropa"], "chándal")
         self.assertEqual(lunes["tarde"]["nacho_ropa"], "chándal")

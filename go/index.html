@@ -168,7 +168,7 @@
   import { tripOn, tripLineText, tripSoon } from './trip_line.mjs?v=20260929a';
   import { menuDelDia } from './comedor.mjs?v=20260929a';
   import { formatPublicado } from './stamp.mjs?v=20260929a';
-  import { nachoRopa } from './ropa.mjs?v=20261019a';
+  import { nachoRopa } from './ropa.mjs?v=20261019b';
   import { fetchTiempo } from './tiempo.mjs?v=20260929a';
   import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20261007a';
   import { ymdInZone, nextYmd, weekYmds, nextWeekYmds, isFestivo, applyFestivosFromDoc } from './fechas.mjs?v=20261018b';
@@ -281,7 +281,7 @@
         min:w.min??null,
         max:w.max??null,
         rain_probability:w.rain_probability??null,
-        nacho_ropa:nachoRopa(date),
+        nacho_ropa:nachoRopa(date,reglas),
         festivo:isFestivo(date),
         events:mergeEvents(eventsFromReglas(reglas,date),fromCal[date]||[]),
       };
