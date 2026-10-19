@@ -60,7 +60,6 @@ PARCHE_CICLO = ("izquierdo", "izquierdo", "derecho", "descanso")
 FICHAS_TOPE = 8
 MANANA_ANTES = 14 * 60
 ALLOW_CAL = {"Familia", "Casa"}
-CASA_QUIEN = "garcia timon"
 MELA_CENA_FROM = 16 * 60
 COMEDOR_SKIP = ("pan", "fruta", "yogur", "ensalada")
 
@@ -124,8 +123,12 @@ def nacho_ropa(ymd: str, reglas: dict | None = None) -> str:
         if s in ("chandal", "chándal"):
             return "chándal"
         return ""
-    days_raw = ropa.get("chandal_weekdays") if isinstance(ropa.get("chandal_weekdays"), list) else []
+    days_raw = ropa.get("chandal_weekdays") if isinstance(ropa.get("chandal_weekdays"), list) else None
+    if days_raw is None:
+        return ""
     days = [int(x) for x in days_raw if isinstance(x, int) or (isinstance(x, str) and x.isdigit())]
+    if not days:
+        return ""
     if wd in days:
         return "chándal"
     return "uniforme"
@@ -336,18 +339,46 @@ def covers_day(viaje: dict, day: str) -> bool:
 
 
 def is_house_trip(viaje: dict) -> bool:
-    quien = viaje.get("quien")
-    if not isinstance(quien, str):
+    if not isinstance(viaje, dict):
         return False
-    return CASA_QUIEN in fold(quien)
+    if viaje.get("__casa") is True:
+        return True
+    if viaje.get("privado") is True:
+        return True
+    vis = str(viaje.get("visible") or "").strip().lower()
+    if vis in ("casa", "privado"):
+        return True
+    quien = viaje.get("quien")
+    if isinstance(quien, str) and fold(quien) == "casa":
+        return True
+    return False
 
 
-def trip_on(viajes: list | dict | None, day: str) -> dict | None:
-    if isinstance(viajes, dict):
-        viajes = viajes.get("viajes")
-    if not isinstance(viajes, list):
-        return None
-    for viaje in viajes:
+def combine_viajes(publico, casa=None):
+    rows: list[dict] = []
+    seen: set[str] = set()
+    for src, stamp in ((casa, True), (publico, False)):
+        chunk = src.get("viajes") if isinstance(src, dict) else src
+        if not isinstance(chunk, list):
+            continue
+        for v in chunk:
+            if not isinstance(v, dict):
+                continue
+            tid = str(v.get("id") or "")
+            key = tid or json.dumps(v, sort_keys=True, ensure_ascii=False)
+            if key in seen:
+                continue
+            seen.add(key)
+            row = dict(v)
+            if stamp:
+                row["__casa"] = True
+            rows.append(row)
+    return {"viajes": rows}
+
+
+def trip_on(viajes: list | dict | None, day: str, viajes_casa=None) -> dict | None:
+    merged = combine_viajes(viajes, viajes_casa)
+    for viaje in merged["viajes"]:
         if isinstance(viaje, dict) and is_house_trip(viaje) and covers_day(viaje, day):
             return viaje
     return None
@@ -1256,8 +1287,10 @@ def build_hoy(
     comedor: dict | None = None,
     actualizado: str | None = None,
     ahora: datetime | None = None,
+    viajes_casa=None,
 ) -> dict:
     del sports_week
+    viajes = combine_viajes(viajes, viajes_casa)
     extras = events_from_reglas(reglas, ymd)
     extra_titles = {norm_title(e["title"]) for e in extras}
     extra_titles |= {norm_title(str(e.get("_skip_of") or "")) for e in extras if e.get("_skip_of")}
@@ -1402,23 +1435,26 @@ def _read_json(path: Path) -> dict | None:
     return payload if isinstance(payload, dict) else None
 
 
-def load_sources() -> tuple[dict | None, dict | None, dict | None, list[dict], dict | None]:
+def load_sources() -> tuple:
     creds = None
     if SA.is_file():
         creds = _creds()
     reglas = firestore_get_casa("go_reglas", creds) if creds else None
     viajes = firestore_get_casa("viajes", creds) if creds else None
+    viajes_casa = firestore_get_casa("viajes_casa", creds) if creds else None
     deporte = firestore_get_casa("deporte", creds) if creds else None
     comedor = firestore_get_casa("go_comedor", creds) if creds else None
     if reglas is None:
         reglas = _read_json(REPO / "go" / "reglas.json")
     if viajes is None:
         viajes = _read_json(REPO / "viajes" / "viajes.json")
+    if viajes_casa is None:
+        viajes_casa = _read_json(REPO / "viajes" / "viajes_casa.json")
     if deporte is None:
         deporte = _read_json(REPO / "deporte" / "deporte.json")
     if comedor is None:
         comedor = _read_json(REPO / "go" / "comedor.json")
-    return reglas, viajes, deporte, overlay_mela(read_calendar(), fetch_mela_ics()), comedor
+    return reglas, viajes, deporte, overlay_mela(read_calendar(), fetch_mela_ics()), comedor, viajes_casa
 
 
 def put_epaper(body: str) -> None:
@@ -1463,7 +1499,7 @@ def main() -> None:
     parser.add_argument("--ahora", default="", help="HH:MM o YYYY-MM-DD HH:MM (Europe/Madrid)")
     args = parser.parse_args()
     ymd = args.ymd or ymd_madrid()
-    reglas, viajes, deporte, calendario, comedor = load_sources()
+    reglas, viajes, deporte, calendario, comedor, viajes_casa = load_sources()
     tiempo = fetch_tiempo()
     ahora_dt = parse_ahora_arg(args.ahora, ymd)
     ahora = ahora_dt.strftime("%Y-%m-%d %H:%M")
@@ -1471,6 +1507,7 @@ def main() -> None:
         ymd,
         reglas=reglas,
         viajes=viajes,
+        viajes_casa=viajes_casa,
         deporte=deporte,
         tiempo=tiempo,
         calendario=calendario,

@@ -12,6 +12,8 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from epaper_hoy import nacho_ropa
+
 TZ = ZoneInfo("Europe/Madrid")
 CAL = Path.home() / ".hermes/scripts/cal_read"
 WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
@@ -20,9 +22,23 @@ KEYS = ("nacho", "luz", "molletito", "mollete")
 SKIP_CAL = {"Trabajo"}
 
 
-def nacho_uniform(day):
-    """Regla de casa para Nacho: chándal lunes, martes y viernes; uniforme miércoles y jueves."""
-    return "chándal" if day.weekday() in (0, 1, 4) else "uniforme"
+def load_reglas():
+    try:
+        from epaper_hoy import SA, _creds, firestore_get_casa
+        if SA.is_file():
+            doc = firestore_get_casa("go_reglas", _creds())
+            if isinstance(doc, dict) and doc.get("schema_version") == 1:
+                return doc
+    except Exception:
+        pass
+    path = Path(__file__).with_name("reglas.json")
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(data, dict) and data.get("schema_version") == 1:
+            return data
+    except (OSError, json.JSONDecodeError):
+        pass
+    return {"schema_version": 1, "timezone": "Europe/Madrid", "ropa": {}}
 
 
 def filter_events(events, dates):
@@ -73,14 +89,14 @@ def fetch_weather(start, opener=urllib.request.urlopen):
     return {day: {"min": daily["temperature_2m_min"][i], "max": daily["temperature_2m_max"][i], "rain_probability": (daily.get("precipitation_probability_max") or [None, None])[i]} for i, day in enumerate(daily["time"])}
 
 
-def build_payload(today, weather, events):
+def build_payload(today, weather, events, reglas=None):
     dates = [today, today + timedelta(days=1)]
     selected = filter_events(events, set(dates))
     days = []
     for day in dates:
         values = weather.get(day.isoformat(), {})
         day_events = [e for e in selected if e["start"].startswith(day.isoformat())]
-        item = {"date": day.isoformat(), "min": values.get("min"), "max": values.get("max"), "rain_probability": values.get("rain_probability"), "nacho_ropa": nacho_uniform(day), "events": []}
+        item = {"date": day.isoformat(), "min": values.get("min"), "max": values.get("max"), "rain_probability": values.get("rain_probability"), "nacho_ropa": nacho_ropa(day.isoformat(), reglas), "events": []}
         for event in day_events:
             start = datetime.fromisoformat(event["start"])
             item["events"].append({"time": start.strftime("%H:%M"), "title": event["title"], "location": event["location"]})
@@ -116,7 +132,7 @@ def main():
     today = args.date or datetime.now(TZ).date()
     try: weather = fetch_weather(today)
     except Exception: weather = {}
-    payload = build_payload(today, weather, read_calendar())
+    payload = build_payload(today, weather, read_calendar(), load_reglas())
     validate_payload(payload)
     args.output.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 

@@ -42,14 +42,15 @@ REGLAS = {
         {"id": "danza-molletito", "title": "Danza Molletito", "time": "16:30", "weekdays": [1, 3]},
         {"id": "piano-manana", "title": "Piano Luz", "time": "08:30", "weekdays": [1]},
     ],
-    "ropa": {"chandal_weekdays": [1, 2, 5], "excepciones": {"2026-10-22": "chandal"}},
+    "ropa": {"chandal_weekdays": [2, 4], "excepciones": {"2026-10-22": "chandal"}},
 }
 VIAJES = {
     "viajes": [
         {
             "id": "disney-paris",
             "titulo": "Disney París",
-            "quien": "García Timón",
+            "quien": "casa",
+            "visible": "casa",
             "inicio": "2026-09-11",
             "fin": "2026-09-14",
             "lugar_principal": {"label": "Disneyland Paris"},
@@ -205,6 +206,7 @@ def doc(ymd, **kwargs):
         ymd,
         reglas=kwargs.get("reglas", REGLAS),
         viajes=kwargs.get("viajes", VIAJES),
+        viajes_casa=kwargs.get("viajes_casa"),
         deporte=kwargs.get("deporte", DEPORTE),
         sports_day=kwargs.get("sports_day"),
         sports_week=kwargs.get("sports_week"),
@@ -272,13 +274,37 @@ class EpaperHoyTests(unittest.TestCase):
         self.assertEqual(titles.count("Abuelos GT en Atenas"), 1)
         self.assertTrue(all(e["title"] == "Abuelos GT en Atenas" or "Abuelos GT en Atenas" not in e["title"] for e in lunes["manana"]["extraescolares"]))
 
+    def test_viaje_solo_en_viajes_casa(self):
+        public = {"viajes": []}
+        casa = {
+            "viajes": [
+                {
+                    "id": "solo-casa-demo",
+                    "titulo": "Fin de semana Norte",
+                    "quien": "Familia Norte",
+                    "inicio": "2026-10-24",
+                    "fin": "2026-10-25",
+                    "lugar_principal": {"label": "Norte"},
+                }
+            ]
+        }
+        payload = doc("2026-10-24", viajes=public, viajes_casa=casa)
+        self.assertIn("Fin de semana Norte", payload["manana"]["viaje"])
+        vacio = doc("2026-10-24", viajes=public)
+        self.assertEqual(vacio["manana"]["viaje"], "")
+
+    def test_sin_ropa_no_uniforme(self):
+        self.assertEqual(nacho_ropa("2026-09-21", {"schema_version": 1}), "")
+        self.assertEqual(nacho_ropa("2026-09-21", {"schema_version": 1, "ropa": {}}), "")
+
     def test_viaje_texto_no_inventa_plan(self):
         viajes = {
             "viajes": [
                 {
                     "id": "disney-paris",
                     "titulo": "Disney París",
-                    "quien": "García Timón",
+                    "quien": "casa",
+                    "visible": "casa",
                     "inicio": "2026-09-11",
                     "fin": "2026-09-14",
                     "lugar_principal": {"label": "Disneyland Paris"},
@@ -295,21 +321,21 @@ class EpaperHoyTests(unittest.TestCase):
         sabado = doc("2026-09-19")
         self.assertTrue(viernes["laborable"])
         self.assertFalse(sabado["laborable"])
-        self.assertEqual(viernes["manana"]["nacho_ropa"], "chándal")
+        self.assertEqual(viernes["manana"]["nacho_ropa"], "uniforme")
         self.assertEqual(viernes["tarde"]["nacho_ropa"], "")
         self.assertEqual(sabado["manana"]["nacho_ropa"], "")
         self.assertEqual(sabado["tarde"]["nacho_ropa"], "")
         self.assertEqual(nacho_ropa("2026-09-22", REGLAS), "chándal")
         self.assertEqual(nacho_ropa("2026-09-23", REGLAS), "uniforme")
         lunes = doc("2026-09-21")
-        self.assertEqual(lunes["manana"]["nacho_ropa"], "chándal")
+        self.assertEqual(lunes["manana"]["nacho_ropa"], "uniforme")
         self.assertEqual(lunes["tarde"]["nacho_ropa"], "chándal")
         martes = doc("2026-09-22")
         self.assertEqual(martes["manana"]["nacho_ropa"], "chándal")
         self.assertEqual(martes["tarde"]["nacho_ropa"], "uniforme")
         miercoles = doc("2026-09-23")
         self.assertEqual(miercoles["manana"]["nacho_ropa"], "uniforme")
-        self.assertEqual(miercoles["tarde"]["nacho_ropa"], "uniforme")
+        self.assertEqual(miercoles["tarde"]["nacho_ropa"], "chándal")
         self.assertNotIn("nacho_ropa", viernes["finde"])
         self.assertNotIn("nacho_ropa", sabado["finde"])
         self.assertNotIn("uniforme", json.dumps(sabado["finde"], ensure_ascii=False))
@@ -691,7 +717,8 @@ class EpaperHoyTests(unittest.TestCase):
                 {
                     "id": "lisboa-dic",
                     "titulo": "Lisboa",
-                    "quien": "García Timón",
+                    "quien": "casa",
+                    "visible": "casa",
                     "inicio": "2026-12-25",
                     "fin": "2026-12-28",
                     "lugar_principal": {"label": "Lisboa"},
@@ -746,14 +773,16 @@ class EpaperHoyTests(unittest.TestCase):
         lisboa = {
             "id": "lisboa-dic",
             "titulo": "Lisboa",
-            "quien": "García Timón",
+            "quien": "casa",
+            "visible": "casa",
             "inicio": "2026-12-25",
             "fin": "2026-12-28",
         }
         roma = {
             "id": "roma-casa",
             "titulo": "Roma",
-            "quien": "García Timón",
+            "quien": "casa",
+            "visible": "casa",
             "inicio": "2026-10-20",
             "fin": "2026-10-24",
         }
@@ -769,7 +798,8 @@ class EpaperHoyTests(unittest.TestCase):
         self.assertFalse(manana_hay["viaje_hoy"].startswith("faltan"))
         self.assertNotIn("Lisboa", manana_hay["viaje_manana"])
         src = Path(__file__).with_name("epaper_hoy.py").read_text(encoding="utf-8")
-        self.assertNotIn("viajes_casa", src)
+        self.assertIn("viajes_casa", src)
+        self.assertIn('firestore_get_casa("viajes_casa"', src)
         self.assertIn('firestore_get_casa("viajes"', src)
 
     def test_nacho_parche_ciclo_manana_y_finde(self):

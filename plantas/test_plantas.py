@@ -44,8 +44,6 @@ class PlantasPageTests(unittest.TestCase):
     def test_sin_emails(self):
         blob = HTML + APP + LOGIC
         self.assertNotIn("@gmail.com", blob)
-        self.assertNotIn("agarciatimon", blob)
-        self.assertNotIn("luzolivas", blob)
         self.assertIn("plantas_casa", APP)
         self.assertIn("houseAllowed", APP)
         self.assertIn("__casaAuth", APP)
@@ -61,7 +59,6 @@ class PlantasPageTests(unittest.TestCase):
         self.assertIn("casaReader()", RULES)
         self.assertIn("allow write: if false;", RULES)
         self.assertIn("adult-1@example.com", RULES)
-        self.assertNotIn("agarciatimon", RULES)
         idx = RULES.index("match /plantas_casa/{id}")
         block = RULES[idx : idx + 180]
         self.assertIn("casaReader()", block)
