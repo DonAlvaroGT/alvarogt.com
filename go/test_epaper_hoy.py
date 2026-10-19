@@ -206,6 +206,7 @@ def doc(ymd, **kwargs):
         ymd,
         reglas=kwargs.get("reglas", REGLAS),
         viajes=kwargs.get("viajes", VIAJES),
+        viajes_casa=kwargs.get("viajes_casa"),
         deporte=kwargs.get("deporte", DEPORTE),
         sports_day=kwargs.get("sports_day"),
         sports_week=kwargs.get("sports_week"),
@@ -272,6 +273,29 @@ class EpaperHoyTests(unittest.TestCase):
         self.assertIn("Abuelos GT en Atenas", titles)
         self.assertEqual(titles.count("Abuelos GT en Atenas"), 1)
         self.assertTrue(all(e["title"] == "Abuelos GT en Atenas" or "Abuelos GT en Atenas" not in e["title"] for e in lunes["manana"]["extraescolares"]))
+
+    def test_viaje_solo_en_viajes_casa(self):
+        public = {"viajes": []}
+        casa = {
+            "viajes": [
+                {
+                    "id": "solo-casa-demo",
+                    "titulo": "Fin de semana Norte",
+                    "quien": "Familia Norte",
+                    "inicio": "2026-10-24",
+                    "fin": "2026-10-25",
+                    "lugar_principal": {"label": "Norte"},
+                }
+            ]
+        }
+        payload = doc("2026-10-24", viajes=public, viajes_casa=casa)
+        self.assertIn("Fin de semana Norte", payload["manana"]["viaje"])
+        vacio = doc("2026-10-24", viajes=public)
+        self.assertEqual(vacio["manana"]["viaje"], "")
+
+    def test_sin_ropa_no_uniforme(self):
+        self.assertEqual(nacho_ropa("2026-09-21", {"schema_version": 1}), "")
+        self.assertEqual(nacho_ropa("2026-09-21", {"schema_version": 1, "ropa": {}}), "")
 
     def test_viaje_texto_no_inventa_plan(self):
         viajes = {
@@ -774,7 +798,8 @@ class EpaperHoyTests(unittest.TestCase):
         self.assertFalse(manana_hay["viaje_hoy"].startswith("faltan"))
         self.assertNotIn("Lisboa", manana_hay["viaje_manana"])
         src = Path(__file__).with_name("epaper_hoy.py").read_text(encoding="utf-8")
-        self.assertNotIn("viajes_casa", src)
+        self.assertIn("viajes_casa", src)
+        self.assertIn('firestore_get_casa("viajes_casa"', src)
         self.assertIn('firestore_get_casa("viajes"', src)
 
     def test_nacho_parche_ciclo_manana_y_finde(self):

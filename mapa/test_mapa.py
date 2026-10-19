@@ -31,7 +31,10 @@ class MapaPageTests(unittest.TestCase):
         self.assertIn("/pie.js?v=20260930a", HTML)
 
     def test_leaflet_osm_sin_key(self):
-        self.assertIn("leaflet@1.9.4", HTML)
+        self.assertIn("./lib/leaflet.css", HTML)
+        self.assertIn("./lib/leaflet.js", HTML)
+        self.assertNotIn("unpkg.com", HTML)
+        self.assertNotIn("cdn.jsdelivr", HTML)
         self.assertIn("tile.openstreetmap.org", APP)
         self.assertNotIn("apiKey", APP)
         self.assertNotIn("access_token", APP)
@@ -49,8 +52,8 @@ class MapaPageTests(unittest.TestCase):
         self.assertIn("classList.add('embedded')", APP)
         self.assertNotIn("manageViajesCasa", APP)
         self.assertNotIn("@gmail.com", BLOB)
-        self.assertNotIn("Mari Luz", BLOB)
-        self.assertNotIn("mariluz-vidal", BLOB)
+        self.assertNotIn("Tia Norte", BLOB)
+        self.assertNotIn("tia-norte", BLOB)
 
     def test_no_toca_rules_ni_otras_paginas(self):
         self.assertIn("<h1>Álvaro<br>GT</h1>", HOME)
