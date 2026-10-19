@@ -109,13 +109,24 @@ def laborable(ymd: str) -> bool:
     return wd is not None and wd <= 5 and not festivo(ymd)
 
 
-def nacho_ropa(ymd: str) -> str:
+def nacho_ropa(ymd: str, reglas: dict | None = None) -> str:
     wd = weekday_iso(ymd)
     if wd is None or wd >= 6 or festivo(ymd):
         return ""
-    if ymd == "2026-10-22":
-        return "chándal"
-    if wd in (1, 2, 5):
+    ropa = (reglas or {}).get("ropa") if isinstance(reglas, dict) else None
+    if not isinstance(ropa, dict):
+        return ""
+    ex = (ropa.get("excepciones") or {}).get(ymd) if isinstance(ropa.get("excepciones"), dict) else None
+    if ex:
+        s = str(ex).lower()
+        if s == "uniforme":
+            return "uniforme"
+        if s in ("chandal", "chándal"):
+            return "chándal"
+        return ""
+    days_raw = ropa.get("chandal_weekdays") if isinstance(ropa.get("chandal_weekdays"), list) else []
+    days = [int(x) for x in days_raw if isinstance(x, int) or (isinstance(x, str) and x.isdigit())]
+    if wd in days:
         return "chándal"
     return "uniforme"
 
@@ -1283,8 +1294,8 @@ def build_hoy(
     es_laborable = laborable(ymd)
     es_festivo = festivo(ymd)
     stamp = (actualizado or "").strip()
-    ropa = nacho_ropa(ymd)
-    ropa_tarde = nacho_ropa(manana_ymd) if manana_ymd else ""
+    ropa = nacho_ropa(ymd, reglas)
+    ropa_tarde = nacho_ropa(manana_ymd, reglas) if manana_ymd else ""
     comida, cena = mela_meals(calendario, ymd)
     menu = comedor_line(comedor, ymd) if es_laborable else ""
     comida_txt = f"Comida {comida}" if comida else ""
