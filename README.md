@@ -1,6 +1,6 @@
 # alvarogt.com
 
-Web de casa (familia familia). La sirve **GitHub Pages**: [https://alvarogt.com](https://alvarogt.com).
+Web de casa (familia). La sirve **GitHub Pages**: [https://alvarogt.com](https://alvarogt.com).
 
 Pie: «Creado por Álvaro GT y sus minions».
 
