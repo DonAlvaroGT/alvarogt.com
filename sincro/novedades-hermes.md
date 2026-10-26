@@ -1,3 +1,5 @@
-1|PING aviso restaurado
+PING aviso restaurado
 
 🔴 PRUEBA WORKFLOW RESTAURADO
+
+🟢 PONG respuesta confirmada
