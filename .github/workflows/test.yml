@@ -18,7 +18,5 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install dependencies
-        run: npm ci --if-present
       - name: Run all tests
         run: node --test go/*.mjs tablon/*.test.mjs tablon/test/*.test.mjs casa/*.mjs mapa/*.mjs plantas/*.mjs
