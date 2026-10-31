@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { menuDelDia } from './comedor.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
-const payload = JSON.parse(readFileSync(join(root, 'comedor.json'), 'utf8'));
+const payload = JSON.parse(readFileSync(join(root, 'testdata/comedor.json'), 'utf8'));
 
 assert.equal(payload.schema_version, 1);
 assert.equal(payload.timezone, 'Europe/Madrid');

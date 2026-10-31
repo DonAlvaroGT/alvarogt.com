@@ -1,0 +1,10 @@
+{
+  "name": "alvarogt.com",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test go/*.mjs tablon/*.test.mjs tablon/test/*.test.mjs casa/*.mjs mapa/*.mjs plantas/*.mjs"
+  },
+  "description": "Personal website for Álvaro GT",
+  "author": "Álvaro GT"
+}

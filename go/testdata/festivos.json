@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "timezone": "Europe/Madrid",
+  "curso": "2026-27",
+  "festivos": [
+    {
+      "fecha": "2026-10-12",
+      "nombre": "Fiesta Nacional",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2026-11-02",
+      "nombre": "Todos los Santos",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2026-11-09",
+      "nombre": "Almudena",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2026-12-07",
+      "nombre": "Constitución",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2026-12-08",
+      "nombre": "Inmaculada",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2026-12-23",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-12-24",
+      "nombre": "Nochebuena",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2026-12-25",
+      "nombre": "Navidad",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2026-12-26",
+      "nombre": "Santo Tomás",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2026-12-27",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-12-28",
+      "nombre": "Inocentes",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2026-12-29",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-12-30",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2026-12-31",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-01-01",
+      "nombre": "Año Nuevo",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-01-02",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-01-03",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-01-04",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-01-05",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-01-06",
+      "nombre": "Reyes",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-01-07",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-01-08",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-02-12",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-02-15",
+      "nombre": "Carnaval",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-03-19",
+      "nombre": "San José",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-03-20",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-21",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-22",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-23",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-24",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-25",
+      "nombre": "Anunciación",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-03-26",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-27",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-28",
+      "nombre": "No lectivo",
+      "tipo": "no_lectivo"
+    },
+    {
+      "fecha": "2027-03-29",
+      "nombre": "Jueves Santo",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-05-01",
+      "nombre": "Trabajo",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-05-15",
+      "nombre": "San Isidro",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-08-16",
+      "nombre": "Asunción",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-10-12",
+      "nombre": "Hispanidad",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-11-01",
+      "nombre": "Todos los Santos",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-11-09",
+      "nombre": "Almudena",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-12-06",
+      "nombre": "Constitución",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-12-08",
+      "nombre": "Inmaculada",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-12-25",
+      "nombre": "Navidad",
+      "tipo": "festivo"
+    }
+  ],
+  "fuente": "Festivos laborales Madrid 2026-27"
+}

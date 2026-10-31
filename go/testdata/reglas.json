@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "timezone": "Europe/Madrid",
+  "extraescolares": [
+    {
+      "id": "futbol-pepe",
+      "title": "Fútbol Pepe",
+      "time": "16:30",
+      "weekdays": [
+        1
+      ],
+      "from": "2026-09-21"
+    },
+    {
+      "id": "natacion-bolo",
+      "title": "Natación Bolo",
+      "time": "18:30",
+      "end": "19:00",
+      "weekdays": [
+        3
+      ],
+      "from": "2026-09-16"
+    },
+    {
+      "id": "danza-boli",
+      "title": "Danza Boli",
+      "time": "16:30",
+      "weekdays": [
+        3
+      ],
+      "from": "2026-09-16"
+    },
+    {
+      "id": "clases-marco",
+      "title": "Clases con Marco",
+      "time": "17:00",
+      "weekdays": [
+        2
+      ],
+      "from": "2026-10-01"
+    }
+  ]
+}
