@@ -3,9 +3,26 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { eventsFromReglas, mergeEvents, skipAviso, collapseSameTime } from './reglas.mjs';
+import { FESTIVOS } from './fechas.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
-const reglas = JSON.parse(readFileSync(join(root, 'reglas.json'), 'utf8'));
+
+// Load festivos fixture
+const festivosPath = join(root, 'testdata/festivos.json');
+const festivosData = JSON.parse(readFileSync(festivosPath, 'utf8'));
+if (festivosData && festivosData.schema_version === 1 && Array.isArray(festivosData.festivos)) {
+  for (const row of festivosData.festivos) {
+    const fecha = row && row.fecha;
+    if (typeof fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+      FESTIVOS.add(fecha);
+    }
+  }
+}
+
+const reglas = JSON.parse(readFileSync(join(root, 'testdata/reglas.json'), 'utf8'));
+
+// Helper to clear FESTIVOS before each date check (for testing specific scenarios)
+const clearFestivos = () => FESTIVOS.clear();
 
 assert.deepEqual(eventsFromReglas(reglas, '2026-09-15'), []);
 assert.deepEqual(eventsFromReglas(reglas, '2026-09-16'), [

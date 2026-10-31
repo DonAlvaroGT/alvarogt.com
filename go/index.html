@@ -171,7 +171,8 @@
   import { nachoRopa } from './ropa.mjs?v=20261019b';
   import { fetchTiempo } from './tiempo.mjs?v=20260929a';
   import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20261007a';
-  import { ymdInZone, nextYmd, weekYmds, nextWeekYmds, isFestivo, applyFestivosFromDoc } from './fechas.mjs?v=20261018b';
+  import { ymdInZone, nextYmd, weekYmds, nextWeekYmds, isFestivo, applyFestivosFromDoc, loadFestivos } from './fechas.mjs?v=20261020a';
+    await loadFestivos();
   import { lastVista, rememberVista, datesForVista, dayLabel, headingParts } from './vista.mjs?v=20260929a';
   const embedded=(()=>{try{return window.parent!==window&&window.parent.location.origin===location.origin}catch{return false}})();
   if(embedded)document.documentElement.classList.add('embedded');

@@ -1,6 +1,25 @@
 export const ZONE = 'Europe/Madrid';
-export const FALLBACK_FESTIVOS = ['2026-10-12', '2026-11-02', '2026-11-09', '2026-12-07', '2026-12-08', '2026-12-23', '2026-12-24', '2026-12-25', '2026-12-26', '2026-12-27', '2026-12-28', '2026-12-29', '2026-12-30', '2026-12-31', '2027-01-01', '2027-01-02', '2027-01-03', '2027-01-04', '2027-01-05', '2027-01-06', '2027-01-07', '2027-01-08', '2027-02-12', '2027-02-15', '2027-03-19', '2027-03-20', '2027-03-21', '2027-03-22', '2027-03-23', '2027-03-24', '2027-03-25', '2027-03-26', '2027-03-27', '2027-03-28', '2027-03-29'];
-export const FESTIVOS = new Set(FALLBACK_FESTIVOS);
+// Load festivos from go/festivos.json
+export const FESTIVOS = new Set();
+export async function loadFestivos() {
+  try {
+    const response = await fetch(new URL('festivos.json', import.meta.url));
+    const doc = await response.json();
+    if (doc && doc.schema_version === 1 && Array.isArray(doc.festivos)) {
+      FESTIVOS.clear();
+      for (const row of doc.festivos) {
+        const fecha = row && row.fecha;
+        if (typeof fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+          FESTIVOS.add(fecha);
+        }
+      }
+      return true;
+    }
+  } catch (err) {
+    console.error('Failed to load festivos.json:', err);
+  }
+  return false;
+}
 
 export function applyFestivosFromDoc(doc) {
   if (!doc || doc.schema_version !== 1 || !Array.isArray(doc.festivos)) return false;

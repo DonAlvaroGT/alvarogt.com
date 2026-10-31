@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "colegio": "Santa María de Yermo / Basal",
+  "curso": "2026/2027",
+  "mes": "2026-09",
+  "timezone": "Europe/Madrid",
+  "fuente": "fixture para tests",
+  "dias": {
+    "2026-09-15": {
+      "platos": [
+        "menú prueba",
+        "ejemplo 2"
+      ]
+    },
+    "2026-10-01": {
+      "platos": [
+        "menú octubre"
+      ]
+    }
+  }
+}

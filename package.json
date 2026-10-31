@@ -1,0 +1,10 @@
+{
+  "name": "alvarogt.com",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node go/test_comedor.mjs && node go/test_reglas.mjs && node tablon/test-app.mjs"
+  },
+  "description": "Personal website for Álvaro GT",
+  "author": "Álvaro GT"
+}
