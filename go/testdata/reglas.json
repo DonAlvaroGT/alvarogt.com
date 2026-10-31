@@ -3,8 +3,8 @@
   "timezone": "Europe/Madrid",
   "extraescolares": [
     {
-      "id": "futbol-nico",
-      "title": "Fútbol Nico",
+      "id": "futbol-pepe",
+      "title": "Fútbol Pepe",
       "time": "16:30",
       "weekdays": [
         1,
@@ -13,8 +13,8 @@
       "from": "2026-09-21"
     },
     {
-      "id": "natacion-bollo",
-      "title": "Natación Bollo",
+      "id": "natacion-bolo",
+      "title": "Natación Bolo",
       "time": "18:30",
       "end": "19:00",
       "weekdays": [
@@ -23,8 +23,8 @@
       "from": "2026-09-16"
     },
     {
-      "id": "danza-bollito",
-      "title": "Danza Bollito",
+      "id": "danza-boli",
+      "title": "Danza Boli",
       "time": "16:30",
       "weekdays": [
         1,
@@ -40,34 +40,6 @@
         2
       ],
       "from": "2026-09-22"
-    },
-    {
-      "id": "logopeda-nico",
-      "title": "Logopeda Nico",
-      "time": "sin hora",
-      "weekdays": [
-        4
-      ],
-      "from": "2026-10-01",
-      "until": "2026-10-01"
-    },
-    {
-      "id": "zoo-madrid",
-      "title": "Zoo Madrid Nico",
-      "time": "sin hora",
-      "weekdays": [
-        4
-      ],
-      "from": "2026-10-22"
-    },
-    {
-      "id": "cumple-cecia",
-      "title": "Cumple Cecilia Luz",
-      "time": "sin hora",
-      "weekdays": [
-        5
-      ],
-      "from": "2026-10-23"
     }
   ]
 }

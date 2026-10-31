@@ -37,19 +37,10 @@ Secretos solo en `~/.hermes/gabinete/secrets/` (`tablongo-firebase-adminsdk.json
 JSON `hoy` en Firestore `epaper/{token}` (token en `~/.hermes/gabinete/secrets/epaper-token.txt`, no git). GET REST sin Google. Tiempo: grados enteros + sol/nubes; bajo los grados `lluvia` (`lluvia 40 %` o `sin lluvia`) desde Open-Meteo `rain_probability`. Si `go_reglas` `skip[]` quita un extraescolar que tocaba, línea `hoy no hay inglés` (o fútbol/natación), no un hueco. Calendario Familia y Casa (abuelos no son viaje). Mela: platos del ICS iCloud (secreto `mela-webcal.url`, no git); DTSTART con hora, cena ≥16:00; EventKit no. Sin inventar. Mañana laborable: menú de niños de `go_comedor` si hay fecha; si no, sin línea. Ropa laborable mañana y tarde según `go_reglas.ropa`; finde y festivo sin esa ficha. Viaje solo de esta casa, título · lugar; `viaje_texto` añade el `plan` del día si está en viajes.json (no se inventa). `deportes` es la lista de la ventana 10:00–22:30. `actualizado` es la hora Madrid del JSON. El panel pinta solo ese JSON (NTP para la hora del aparato). Se regenera al final de publicar deporte (~6:50) y deporte semana (~6:55). Regenerar ahora:
 
 ```sh
-/Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/epaper_hoy.py
+python3 go/epaper_hoy.py
 ```
 
 ## Probar
 
 ```sh
 python3 -m unittest go/test_go_flow.py go/test_go_reglas.py go/test_epaper_hoy.py
-node --check go/fechas.mjs go/stamp.mjs go/ropa.mjs go/tiempo.mjs go/reglas.mjs go/comedor.mjs go/trip_line.mjs go/vista.mjs
-node go/test_stamp.mjs
-node go/test_ropa.mjs
-node go/test_reglas.mjs
-node go/test_comedor.mjs
-node go/test_vista.mjs
-node go/test_trip_line.mjs
-python3 -m unittest go/test_go_comedor.py
-```

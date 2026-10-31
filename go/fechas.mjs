@@ -2,7 +2,7 @@ export const ZONE = 'Europe/Madrid';
 // Sync fallback: static array from go/festivos.json
 // This Set is pre-populated at module load time for non-blocking behavior
 // Browser will later be overwritten by loadFestivos() or applyFestivosFromDoc()
-export const FESTIVOS_FALLBACK = new Set([
+const _FESTIVOS_FALLBACK = new Set([
   '2026-10-12',
   '2026-11-02',
   '2026-11-09',
@@ -48,7 +48,9 @@ export const FESTIVOS_FALLBACK = new Set([
   '2027-12-08',
   '2027-12-25',
 ]);
-export const FESTIVOS = FESTIVOS_FALLBACK;
+const _HAS_BEEN_APPLIED = new Set(); // Track dates that have been applied from doc
+export const FESTIVOS_FALLBACK = _FESTIVOS_FALLBACK;
+export const FESTIVOS = _FESTIVOS_FALLBACK;
 export async function loadFestivos() {
   try {
     const response = await fetch(new URL('festivos.json', import.meta.url));
@@ -77,8 +79,19 @@ export function applyFestivosFromDoc(doc) {
     if (typeof fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) next.add(fecha);
   }
   if (!next.size) return false;
+  // Check if already applied - if FESTIVOS contains the same dates as next, skip
+  if (_HAS_BEEN_APPLIED.size > 0 && next.size === _HAS_BEEN_APPLIED.size) {
+    let allMatch = true;
+    for (const d of next) {
+      if (!_HAS_BEEN_APPLIED.has(d)) { allMatch = false; break; }
+    }
+    if (allMatch) return false; // Already applied
+  }
   FESTIVOS.clear();
-  for (const ymd of next) FESTIVOS.add(ymd);
+  for (const ymd of next) {
+    FESTIVOS.add(ymd);
+    _HAS_BEEN_APPLIED.add(ymd);
+  }
   return true;
 }
 
@@ -92,7 +105,7 @@ export function isLaborable(ymd) {
 }
 
 export function weekdayIso(ymd) {
-  if (typeof ymd !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return null;
+  if (typeof ymd !== 'string' || ! /^\d{4}-\d{2}-\d{2}$/.test(ymd)) return null;
   const [y, m, d] = ymd.split('-').map(Number);
   const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
   return wd === 0 ? 7 : wd;
@@ -114,7 +127,7 @@ export function nextYmd(ymd) {
 }
 
 export function addDaysYmd(ymd, n) {
-  if (typeof ymd !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return null;
+  if (typeof ymd !== 'string' || ! /^\d{4}-\d{2}-\d{2}$/.test(ymd)) return null;
   if (typeof n !== 'number' || !Number.isInteger(n)) return null;
   const [y, m, d] = ymd.split('-').map(Number);
   return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
@@ -134,7 +147,7 @@ export function nextWeekYmds(ymd) {
 }
 
 export function prettyDate(ymd, withWeekday = true, zone = ZONE) {
-  if (typeof ymd !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return '';
+  if (typeof ymd !== 'string' || ! /^\d{4}-\d{2}-\d{2}$/.test(ymd)) return '';
   const opts = { timeZone: zone, day: 'numeric', month: 'long' };
   if (withWeekday) opts.weekday = 'long';
   return new Intl.DateTimeFormat('es-ES', opts).format(new Date(`${ymd}T12:00:00Z`));

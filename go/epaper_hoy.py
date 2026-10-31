@@ -1451,7 +1451,10 @@ def load_sources() -> tuple:
     if viajes_casa is None:
         viajes_casa = _read_json(REPO / "viajes" / "viajes_casa.json")
     if deporte is None:
-        deporte = _read_json(REPO / "deporte" / "deporte.json")
+        try:
+            deporte = _read_json(REPO / "deporte" / "deporte.json")
+        except FileNotFoundError:
+            deporte = None
     if comedor is None:
         comedor = _read_json(REPO / "go" / "comedor.json")
     return reglas, viajes, deporte, overlay_mela(read_calendar(), fetch_mela_ics()), comedor, viajes_casa
