@@ -177,6 +177,52 @@
       "fecha": "2027-03-29",
       "nombre": "Jueves Santo",
       "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-05-01",
+      "nombre": "Trabajo",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-05-15",
+      "nombre": "San Isidro",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-08-16",
+      "nombre": "Asunción",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-10-12",
+      "nombre": "Hispanidad",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-11-01",
+      "nombre": "Todos los Santos",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-11-09",
+      "nombre": "Almudena",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-12-06",
+      "nombre": "Constitución",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-12-08",
+      "nombre": "Inmaculada",
+      "tipo": "festivo"
+    },
+    {
+      "fecha": "2027-12-25",
+      "nombre": "Navidad",
+      "tipo": "festivo"
     }
-  ]
+  ],
+  "fuente": "Festivos laborales Madrid 2026-27"
 }

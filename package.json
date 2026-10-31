@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "test": "node go/test_comedor.mjs && node go/test_reglas.mjs && node go/test_ropa.mjs && node go/test_stamp.mjs && node go/test_tiempo.mjs && node go/test_trip_line.mjs && node go/test_vista.mjs && node tablon/domain.test.mjs && node tablon/backend.contract.test.mjs && node tablon/domain.security.test.mjs && node tablon/test-app.mjs && node casa/test_casa.mjs && node mapa/test_mapa.mjs && node plantas/test_plantas.mjs"
+    "test": "node --test go/*.mjs tablon/*.test.mjs tablon/test/*.test.mjs casa/*.mjs mapa/*.mjs plantas/*.mjs"
   },
   "description": "Personal website for Álvaro GT",
   "author": "Álvaro GT"

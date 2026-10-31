@@ -21,37 +21,37 @@ assert.deepEqual(eventsFromReglas(reglas, '2026-09-16'), [
 ]);
 assert.deepEqual(eventsFromReglas(reglas, '2026-09-21'), [
   { time: '16:30', title: 'Fútbol Pepe', location: '' },
-  { time: '16:30', title: 'Danza Boli', location: '' },
 ]);
-assert.deepEqual(eventsFromReglas(reglas, '2026-09-22'), [
-  { time: '16:30', title: 'Inglés con Dom', location: '' },
-]);
+assert.deepEqual(eventsFromReglas(reglas, '2026-09-22'), []);
 
 const mie23 = eventsFromReglas(reglas, '2026-09-23');
-assert.equal(mie23.length, 3);
-assert.equal(mie23[0].title, 'Fútbol Pepe');
-assert.equal(mie23[0].time, '16:30');
-assert.equal(mie23[2].title, 'Danza Boli');
-assert.equal(mie23[1].title, 'Natación Bolo');
-assert.equal(mie23[1].time, '18:30–19:00');
+assert.equal(mie23.length, 2);
+assert.equal(mie23[0].title, 'Natación Bolo');
+assert.equal(mie23[0].time, '18:30–19:00');
+assert.equal(mie23[1].title, 'Danza Boli');
+assert.equal(mie23[1].time, '16:30');
 const mie23Line = mergeEvents(mie23, []);
-assert.equal(mie23Line[0].title, 'Fútbol Pepe · Danza Boli');
+assert.equal(mie23Line.length, 2);
+assert.equal(mie23Line[0].title, 'Danza Boli');
 assert.equal(mie23Line[0].time, '16:30');
+assert.equal(mie23Line[1].title, 'Natación Bolo');
+assert.equal(mie23Line[1].time, '18:30–19:00');
 
 assert.deepEqual(eventsFromReglas(reglas, '2026-09-24'), []);
 assert.equal(eventsFromReglas(reglas, '2026-09-17').length, 0);
 
-assert.deepEqual(eventsFromReglas(reglas, '2026-10-01'), []);
-assert.deepEqual(eventsFromReglas(reglas, '2026-10-08'), []);
+assert.deepEqual(eventsFromReglas(reglas, '2026-10-06'), [
+  { time: '17:00', title: 'Clases con Marco', location: '' },
+]);
 assert.deepEqual(eventsFromReglas(reglas, '2026-10-12'), []);
 assert.deepEqual(eventsFromReglas(reglas, '2026-10-22'), []);
 assert.deepEqual(eventsFromReglas(reglas, '2026-10-23'), []);
 
 const merged = mergeEvents(eventsFromReglas(reglas, '2026-09-16'), [
-  { time: '18:30', title: 'Natación Bolo', location: '' },
+  { time: '16:30', title: 'Fútbol Pepe', location: '' },
 ]);
 assert.equal(merged.length, 2);
-assert.equal(merged[0].title, 'Danza Boli');
+assert.equal(merged[0].title, 'Fútbol Pepe · Danza Boli');
 assert.equal(merged[0].time, '16:30');
 assert.equal(merged[1].title, 'Natación Bolo');
 

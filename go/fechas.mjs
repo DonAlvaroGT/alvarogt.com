@@ -48,19 +48,31 @@ const _FESTIVOS_FALLBACK = new Set([
   '2027-12-08',
   '2027-12-25',
 ]);
-const _HAS_BEEN_APPLIED = new Set(); // Track dates that have been applied from doc
+
+const _FESTIVOS = new Set(); // Separate mutable set for actual festivos
+const _FESTIVOS_APPLIED = new Set(); // Track dates that have been applied via applyFestivosFromDoc
+
+// Initialize FESTIVOS with fallback if not already set
+for (const d of _FESTIVOS_FALLBACK) {
+  _FESTIVOS.add(d);
+  _FESTIVOS_APPLIED.add(d);
+}
+
 export const FESTIVOS_FALLBACK = _FESTIVOS_FALLBACK;
-export const FESTIVOS = _FESTIVOS_FALLBACK;
+export const FESTIVOS = _FESTIVOS;
+
 export async function loadFestivos() {
   try {
     const response = await fetch(new URL('festivos.json', import.meta.url));
     const doc = await response.json();
     if (doc && doc.schema_version === 1 && Array.isArray(doc.festivos)) {
       FESTIVOS.clear();
+      _FESTIVOS_APPLIED.clear();
       for (const row of doc.festivos) {
         const fecha = row && row.fecha;
         if (typeof fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
           FESTIVOS.add(fecha);
+          _FESTIVOS_APPLIED.add(fecha);
         }
       }
       return true;
@@ -79,18 +91,19 @@ export function applyFestivosFromDoc(doc) {
     if (typeof fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) next.add(fecha);
   }
   if (!next.size) return false;
-  // Check if already applied - if FESTIVOS contains the same dates as next, skip
-  if (_HAS_BEEN_APPLIED.size > 0 && next.size === _HAS_BEEN_APPLIED.size) {
+  // If FESTIVOS was already applied from doc (sharing all dates), skip
+  if (_FESTIVOS_APPLIED.size > 0 && next.size === _FESTIVOS_APPLIED.size) {
     let allMatch = true;
     for (const d of next) {
-      if (!_HAS_BEEN_APPLIED.has(d)) { allMatch = false; break; }
+      if (!_FESTIVOS_APPLIED.has(d)) { allMatch = false; break; }
     }
     if (allMatch) return false; // Already applied
   }
   FESTIVOS.clear();
+  _FESTIVOS_APPLIED.clear();
   for (const ymd of next) {
     FESTIVOS.add(ymd);
-    _HAS_BEEN_APPLIED.add(ymd);
+    _FESTIVOS_APPLIED.add(ymd);
   }
   return true;
 }

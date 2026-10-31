@@ -7,8 +7,7 @@
       "title": "Fútbol Pepe",
       "time": "16:30",
       "weekdays": [
-        1,
-        3
+        1
       ],
       "from": "2026-09-21"
     },
@@ -27,19 +26,18 @@
       "title": "Danza Boli",
       "time": "16:30",
       "weekdays": [
-        1,
         3
       ],
       "from": "2026-09-16"
     },
     {
-      "id": "ingles-dom",
-      "title": "Inglés con Dom",
-      "time": "16:30",
+      "id": "clases-marco",
+      "title": "Clases con Marco",
+      "time": "17:00",
       "weekdays": [
         2
       ],
-      "from": "2026-09-22"
+      "from": "2026-10-01"
     }
   ]
 }
