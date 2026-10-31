@@ -3,8 +3,8 @@
   "timezone": "Europe/Madrid",
   "extraescolares": [
     {
-      "id": "futbol-nacho",
-      "title": "Fútbol Nacho",
+      "id": "futbol-nico",
+      "title": "Fútbol Nico",
       "time": "16:30",
       "weekdays": [
         1,
@@ -13,8 +13,8 @@
       "from": "2026-09-21"
     },
     {
-      "id": "natacion-mollete",
-      "title": "Natación Mollete",
+      "id": "natacion-bollo",
+      "title": "Natación Bollo",
       "time": "18:30",
       "end": "19:00",
       "weekdays": [
@@ -23,8 +23,8 @@
       "from": "2026-09-16"
     },
     {
-      "id": "danza-molletito",
-      "title": "Danza Molletito",
+      "id": "danza-bollito",
+      "title": "Danza Bollito",
       "time": "16:30",
       "weekdays": [
         1,
@@ -42,8 +42,8 @@
       "from": "2026-09-22"
     },
     {
-      "id": "logopeda-nacho",
-      "title": "Logopeda Nacho",
+      "id": "logopeda-nico",
+      "title": "Logopeda Nico",
       "time": "sin hora",
       "weekdays": [
         4
@@ -53,7 +53,7 @@
     },
     {
       "id": "zoo-madrid",
-      "title": "Zoo Madrid Nacho",
+      "title": "Zoo Madrid Nico",
       "time": "sin hora",
       "weekdays": [
         4

@@ -15,14 +15,13 @@ El sello `#updated` usa `go_data.generated_at` si es un timestamp ISO (hora Madr
 ## Subir JSON (sin git)
 
 ```sh
-/Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name go/reglas.json --file go/reglas.json
-/Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name go/favoritos.json --file go/favoritos.json
-/Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name go/data.json --file go/data.json
-/Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name go/sports.json --file go/sports.json
-/Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name go/sports_week.json --file go/sports_week.json
-/Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name go/comedor.json --file go/comedor.json
-/Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name viajes/viajes.json --file viajes/viajes.json
-/Users/Alvaro/.hermes/hermes-agent/venv/bin/python go/casa_put_json.py --name viajes/viajes_casa.json --file viajes/viajes_casa.json
+python go/casa_put_json.py --name go/reglas.json --file go/reglas.json
+python go/casa_put_json.py --name go/favoritos.json --file go/favoritos.json
+python go/casa_put_json.py --name go/data.json --file go/data.json
+python go/casa_put_json.py --name go/comedor.json --file go/comedor.json
+python go/casa_put_json.py --name go/festivos.json --file go/festivos.json
+python go/casa_put_json.py --name viajes/viajes.json --file viajes/viajes.json
+python go/casa_put_json.py --name viajes/viajes_casa.json --file viajes/viajes_casa.json
 ```
 
 Los JSON viven en Firestore `casa_json`. No van a git ni a GitHub Pages. La página en `alvarogt.com/go/` los lee tras el login.
@@ -44,16 +43,13 @@ JSON `hoy` en Firestore `epaper/{token}` (token en `~/.hermes/gabinete/secrets/e
 ## Probar
 
 ```sh
-python3 -m unittest go/test_go_flow.py go/test_go_reglas.py go/test_go_favoritos.py go/test_epaper_hoy.py
-node --check go/fechas.mjs go/stamp.mjs go/ropa.mjs go/tiempo.mjs go/reglas.mjs go/comedor.mjs go/trip_line.mjs go/vista.mjs go/favoritos.mjs go/sports.mjs
+python3 -m unittest go/test_go_flow.py go/test_go_reglas.py go/test_epaper_hoy.py
+node --check go/fechas.mjs go/stamp.mjs go/ropa.mjs go/tiempo.mjs go/reglas.mjs go/comedor.mjs go/trip_line.mjs go/vista.mjs
 node go/test_stamp.mjs
 node go/test_ropa.mjs
 node go/test_reglas.mjs
-node go/test_favoritos.mjs
-node go/test_tiempo.mjs
 node go/test_comedor.mjs
 node go/test_vista.mjs
 node go/test_trip_line.mjs
-node go/test_sports.mjs
-/Users/Alvaro/.hermes/hermes-agent/venv/bin/python -m unittest go/test_go_comedor.py go/test_go_sports.py go/test_go_favoritos.py
+python3 -m unittest go/test_go_comedor.py
 ```

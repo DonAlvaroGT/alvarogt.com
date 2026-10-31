@@ -14,15 +14,11 @@ from google.oauth2 import service_account
 
 DOCS = {
     "go/data.json": "go_data",
-    "go/sports.json": "go_sports",
-    "go/sports_week.json": "go_sports_week",
     "go/comedor.json": "go_comedor",
     "go/reglas.json": "go_reglas",
-    "go/favoritos.json": "go_favoritos",
     "go/festivos.json": "go_festivos",
     "viajes/viajes.json": "viajes",
     "viajes/viajes_casa.json": "viajes_casa",
-    "deporte/deporte.json": "deporte",
 }
 SA = Path.home() / ".hermes/gabinete/secrets/tablongo-firebase-adminsdk.json"
 PROJECT = "tablongo"

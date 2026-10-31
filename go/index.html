@@ -163,7 +163,7 @@
       <footer><span class="source">Fuente del tiempo: Open-Meteo</span><br>La página se actualiza sola al abrirla.<br>Creado por Álvaro GT y sus minions</footer>
     </main>
   </div>
-<script src="/pie.js?v=20260930a"></script>
+<script src="/pie.js?v=20260930b"></script>
 <script type="module">
   import { tripOn, tripLineText, tripSoon } from './trip_line.mjs?v=20260929a';
   import { menuDelDia } from './comedor.mjs?v=20260929a';
@@ -172,7 +172,6 @@
   import { fetchTiempo } from './tiempo.mjs?v=20260929a';
   import { eventsFromReglas, mergeEvents } from './reglas.mjs?v=20261007a';
   import { ymdInZone, nextYmd, weekYmds, nextWeekYmds, isFestivo, applyFestivosFromDoc, loadFestivos } from './fechas.mjs?v=20261020a';
-    await loadFestivos();
   import { lastVista, rememberVista, datesForVista, dayLabel, headingParts } from './vista.mjs?v=20260929a';
   const embedded=(()=>{try{return window.parent!==window&&window.parent.location.origin===location.origin}catch{return false}})();
   if(embedded)document.documentElement.classList.add('embedded');
@@ -191,6 +190,8 @@
   function comedorBlock(payload,date){const platos=menuDelDia(payload,date);if(!platos)return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><p class="copy empty">Sin menú de comedor</p></div>`;return `<div class="comedor"><p class="copy"><strong>Comedor</strong></p><ul>${platos.map(p=>`<li>${safe(p)}</li>`).join('')}</ul></div>`}
   function card(day,label,viaje,comedor,vista){const rain=day.rain_probability==null?'':` · lluvia ${safe(day.rain_probability)}%`;const weather=day.min==null?'Previsión no disponible.':`${safe(day.min)}–${safe(day.max)} °C${rain}.`;const events=(day.events||[]).map(e=>{const clock=e.time?`<strong>${safe(e.time)}</strong> `:'';return `<li>${clock}${safe(e.title)}${e.location?` · ${safe(e.location)}`:''}</li>`}).join('');const nacho=day.nacho_ropa?`<p class="copy"><strong>Ropa: ${safe(day.nacho_ropa)}</strong></p>`:'';const festivo=day.festivo?`<p class="copy"><strong>Festivo</strong></p>`:'';const trip=viaje?tripLineText(viaje,day.date):'';const tripHtml=trip?`<p class="viaje">${safe(trip)}</p>`:'';const head=headingParts(vista,label,day.date);return `<article data-date="${safe(day.date)}"><div class="date">${safe(head.dateLine)}</div><h2 class="day-name">${safe(head.title)}</h2>${tripHtml}<p class="copy">${weather}</p>${festivo}${nacho}${comedorBlock(comedor,day.date)}<div class="activities">${events?`<ul>${events}</ul>`:'<span class="empty">No hay extraescolares apuntadas</span>'}</div></article>`}
   let fsApi=null, db=null, fsProject='tablongo', started=false, dayMap={}, viajesList=[], comedorPayload=null, todayYmd='';
+  // Initialize festivos sync (from fallback) and async (from Firestore)
+  loadFestivos().catch(() => {});
   function parentEmail(){
     if(!embedded)return '';
     try{return String(window.parent.__casaAuth?.email?.()||'').toLowerCase()}catch{return ''}

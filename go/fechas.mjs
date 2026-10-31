@@ -1,6 +1,54 @@
 export const ZONE = 'Europe/Madrid';
-// Load festivos from go/festivos.json
-export const FESTIVOS = new Set();
+// Sync fallback: static array from go/festivos.json
+// This Set is pre-populated at module load time for non-blocking behavior
+// Browser will later be overwritten by loadFestivos() or applyFestivosFromDoc()
+export const FESTIVOS_FALLBACK = new Set([
+  '2026-10-12',
+  '2026-11-02',
+  '2026-11-09',
+  '2026-12-07',
+  '2026-12-08',
+  '2026-12-23',
+  '2026-12-24',
+  '2026-12-25',
+  '2026-12-26',
+  '2026-12-27',
+  '2026-12-28',
+  '2026-12-29',
+  '2026-12-30',
+  '2026-12-31',
+  '2027-01-01',
+  '2027-01-02',
+  '2027-01-03',
+  '2027-01-04',
+  '2027-01-05',
+  '2027-01-06',
+  '2027-01-07',
+  '2027-01-08',
+  '2027-02-12',
+  '2027-02-15',
+  '2027-03-19',
+  '2027-03-20',
+  '2027-03-21',
+  '2027-03-22',
+  '2027-03-23',
+  '2027-03-24',
+  '2027-03-25',
+  '2027-03-26',
+  '2027-03-27',
+  '2027-03-28',
+  '2027-03-29',
+  '2027-05-01',
+  '2027-05-15',
+  '2027-08-16',
+  '2027-10-12',
+  '2027-11-01',
+  '2027-11-09',
+  '2027-12-06',
+  '2027-12-08',
+  '2027-12-25',
+]);
+export const FESTIVOS = FESTIVOS_FALLBACK;
 export async function loadFestivos() {
   try {
     const response = await fetch(new URL('festivos.json', import.meta.url));
