@@ -9,7 +9,7 @@ const payload = JSON.parse(readFileSync(join(root, 'testdata/comedor.json'), 'ut
 
 assert.equal(payload.schema_version, 1);
 assert.equal(payload.timezone, 'Europe/Madrid');
-assert.equal(payload.colegio, 'Santa María de Yermo / Basal');
+assert.equal(payload.colegio, 'Colegio Ejemplo');
 assert.equal(payload.curso, '2026/2027');
 assert.ok(payload.dias && typeof payload.dias === 'object');
 assert.ok(!Object.hasOwn(payload.dias, '2026-10-12'));

@@ -36,7 +36,7 @@ def validate_comedor(payload: dict) -> dict:
         payload.get("schema_version") != 1
         or payload.get("timezone") != ZONE
         or payload.get("mes") != MES
-        or payload.get("colegio") != "Santa María de Yermo / Basal"
+        or payload.get("colegio") != "Colegio Ejemplo"
         or payload.get("curso") != "2026/2027"
         or not isinstance(payload.get("dias"), dict)
     ):
