@@ -19,10 +19,12 @@ exclude:
   - tablon/firestore.rules
   - tablon/firestore.indexes.json
   - go/README.md
+  - go/testdata
   - go/skinner_go.py
   - go/epaper_hoy.py
   - go/casa_put_json.py
   - go/test_comedor.mjs
+  - go/test_fechas.mjs
   - go/test_epaper_hoy.py
   - go/test_go_comedor.py
   - go/test_go_flow.py
