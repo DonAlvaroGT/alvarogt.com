@@ -9,8 +9,8 @@ import {
   textoProximo,
   plantaValida,
   camposPlanta,
-} from './logic.mjs?v=20261016f';
-import { fetchTiempo } from '../go/tiempo.mjs?v=20261016f';
+} from './logic.mjs?v=20261113a';
+import { fetchTiempo } from '../go/tiempo.mjs?v=20261113a';
 
 export const HOSTS = [
   'localhost',
@@ -81,15 +81,18 @@ function fromSnap(doc) {
 }
 
 function fotoSrc(url) {
-  if (/^https:/i.test(url) && !/[?&]v=/.test(url)) {
-    return `${url}${url.includes('?') ? '&' : '?'}v=20261016d`;
+  if (!url) return url;
+  if (/[?&]v=/.test(url)) return url;
+  if (/^https:/i.test(url) || String(url).startsWith('/plantas/fotos/')) {
+    return `${url}${url.includes('?') ? '&' : '?'}v=20261113a`;
   }
   return url;
 }
 
 function fotoHtml(p) {
-  if (p.foto && /^(https:|data:image\/)/i.test(p.foto)) {
-    return `<img class="foto" src="${esc(fotoSrc(p.foto))}" alt="">`;
+  const foto = String(p.foto || '');
+  if (/^(https:|data:image\/)/i.test(foto) || foto.startsWith('/plantas/fotos/')) {
+    return `<img class="foto" src="${esc(fotoSrc(foto))}" alt="">`;
   }
   return `<div class="foto pixel" aria-hidden="true"></div>`;
 }

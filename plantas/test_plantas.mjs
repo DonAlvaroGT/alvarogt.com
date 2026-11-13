@@ -111,6 +111,9 @@ test('html sin plantas ni semilla', () => {
   assert.doesNotMatch(html, /tronco-brasil/);
   assert.doesNotMatch(app, /Tronco del Brasil/);
   assert.doesNotMatch(logic, /Tronco del Brasil/);
+  for (const src of [html, app, logic]) {
+    assert.doesNotMatch(src, /cocotero|enebro|Gold Coast|Juniperus|romero|Rosmarinus|lavanda|Lavandula|Cocos nucifera/i);
+  }
   assert.match(html, /Creado por Álvaro GT y sus minions/);
   assert.match(app, /💧 Regada/);
   assert.match(html, /Añadir planta/);
@@ -131,6 +134,8 @@ test('sin emails y login de casa', () => {
   assert.match(html, /html\.embedded \.access/);
   assert.match(html, /#f4f0e8/);
   assert.match(html, /object-position:\s*50%\s*20%/);
+  assert.match(app, /\/plantas\/fotos\//);
+  assert.match(app, /data:image/);
   assert.match(app, /data-plantas-alerta/);
   assert.match(app, /fetchTiempo/);
   assert.match(app, /go\/tiempo\.mjs/);

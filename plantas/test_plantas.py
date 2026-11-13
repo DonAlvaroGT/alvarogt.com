@@ -26,6 +26,19 @@ class PlantasPageTests(unittest.TestCase):
         self.assertNotIn("Dracaena", HTML)
         self.assertNotIn("tronco-brasil", HTML)
         self.assertNotIn("Tronco del Brasil", APP)
+        blob = HTML + APP
+        for token in (
+            "cocotero",
+            "Cocos",
+            "enebro",
+            "Gold Coast",
+            "Juniperus",
+            "romero",
+            "Rosmarinus",
+            "lavanda",
+            "Lavandula",
+        ):
+            self.assertNotIn(token, blob)
         self.assertIn("Sin sesión no hay plantas", HTML)
         self.assertIn("Continuar con Google", HTML)
 
@@ -36,7 +49,7 @@ class PlantasPageTests(unittest.TestCase):
         self.assertIn("Salón", HTML)
         self.assertIn("Añadir planta", HTML)
         self.assertIn(PIE, HTML)
-        self.assertIn("/pie.js?v=20260930a", HTML)
+        self.assertIn("/pie.js?v=20260930b", HTML)
         self.assertIn("plantas-build:", HTML)
         self.assertIn("¡tengo sed!", APP + LOGIC)
         self.assertIn("sin registrar", APP + LOGIC)
@@ -53,6 +66,8 @@ class PlantasPageTests(unittest.TestCase):
         self.assertIn("html.embedded .access", HTML)
         self.assertIn("#f4f0e8", HTML)
         self.assertIn("object-position: 50% 20%", HTML)
+        self.assertIn("/plantas/fotos/", APP)
+        self.assertIn("data:image", APP)
 
     def test_rules_solo_plantas(self):
         self.assertIn("match /plantas_casa/{id}", RULES)
