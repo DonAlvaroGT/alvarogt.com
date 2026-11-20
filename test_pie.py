@@ -108,7 +108,7 @@ class PiePaginasTests(unittest.TestCase):
 
     def test_plantas_pie(self):
         self.assertIn(PIE_NORMAL, PLANTAS)
-        self.assertIn(PIE_SRC, PLANTAS)
+        self.assertIn("/pie.js?v=20261120c", PLANTAS)
 
     def test_casa_sin_pie_script(self):
         self.assertNotIn("pie.js", CASA)

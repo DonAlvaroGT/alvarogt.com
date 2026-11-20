@@ -9,8 +9,14 @@ import {
   textoProximo,
   plantaValida,
   camposPlanta,
-} from './logic.mjs?v=20261120a';
-import { fetchTiempo } from '../go/tiempo.mjs?v=20261120a';
+  alertaRiego,
+  anioMadrid,
+  tareasPendientes,
+  parseTs,
+  ymdMadrid,
+  abonoHtml as abonoCuerpo,
+} from './logic.mjs?v=20261120c';
+import { fetchTiempo } from '../go/tiempo.mjs?v=20261120c';
 
 export const HOSTS = [
   'localhost',
@@ -34,7 +40,9 @@ let unsub = null;
 let plantas = [];
 let filtro = 'todas';
 let undos = new Map();
+let undosAbono = new Map();
 let tiempo = null;
+let fichaId = null;
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -70,7 +78,7 @@ export async function loadFirebaseConfig() {
 }
 
 function esc(s) {
-  return String(s || '').replace(/[&<>"']/g, (c) => ({
+  return String(s || '').replace(/[&<>\"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
   }[c]));
 }
@@ -84,7 +92,7 @@ function fotoSrc(url) {
   if (!url) return url;
   if (/[?&]v=/.test(url)) return url;
   if (/^https:/i.test(url) || String(url).startsWith('/plantas/fotos/')) {
-    return `${url}${url.includes('?') ? '&' : '?'}v=20261120a`;
+    return `${url}${url.includes('?') ? '&' : '?'}v=20261120c`;
   }
   return url;
 }
@@ -97,7 +105,66 @@ function fotoHtml(p) {
   return `<div class="foto pixel" aria-hidden="true"></div>`;
 }
 
+function tareasHtml(p, now) {
+  return tareasPendientes(p, now).map((t) => {
+    const key = encodeURIComponent(t.texto);
+    return `<p class="aviso-tarea">Toca: ${esc(t.texto)}</p>
+      <button type="button" class="regar hecho" data-act="hecho" data-texto="${esc(key)}">Hecho este año</button>`;
+  }).join('');
+}
+
+function abonoHtml(p, now) {
+  const cuerpo = abonoCuerpo(p, now);
+  if (!cuerpo) return '';
+  const pending = undosAbono.has(p.id);
+  return `${cuerpo}
+    <button type="button" class="undo" data-act="undo-abono" ${pending ? '' : 'hidden'}>deshacer abono</button>`;
+}
+
+function archivoHtml(p) {
+  if (p.archivada) {
+    return `<button type="button" class="regar archivo" data-act="recuperar">Recuperar</button>`;
+  }
+  return `<button type="button" class="regar archivo" data-act="archivar">Archivar</button>`;
+}
+
+function accionesRiegoHtml(p) {
+  const pending = undos.has(p.id);
+  return `<button type="button" class="regar" data-act="regar">💧 Regada</button>
+    <button type="button" class="undo" data-act="undo" ${pending ? '' : 'hidden'}>deshacer</button>`;
+}
+
+function historialHtml(p) {
+  const items = (p.historial || []).slice(-5).reverse().map((ts) => {
+    const d = parseTs(ts);
+    if (!d) return '';
+    return `<li>${esc(ymdMadrid(d))}</li>`;
+  }).filter(Boolean);
+  if (!items.length) return '';
+  return `<p class="meta hist-tit">Últimos riegos</p><ul class="hist">${items.join('')}</ul>`;
+}
+
 function cardHtml(p, now, t) {
+  const kind = estado(p, now, t);
+  const tag = etiquetaEstado(kind);
+  const tox = p.toxica ? `<span class="tox">⚠️ tóxica</span>` : '';
+  const regada = textoRegada(p, now);
+  const next = textoProximo(p, now, t);
+  return `<article class="card compact ${kind}" data-id="${esc(p.id)}">
+    ${fotoHtml(p)}
+    <div class="body">
+      <h2>${esc(p.nombre)} ${tox}</h2>
+      ${tag ? `<p class="estado">${esc(tag)}</p>` : ''}
+      ${regada ? `<p class="meta">${esc(regada)}</p>` : ''}
+      ${next ? `<p class="meta">${esc(next)}</p>` : ''}
+      ${tareasHtml(p, now)}
+      ${accionesRiegoHtml(p)}
+      ${abonoHtml(p, now)}
+    </div>
+  </article>`;
+}
+
+function fichaHtml(p, now, t) {
   const kind = estado(p, now, t);
   const tag = etiquetaEstado(kind);
   const tox = p.toxica ? `<span class="tox">⚠️ tóxica</span>` : '';
@@ -105,8 +172,7 @@ function cardHtml(p, now, t) {
   const latin = p.latin ? `<p class="latin">${esc(p.latin)}</p>` : '';
   const regada = textoRegada(p, now);
   const next = textoProximo(p, now, t);
-  const pending = undos.has(p.id);
-  return `<article class="card ${kind}" data-id="${esc(p.id)}">
+  return `<article class="card ficha-card ${kind}" data-id="${esc(p.id)}">
     ${fotoHtml(p)}
     <div class="body">
       <h2>${esc(p.nombre)} ${tox}</h2>
@@ -116,8 +182,11 @@ function cardHtml(p, now, t) {
       ${nota}
       ${regada ? `<p class="meta">${esc(regada)}</p>` : ''}
       ${next ? `<p class="meta">${esc(next)}</p>` : ''}
-      <button type="button" class="regar" data-act="regar">💧 Regada</button>
-      <button type="button" class="undo" data-act="undo" ${pending ? '' : 'hidden'}>deshacer</button>
+      ${tareasHtml(p, now)}
+      ${accionesRiegoHtml(p)}
+      ${abonoHtml(p, now)}
+      ${historialHtml(p)}
+      ${archivoHtml(p)}
     </div>
   </article>`;
 }
@@ -130,10 +199,7 @@ export function renderList(list, zona, now, t) {
 
 function setAlertaAttr() {
   try {
-    const on = plantas.some((p) => {
-      const k = estado(p, undefined, tiempo);
-      return k === 'amarillo' || k === 'rojo';
-    });
+    const on = plantas.some((p) => alertaRiego(p, undefined, tiempo));
     document.documentElement.setAttribute('data-plantas-alerta', on ? '1' : '0');
   } catch {}
 }
@@ -143,11 +209,55 @@ async function loadTiempo() {
   paint();
 }
 
+function paintFicha() {
+  const wrap = $('#ficha');
+  const body = $('#ficha-body');
+  if (!wrap || !body) return;
+  if (!fichaId) {
+    wrap.hidden = true;
+    body.innerHTML = '';
+    return;
+  }
+  const p = plantas.find((x) => x.id === fichaId);
+  if (!p) {
+    wrap.hidden = true;
+    body.innerHTML = '';
+    return;
+  }
+  body.innerHTML = fichaHtml(p, new Date(), tiempo);
+  wrap.hidden = false;
+}
+
+function openFicha(id) {
+  if (!id) return;
+  const opened = !!fichaId;
+  fichaId = id;
+  paintFicha();
+  if (opened) history.replaceState({ plantasFicha: id }, '');
+  else history.pushState({ plantasFicha: id }, '');
+}
+
+function closeFicha() {
+  if (history.state && history.state.plantasFicha) {
+    history.back();
+    return;
+  }
+  fichaId = null;
+  paintFicha();
+}
+
+function onPopFicha() {
+  const id = history.state && history.state.plantasFicha;
+  fichaId = id || null;
+  paintFicha();
+}
+
 function paint() {
   const box = $('#list');
   if (!box) return;
   box.innerHTML = renderList(plantas, filtro);
   setAlertaAttr();
+  paintFicha();
 }
 
 function listenPlantas() {
@@ -173,17 +283,21 @@ async function houseAllowed() {
   }
 }
 
+async function patchPlanta(id, fields) {
+  const p = plantas.find((x) => x.id === id) || { id };
+  await fsApi.setDoc(fsApi.doc(db, 'plantas_casa', id), {
+    ...p,
+    ...fields,
+  }, { merge: true });
+}
+
 async function regar(id) {
   const p = plantas.find((x) => x.id === id);
   if (!p || !fsApi || !db) return;
   const prev = { ultimo_riego: p.ultimo_riego, historial: (p.historial || []).slice() };
   const now = fsApi.Timestamp.now();
   const hist = pushHistorial(prev.historial, now, 20);
-  await fsApi.setDoc(fsApi.doc(db, 'plantas_casa', id), {
-    ...p,
-    ultimo_riego: now,
-    historial: hist,
-  }, { merge: true });
+  await patchPlanta(id, { ultimo_riego: now, historial: hist });
   const t = setTimeout(() => {
     undos.delete(id);
     paint();
@@ -197,13 +311,61 @@ async function deshacer(id) {
   if (!u || !fsApi || !db) return;
   clearTimeout(u.t);
   undos.delete(id);
-  const p = plantas.find((x) => x.id === id) || { id };
-  await fsApi.setDoc(fsApi.doc(db, 'plantas_casa', id), {
-    ...p,
+  await patchPlanta(id, {
     ultimo_riego: u.prev.ultimo_riego || null,
     historial: u.prev.historial || [],
-  }, { merge: true });
+  });
   paint();
+}
+
+async function abonar(id) {
+  const p = plantas.find((x) => x.id === id);
+  if (!p || !fsApi || !db) return;
+  const prev = { ultimo_abono: p.ultimo_abono, historial_abono: (p.historial_abono || []).slice() };
+  const now = fsApi.Timestamp.now();
+  const hist = pushHistorial(prev.historial_abono, now, 20);
+  await patchPlanta(id, { ultimo_abono: now, historial_abono: hist });
+  const t = setTimeout(() => {
+    undosAbono.delete(id);
+    paint();
+  }, UNDO_MS);
+  undosAbono.set(id, { prev, t });
+  paint();
+}
+
+async function deshacerAbono(id) {
+  const u = undosAbono.get(id);
+  if (!u || !fsApi || !db) return;
+  clearTimeout(u.t);
+  undosAbono.delete(id);
+  await patchPlanta(id, {
+    ultimo_abono: u.prev.ultimo_abono || null,
+    historial_abono: u.prev.historial_abono || [],
+  });
+  paint();
+}
+
+async function marcarHecho(id, texto) {
+  const p = plantas.find((x) => x.id === id);
+  if (!p || !texto || !fsApi || !db) return;
+  const hecha = { ...(p.tarea_hecha || {}) };
+  hecha[texto] = anioMadrid(new Date());
+  await patchPlanta(id, { tarea_hecha: hecha });
+}
+
+async function archivar(id) {
+  const p = plantas.find((x) => x.id === id);
+  if (!p || p.archivada || !fsApi || !db) return;
+  const ok = window.confirm('¿La archivamos? No se borra ni la foto; solo se esconde.');
+  if (!ok) return;
+  await patchPlanta(id, { archivada: true, fecha_archivo: fsApi.Timestamp.now() });
+  closeFicha();
+}
+
+async function recuperar(id) {
+  if (!fsApi || !db) return;
+  await patchPlanta(id, { archivada: false, fecha_archivo: null });
+  closeFicha();
 }
 
 function uniqueId(nombre) {
@@ -256,6 +418,7 @@ async function alta(ev) {
     nota_toxica: form.nota_toxica.value,
     riego_verano_dias: form.riego_verano_dias.value,
     riego_invierno_dias: form.riego_invierno_dias.value,
+    abono_dias: form.abono_dias.value,
     consejo: form.consejo.value,
     ultimo_riego: null,
     historial: [],
@@ -285,6 +448,7 @@ function showApp(label) {
 function showGate(msg) {
   if (unsub) { unsub(); unsub = null; }
   plantas = [];
+  fichaId = null;
   try { document.documentElement.setAttribute('data-plantas-alerta', '0'); } catch {}
   $('#app').hidden = true;
   $('#gate').hidden = false;
@@ -293,6 +457,7 @@ function showGate(msg) {
   $('#google-status').textContent = msg || 'Sin sesión';
   const box = $('#list');
   if (box) box.innerHTML = '';
+  paintFicha();
 }
 
 async function boot() {
@@ -380,6 +545,20 @@ async function boot() {
   }
 }
 
+function runAct(act, id, btn) {
+  if (act === 'regar') void regar(id);
+  if (act === 'undo') void deshacer(id);
+  if (act === 'abonar') void abonar(id);
+  if (act === 'undo-abono') void deshacerAbono(id);
+  if (act === 'hecho') {
+    let texto = '';
+    try { texto = decodeURIComponent(btn.dataset.texto || ''); } catch { texto = btn.dataset.texto || ''; }
+    void marcarHecho(id, texto);
+  }
+  if (act === 'archivar') void archivar(id);
+  if (act === 'recuperar') void recuperar(id);
+}
+
 function wireUi() {
   document.querySelectorAll('[data-filtro]').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -392,12 +571,31 @@ function wireUi() {
   });
   $('#list').addEventListener('click', (ev) => {
     const btn = ev.target.closest('[data-act]');
-    if (!btn) return;
-    const card = btn.closest('[data-id]');
-    if (!card) return;
-    if (btn.dataset.act === 'regar') void regar(card.dataset.id);
-    if (btn.dataset.act === 'undo') void deshacer(card.dataset.id);
+    if (btn) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const card = btn.closest('[data-id]');
+      if (!card) return;
+      runAct(btn.dataset.act, card.dataset.id, btn);
+      return;
+    }
+    const card = ev.target.closest('article.card[data-id]');
+    if (card) openFicha(card.dataset.id);
   });
+  $('#ficha').addEventListener('click', (ev) => {
+    if (ev.target === $('#ficha') || ev.target.closest('[data-cerrar]')) {
+      closeFicha();
+      return;
+    }
+    const btn = ev.target.closest('[data-act]');
+    if (!btn) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    const card = btn.closest('[data-id]') || $('#ficha-body [data-id]');
+    if (!card) return;
+    runAct(btn.dataset.act, card.dataset.id, btn);
+  });
+  window.addEventListener('popstate', onPopFicha);
   $('#btn-alta').addEventListener('click', () => {
     const box = $('#alta');
     box.hidden = !box.hidden;

@@ -17,6 +17,12 @@ import {
   diasRiego,
   usaRiegoVerano,
   UMBRAL_CALOR_C,
+  mesEnRango,
+  tareaPendiente,
+  mostrarAbono,
+  alertaRiego,
+  textoProximo,
+  abonoHtml,
 } from './logic.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -77,6 +83,13 @@ test('alta valida sin ultimo riego', () => {
   assert.equal(p.ultimo_riego, null);
   assert.equal(plantaValida(p), true);
   assert.equal(textoRegada(p, new Date()), '');
+  assert.deepEqual(p.tareas, []);
+  assert.deepEqual(p.tarea_hecha, {});
+  assert.equal(p.abono_dias, null);
+  assert.deepEqual(p.historial_abono, []);
+  assert.equal(p.ultimo_abono, null);
+  assert.equal(p.archivada, false);
+  assert.equal(p.fecha_archivo, null);
 });
 
 test('calor ≥30 usa verano aunque sea invierno; Open-Meteo falla → calendario; lluvia no salta', () => {
@@ -144,4 +157,112 @@ test('sin emails y login de casa', () => {
   assert.doesNotMatch(app, /functions\.https/i);
   assert.doesNotMatch(logic, /precipitation|rain_probability|lluvia/);
   assert.doesNotMatch(app, /precipitation|rain_probability|saltar/);
+  assert.match(html, /Archivadas/);
+  assert.match(html, /id="ficha"/);
+  assert.match(html, /ficha-x/);
+  assert.match(html, /data-cerrar/);
+  assert.match(app, /Hecho este año/);
+  assert.match(app + logic, /Abonada/);
+  assert.match(html, /name="abono_dias"/);
+  assert.match(app, /form\.abono_dias/);
+  assert.match(app, /Archivar/);
+  assert.match(app, /Recuperar/);
+  assert.match(app, /card compact/);
+  assert.match(app, /function fichaHtml/);
+  assert.match(app, /stopPropagation/);
+  assert.match(app, /history\.pushState/);
+  assert.match(app, /popstate/);
+  assert.match(app, /openFicha/);
+  const cardFn = app.slice(app.indexOf('function cardHtml'), app.indexOf('function fichaHtml'));
+  assert.doesNotMatch(cardFn, /archivoHtml|Archivar|Recuperar/);
+  assert.match(app, /function fichaHtml[\s\S]*archivoHtml/);
+  assert.match(app, /Últimos riegos/);
+  assert.match(logic, /Regar hoy/);
+  assert.doesNotMatch(html + app + logic, /Trasplantar a maceta mayor/);
+  assert.doesNotMatch(html + app + logic, /parte leñosa/);
+  assert.doesNotMatch(html + app + logic, /14 h diarias/);
+});
+
+test('rango de mes inclusive y cruce de año', () => {
+  assert.equal(mesEnRango(3, 3, 4), true);
+  assert.equal(mesEnRango(4, 3, 4), true);
+  assert.equal(mesEnRango(2, 3, 4), false);
+  assert.equal(mesEnRango(5, 3, 4), false);
+  assert.equal(mesEnRango(10, 10, 10), true);
+  assert.equal(mesEnRango(11, 10, 10), false);
+  assert.equal(mesEnRango(11, 11, 2), true);
+  assert.equal(mesEnRango(1, 11, 2), true);
+  assert.equal(mesEnRango(3, 11, 2), false);
+});
+
+test('hecho este año oculta la tarea y al siguiente vuelve', () => {
+  const tarea = { texto: 'Limpiar hojas', mes_desde: 11, mes_hasta: 11 };
+  const nov = madrid('2026-11-20T12:00:00+01:00');
+  const nov27 = madrid('2027-11-05T12:00:00+01:00');
+  const mar = madrid('2026-03-15T12:00:00+01:00');
+  assert.equal(tareaPendiente(tarea, {}, nov), true);
+  assert.equal(tareaPendiente(tarea, { 'Limpiar hojas': 2026 }, nov), false);
+  assert.equal(tareaPendiente(tarea, { 'Limpiar hojas': 2026 }, nov27), true);
+  assert.equal(tareaPendiente(tarea, {}, mar), false);
+});
+
+test('abono oculto en noviembre', () => {
+  const now = madrid('2026-10-16T12:00:00+02:00');
+  const nov = madrid('2026-11-20T12:00:00+01:00');
+  const jun = madrid('2026-06-15T12:00:00+02:00');
+  const p = {
+    riego_verano_dias: 10,
+    riego_invierno_dias: 20,
+    ultimo_riego: '2026-10-06T10:00:00+02:00',
+    abono_dias: 15,
+    ultimo_abono: '2026-06-01T10:00:00+02:00',
+  };
+  assert.equal(mostrarAbono(p, nov), false);
+  assert.equal(mostrarAbono(p, jun), true);
+  assert.equal(mostrarAbono({ abono_dias: null }, jun), false);
+  assert.equal(estado(p, now), 'verde');
+  assert.equal(estado({ ...p, ultimo_abono: '2020-01-01T10:00:00+01:00' }, now), 'verde');
+});
+
+test('abono en marzo pinta Abonada', () => {
+  const mar = madrid('2026-03-15T12:00:00+01:00');
+  const p = {
+    riego_verano_dias: 10,
+    riego_invierno_dias: 20,
+    abono_dias: 30,
+  };
+  assert.equal(mostrarAbono(p, mar), true);
+  assert.match(abonoHtml(p, mar), /Abonada/);
+});
+
+test('archivada no alerta y sale de Todas', () => {
+  const now = madrid('2026-10-16T12:00:00+02:00');
+  const viva = {
+    nombre: 'Viva', zona: 'salon',
+    riego_verano_dias: 10, riego_invierno_dias: 20,
+    ultimo_riego: '2026-09-23T10:00:00+02:00',
+    archivada: false,
+  };
+  const arch = { ...viva, nombre: 'Guardada', archivada: true };
+  assert.equal(alertaRiego(viva, now), true);
+  assert.equal(alertaRiego(arch, now), false);
+  assert.equal(filtrarZona([viva, arch], 'todas').map((p) => p.nombre).join(), 'Viva');
+  assert.equal(filtrarZona([viva, arch], 'salon').map((p) => p.nombre).join(), 'Viva');
+  assert.equal(filtrarZona([viva, arch], 'archivadas').map((p) => p.nombre).join(), 'Guardada');
+});
+
+test('orden por próximo riego; sin fecha al final; relativo', () => {
+  const now = madrid('2026-10-16T12:00:00+02:00');
+  const d = (nombre, ultimo) => ({
+    nombre, riego_verano_dias: 10, riego_invierno_dias: 20, ultimo_riego: ultimo,
+  });
+  const sorted = ordenarPlantas([
+    d('Zeta', '2026-10-05T10:00:00+02:00'),
+    d('Alfa', '2026-10-01T10:00:00+02:00'),
+    d('Sin fecha', null),
+  ], now).map((p) => p.nombre);
+  assert.deepEqual(sorted, ['Alfa', 'Zeta', 'Sin fecha']);
+  assert.equal(textoProximo(d('Hoy', '2026-09-26T10:00:00+02:00'), now), 'Regar hoy');
+  assert.equal(textoProximo(d('Man', '2026-09-27T10:00:00+02:00'), now), 'mañana');
+  assert.equal(textoProximo(d('Luego', '2026-10-01T10:00:00+02:00'), now), 'en 5 días');
 });

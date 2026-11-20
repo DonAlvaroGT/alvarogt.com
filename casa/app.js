@@ -1,4 +1,4 @@
-import { estado, camposPlanta } from '../plantas/logic.mjs?v=20261016f';
+import { camposPlanta, alertaRiego } from '../plantas/logic.mjs?v=20261120b';
 import { fetchTiempo } from '../go/tiempo.mjs?v=20261016f';
 
 export const VIEWS = { go: '/go/', tablon: '/tablon/', viajes: '/viajes/', plantas: '/plantas/' };
@@ -167,8 +167,7 @@ export function plantasNeedDot(list, now, tiempo) {
   const t = tiempo === undefined ? plantasTiempo : tiempo;
   return (list || []).some((raw) => {
     const p = camposPlanta(raw || {}, (raw && raw.id) || '');
-    const k = estado(p, when, t);
-    return k === 'amarillo' || k === 'rojo';
+    return alertaRiego(p, when, t);
   });
 }
 
