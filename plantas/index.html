@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Plantas</title>
-  <!-- plantas-build: 20261120b -->
+  <!-- plantas-build: 20261120c -->
   <style>
     :root {
       color-scheme: light;
@@ -46,7 +46,7 @@
       background: #fff4ce; border: 1px solid #f0d685; color: #745b16;
       border-radius: 999px; padding: 9px 13px; font: inherit; font-size: .76rem; cursor: pointer;
     }
-    button.demo[hidden], #gate[hidden], #app[hidden], #alta[hidden], .undo[hidden] { display: none !important; }
+    button.demo[hidden], #gate[hidden], #app[hidden], #alta[hidden], #ficha[hidden], .undo[hidden] { display: none !important; }
     #gate { min-height: 36vh; display: grid; place-items: center; text-align: center; padding: 36px 16px; }
     #gate h2 { font: 400 2.2rem/1 Georgia, serif; margin: 0 0 10px; }
     #gate p { color: var(--muted); max-width: 380px; margin: 0 auto 18px; }
@@ -57,6 +57,8 @@
       background: var(--card); border: 1px solid var(--line); border-radius: 18px;
       box-shadow: var(--shadow); overflow: hidden; border-top: 8px solid var(--line);
     }
+    .card.compact { cursor: pointer; }
+    .card.compact .foto { height: 120px; }
     .card.verde { border-top-color: var(--ok); }
     .card.amarillo { border-top-color: var(--warn); }
     .card.rojo { border-top-color: var(--no); }
@@ -82,7 +84,27 @@
     }
     .regar.hecho { background: #e8c547; color: #17324d; }
     .regar.abonar { background: #3d8b4a; }
-    .regar.archivo { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+    .regar.archivo { background: #17324d; color: #fff; border: 0; }
+    #ficha {
+      position: fixed; inset: 0; z-index: 50; background: #17324d66;
+      display: grid; place-items: end center; padding: 10px 10px 0;
+    }
+    .ficha-sheet {
+      width: min(560px, 100%); max-height: min(92vh, 860px); overflow: auto;
+      background: var(--card); border-radius: 18px 18px 0 0; position: relative;
+      box-shadow: var(--shadow);
+    }
+    .ficha-x {
+      position: sticky; top: 8px; float: right; margin: 8px 8px 0 0;
+      width: 36px; height: 36px; border: 0; border-radius: 999px;
+      background: #fff4ce; color: var(--ink); font: 700 1.35rem/1 ui-sans-serif, system-ui, sans-serif;
+      cursor: pointer; z-index: 2;
+    }
+    #ficha .card { border: 0; box-shadow: none; border-radius: 0; }
+    #ficha .foto { height: 120px; }
+    .ficha-sheet { padding-bottom: 16px; }
+    .hist { margin: 6px 0 0; padding-left: 18px; color: var(--muted); font-size: .85rem; }
+    .hist-tit { margin-top: 12px; }
     .meta.abono { margin-top: 10px; }
     .undo {
       margin-top: 8px; width: 100%; padding: 8px; border: 0; background: transparent;
@@ -138,6 +160,12 @@
         <button type="button" data-filtro="archivadas" aria-selected="false">Archivadas</button>
       </div>
       <div id="list" class="grid"></div>
+      <div id="ficha" hidden>
+        <div class="ficha-sheet" role="dialog" aria-modal="true" aria-label="Ficha de planta">
+          <button type="button" class="ficha-x" data-cerrar="1" aria-label="Cerrar">×</button>
+          <div id="ficha-body"></div>
+        </div>
+      </div>
       <p><button id="btn-alta" class="demo" type="button">➕ Añadir planta</button></p>
       <form id="alta" class="alta" hidden>
         <label>Nombre <input name="nombre" required></label>
@@ -161,7 +189,7 @@
     </div>
   </main>
   <footer class="shell">Creado por Álvaro GT y sus minions</footer>
-  <script src="/pie.js?v=20261120b"></script>
-  <script type="module" src="./app.js?v=20261120b"></script>
+  <script src="/pie.js?v=20261120c"></script>
+  <script type="module" src="./app.js?v=20261120c"></script>
 </body>
 </html>
