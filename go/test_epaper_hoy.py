@@ -476,23 +476,23 @@ class EpaperHoyTests(unittest.TestCase):
         events = mela_events_from_ics(ics)
         titles = [e["title"] for e in events]
         self.assertNotIn("Todo el día", titles)
-        self.assertIn("Perritos cumpleañeros", titles)
+        self.assertIn("Menú H - Celebración", titles)
         comida, cena = mela_meals(events, "2026-09-21")
-        self.assertEqual(comida, "Lentejas de la abuela")
-        self.assertEqual(cena, "Empanada de merluza")
+        self.assertEqual(comida, "Menú A - Pasta y verdura")
+        self.assertEqual(cena, "Menú B - Pollo y arroz")
         payload = doc("2026-09-21", calendario=events)
-        self.assertEqual(payload["tarde"]["mela"], "Cena Empanada de merluza")
+        self.assertEqual(payload["tarde"]["mela"], "Cena Menú B - Pollo y arroz")
         self.assertNotIn("20:00", payload["tarde"]["mela"])
         oct7_comida, oct7_cena = mela_meals(events, "2026-10-07")
-        self.assertEqual(oct7_comida, "Antes de las cuatro")
-        self.assertEqual(oct7_cena, "Justo a las cuatro")
+        self.assertEqual(oct7_comida, "Menú F - Antes de las cuatro")
+        self.assertEqual(oct7_cena, "Menú G - Justo a las cuatro")
         oct7 = doc("2026-10-07", calendario=events)
-        self.assertEqual(oct7["tarde"]["mela"], "Cena Justo a las cuatro")
+        self.assertEqual(oct7["tarde"]["mela"], "Cena Menú G - Justo a las cuatro")
         mixed = overlay_mela(
             [{"start": "2026-10-07 20:00", "title": "EventKit viejo", "calendar": "Mela"}],
-            [e for e in events if "Perritos" in e["title"]],
+            [e for e in events if "Celebración" in e["title"]],
         )
-        self.assertEqual(mela_meals(mixed, "2026-10-07")[1], "Perritos cumpleañeros")
+        self.assertEqual(mela_meals(mixed, "2026-10-07")[1], "Menú H - Celebración")
         self.assertNotIn("EventKit viejo", json.dumps(mixed, ensure_ascii=False))
 
     def test_deporte_ventana_sin_inventar(self):

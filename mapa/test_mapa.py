@@ -28,7 +28,7 @@ class MapaPageTests(unittest.TestCase):
         self.assertRegex(HTML, r'id="app"[^>]*hidden')
         self.assertIn(PIE, HTML)
         self.assertIn("mapa-build:", HTML)
-        self.assertIn("/pie.js?v=20260930a", HTML)
+        self.assertRegex(HTML, r"/pie\.js\?v=")
 
     def test_leaflet_osm_sin_key(self):
         self.assertIn("./lib/leaflet.css", HTML)

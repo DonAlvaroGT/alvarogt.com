@@ -14,7 +14,6 @@ Pie: «Creado por Álvaro GT y sus minions».
 | `/viajes/` | Viajes |
 | `/plantas/` | Riego de las plantas |
 | `/mapa/` | Mapa de viajes |
-| `/deporte/` | Fuera de uso |
 
 Los datos vivos (menú, reglas, viajes, plantas, festivos) están en **Firestore**, no en este repo. El HTML/JS sí.
 
