@@ -301,3 +301,11 @@ export function textoProximoAbono(planta, now) {
   if (left > 1) return `Abonar en ${left} días`;
   return 'Toca abonar';
 }
+
+export function abonoHtml(planta, now) {
+  if (!mostrarAbono(planta, now)) return '';
+  const last = textoUltimoAbono(planta, now);
+  const next = textoProximoAbono(planta, now);
+  return `<p class="meta abono">${last}${next ? ` · ${next}` : ''}</p>
+    <button type="button" class="regar abonar" data-act="abonar">Abonada</button>`;
+}

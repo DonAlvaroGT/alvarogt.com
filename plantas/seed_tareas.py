@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Semilla Admin SDK: tareas de temporada en plantas_casa. Merge, no pisa riego/foto."""
+"""Semilla Admin SDK: tareas y abono_dias en plantas_casa. Merge, no pisa riego/foto/ultimo_riego/historial."""
 from __future__ import annotations
 
 import json
@@ -31,6 +31,18 @@ TAREAS = {
         {"texto": "Empezar 14 h diarias de oscuridad durante 8 semanas", "mes_desde": 10, "mes_hasta": 10},
     ],
 }
+
+# Interior/terraza, temporada marzo–sep. Solo este campo; no pisa riego/foto.
+ABONO_DIAS = {
+    "enebro-gold-coast": 30,
+    "romero": 30,
+    "lavanda": 30,
+    "flor-de-pascua": 20,
+    "cocotero": 30,
+    "tronco-brasil": 30,
+}
+
+KEEP = ("riego_verano_dias", "riego_invierno_dias", "foto", "ultimo_riego", "historial")
 
 
 def auth_headers() -> dict[str, str]:
@@ -95,8 +107,39 @@ def ya_tiene_tareas(doc: dict) -> bool:
     return len(arr) > 0
 
 
-def main() -> None:
-    headers = auth_headers()
+def snapshot_keep(doc: dict) -> dict:
+    fields = doc.get("fields") or {}
+    return {k: fields.get(k) for k in KEEP}
+
+
+def abono_actual(doc: dict) -> int | None:
+    raw = ((doc.get("fields") or {}).get("abono_dias") or {}).get("integerValue")
+    if raw is None:
+        return None
+    try:
+        n = int(raw)
+    except (TypeError, ValueError):
+        return None
+    return n if n >= 1 else None
+
+
+def patch_abono(headers: dict[str, str], doc_id: str, dias: int) -> None:
+    url = (
+        f"https://firestore.googleapis.com/v1/projects/{PROJECT}"
+        f"/databases/(default)/documents/plantas_casa/{doc_id}"
+        "?updateMask.fieldPaths=abono_dias"
+    )
+    payload = json.dumps({"fields": {"abono_dias": {"integerValue": str(dias)}}}).encode("utf-8")
+    req = urllib.request.Request(url, data=payload, method="PATCH", headers=headers)
+    try:
+        with urllib.request.urlopen(req, timeout=30) as res:
+            if res.status not in (200, 201):
+                raise SystemExit(f"firestore PATCH abono {doc_id} HTTP {res.status}")
+    except urllib.error.HTTPError as err:
+        raise SystemExit(f"firestore PATCH abono {doc_id} HTTP {err.code}: {err.read()[:500]!r}") from err
+
+
+def seed_tareas(headers: dict[str, str]) -> None:
     for doc_id, items in TAREAS.items():
         doc = get_doc(headers, doc_id)
         if doc is None:
@@ -105,11 +148,39 @@ def main() -> None:
         if ya_tiene_tareas(doc):
             print(f"ok ya tenía tareas plantas_casa/{doc_id}")
             continue
+        before = snapshot_keep(doc)
         patch_tareas(headers, doc_id, items)
         check = get_doc(headers, doc_id)
         if check is None or not ya_tiene_tareas(check):
             raise SystemExit(f"no quedó tareas en plantas_casa/{doc_id}")
+        if snapshot_keep(check) != before:
+            raise SystemExit(f"tareas pisó riego/foto en plantas_casa/{doc_id}")
         print(f"ok tareas plantas_casa/{doc_id}")
+
+
+def seed_abono(headers: dict[str, str]) -> None:
+    for doc_id, dias in ABONO_DIAS.items():
+        doc = get_doc(headers, doc_id)
+        if doc is None:
+            print(f"falta plantas_casa/{doc_id}")
+            continue
+        if abono_actual(doc) == dias:
+            print(f"ok ya tenía abono_dias={dias} plantas_casa/{doc_id}")
+            continue
+        before = snapshot_keep(doc)
+        patch_abono(headers, doc_id, dias)
+        check = get_doc(headers, doc_id)
+        if check is None or abono_actual(check) != dias:
+            raise SystemExit(f"no quedó abono_dias en plantas_casa/{doc_id}")
+        if snapshot_keep(check) != before:
+            raise SystemExit(f"abono pisó riego/foto/ultimo_riego/historial en plantas_casa/{doc_id}")
+        print(f"ok abono_dias={dias} plantas_casa/{doc_id}")
+
+
+def main() -> None:
+    headers = auth_headers()
+    seed_tareas(headers)
+    seed_abono(headers)
 
 
 if __name__ == "__main__":

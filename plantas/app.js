@@ -12,11 +12,9 @@ import {
   alertaRiego,
   anioMadrid,
   tareasPendientes,
-  mostrarAbono,
-  textoUltimoAbono,
-  textoProximoAbono,
   parseTs,
   ymdMadrid,
+  abonoHtml as abonoCuerpo,
 } from './logic.mjs?v=20261120c';
 import { fetchTiempo } from '../go/tiempo.mjs?v=20261120c';
 
@@ -116,12 +114,10 @@ function tareasHtml(p, now) {
 }
 
 function abonoHtml(p, now) {
-  if (!mostrarAbono(p, now)) return '';
-  const last = textoUltimoAbono(p, now);
-  const next = textoProximoAbono(p, now);
+  const cuerpo = abonoCuerpo(p, now);
+  if (!cuerpo) return '';
   const pending = undosAbono.has(p.id);
-  return `<p class="meta abono">${esc(last)}${next ? ` · ${esc(next)}` : ''}</p>
-    <button type="button" class="regar abonar" data-act="abonar">Abonada</button>
+  return `${cuerpo}
     <button type="button" class="undo" data-act="undo-abono" ${pending ? '' : 'hidden'}>deshacer abono</button>`;
 }
 
@@ -422,6 +418,7 @@ async function alta(ev) {
     nota_toxica: form.nota_toxica.value,
     riego_verano_dias: form.riego_verano_dias.value,
     riego_invierno_dias: form.riego_invierno_dias.value,
+    abono_dias: form.abono_dias.value,
     consejo: form.consejo.value,
     ultimo_riego: null,
     historial: [],

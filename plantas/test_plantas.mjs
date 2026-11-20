@@ -22,6 +22,7 @@ import {
   mostrarAbono,
   alertaRiego,
   textoProximo,
+  abonoHtml,
 } from './logic.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -161,7 +162,9 @@ test('sin emails y login de casa', () => {
   assert.match(html, /ficha-x/);
   assert.match(html, /data-cerrar/);
   assert.match(app, /Hecho este año/);
-  assert.match(app, /Abonada/);
+  assert.match(app + logic, /Abonada/);
+  assert.match(html, /name="abono_dias"/);
+  assert.match(app, /form\.abono_dias/);
   assert.match(app, /Archivar/);
   assert.match(app, /Recuperar/);
   assert.match(app, /card compact/);
@@ -219,6 +222,17 @@ test('abono oculto en noviembre', () => {
   assert.equal(mostrarAbono({ abono_dias: null }, jun), false);
   assert.equal(estado(p, now), 'verde');
   assert.equal(estado({ ...p, ultimo_abono: '2020-01-01T10:00:00+01:00' }, now), 'verde');
+});
+
+test('abono en marzo pinta Abonada', () => {
+  const mar = madrid('2026-03-15T12:00:00+01:00');
+  const p = {
+    riego_verano_dias: 10,
+    riego_invierno_dias: 20,
+    abono_dias: 30,
+  };
+  assert.equal(mostrarAbono(p, mar), true);
+  assert.match(abonoHtml(p, mar), /Abonada/);
 });
 
 test('archivada no alerta y sale de Todas', () => {
