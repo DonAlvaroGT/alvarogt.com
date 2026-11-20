@@ -81,6 +81,9 @@ class ComedorSchemaTests(unittest.TestCase):
         self.assertNotIn("2026-10-12", payload["dias"])
 
     def test_firestore_go_comedor_real(self):
+        sa = Path.home() / ".hermes/gabinete/secrets/tablongo-firebase-adminsdk.json"
+        if not sa.is_file():
+            self.skipTest("sin cuenta de servicio de tablongo")
         body, name, updated = fetch_go_comedor()
         payload = validate_comedor(json.loads(body))
         self.assertGreaterEqual(len(payload["dias"]), 18)

@@ -86,6 +86,9 @@ class ReglasSchemaTests(unittest.TestCase):
         self.assertNotEqual(natacion["time"], "18:00")
 
     def test_firestore_go_reglas_real(self):
+        sa = Path.home() / ".hermes/gabinete/secrets/tablongo-firebase-adminsdk.json"
+        if not sa.is_file():
+            self.skipTest("sin cuenta de servicio de tablongo")
         body, name, updated = fetch_go_reglas()
         payload = validate_reglas(json.loads(body))
         self.assertEqual(payload["extraescolares"], EXPECTED)

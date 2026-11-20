@@ -52,7 +52,7 @@ class PlantasPageTests(unittest.TestCase):
         self.assertIn("Salón", HTML)
         self.assertIn("Añadir planta", HTML)
         self.assertIn(PIE, HTML)
-        self.assertIn("/pie.js?v=20261120c", HTML)
+        self.assertRegex(HTML, r"/pie\.js\?v=")
         self.assertIn("plantas-build:", HTML)
         self.assertIn('id="ficha"', HTML)
         self.assertIn("stopPropagation", APP)

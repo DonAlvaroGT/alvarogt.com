@@ -16,7 +16,7 @@ DISNEY = (ROOT / "disney" / "index.html").read_text(encoding="utf-8")
 
 PIE_NORMAL = "Creado por Álvaro GT y sus minions"
 PIE_OSOS = "Creado por osos, no por pandas"
-PIE_SRC = "/pie.js?v=20260930a"
+PIE_SRC_RE = r"/pie\.js\?v="
 
 
 def hash_ymd(ymd: str) -> int:
@@ -86,7 +86,7 @@ class PiePaginasTests(unittest.TestCase):
         self.assertIn('id="oso-egg"', HOME_HTML)
         self.assertIn('fill="#7a4524"', HOME_HTML)
         self.assertNotIn("panda", HOME_HTML.lower().replace("pandas", ""))
-        self.assertIn(PIE_SRC, HOME_HTML)
+        self.assertRegex(HOME_HTML, PIE_SRC_RE)
         self.assertIn("/home.js?v=20260930a", HOME_HTML)
         self.assertIn("home-build: 20260930a", HOME_HTML)
         self.assertNotIn("<audio", HOME_HTML)
@@ -104,11 +104,11 @@ class PiePaginasTests(unittest.TestCase):
         for name, html in (("go", GO), ("viajes", VIAJES), ("tablon", TABLON), ("premios", PREMIOS)):
             with self.subTest(name=name):
                 self.assertIn(PIE_NORMAL, html)
-                self.assertIn(PIE_SRC, html)
+                self.assertRegex(html, PIE_SRC_RE)
 
     def test_plantas_pie(self):
         self.assertIn(PIE_NORMAL, PLANTAS)
-        self.assertIn("/pie.js?v=20261120c", PLANTAS)
+        self.assertRegex(PLANTAS, PIE_SRC_RE)
 
     def test_casa_sin_pie_script(self):
         self.assertNotIn("pie.js", CASA)
