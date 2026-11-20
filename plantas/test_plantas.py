@@ -52,10 +52,18 @@ class PlantasPageTests(unittest.TestCase):
         self.assertIn("Salón", HTML)
         self.assertIn("Añadir planta", HTML)
         self.assertIn(PIE, HTML)
-        self.assertIn("/pie.js?v=20260930b", HTML)
+        self.assertIn("/pie.js?v=20261120b", HTML)
         self.assertIn("plantas-build:", HTML)
         self.assertIn("¡tengo sed!", APP + LOGIC)
         self.assertIn("sin registrar", APP + LOGIC)
+        self.assertIn("Hecho este año", APP)
+        self.assertIn("Abonada", APP)
+        self.assertIn("Archivar", APP)
+        self.assertIn("Archivadas", HTML)
+        self.assertIn("Recuperar", APP)
+        self.assertNotIn("Trasplantar a maceta mayor", HTML + APP + LOGIC)
+        self.assertNotIn("parte leñosa", HTML + APP + LOGIC)
+        self.assertNotIn("14 h diarias", HTML + APP + LOGIC)
 
     def test_sin_emails(self):
         blob = HTML + APP + LOGIC

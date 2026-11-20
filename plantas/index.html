@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Plantas</title>
-  <!-- plantas-build: 20261120a -->
+  <!-- plantas-build: 20261120b -->
   <style>
     :root {
       color-scheme: light;
@@ -75,10 +75,15 @@
     .card.rojo .estado { color: var(--no); }
     .consejo, .nota { margin: 0 0 8px; font-size: .92rem; }
     .meta { margin: 0 0 4px; color: var(--muted); font-size: .85rem; }
+    .aviso-tarea { margin: 10px 0 8px; font-weight: 800; color: #745b16; }
     .regar {
       margin-top: 12px; width: 100%; padding: 14px 16px; border: 0; border-radius: 16px;
       background: #3a7bd5; color: #fff; font: 800 1.05rem/1 ui-sans-serif, system-ui, sans-serif; cursor: pointer;
     }
+    .regar.hecho { background: #e8c547; color: #17324d; }
+    .regar.abonar { background: #3d8b4a; }
+    .regar.archivo { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+    .meta.abono { margin-top: 10px; }
     .undo {
       margin-top: 8px; width: 100%; padding: 8px; border: 0; background: transparent;
       color: var(--muted); font: inherit; cursor: pointer; text-decoration: underline;
@@ -130,6 +135,7 @@
         <button type="button" data-filtro="todas" aria-selected="true">Todas</button>
         <button type="button" data-filtro="terraza" aria-selected="false">Terraza</button>
         <button type="button" data-filtro="salon" aria-selected="false">Salón</button>
+        <button type="button" data-filtro="archivadas" aria-selected="false">Archivadas</button>
       </div>
       <div id="list" class="grid"></div>
       <p><button id="btn-alta" class="demo" type="button">➕ Añadir planta</button></p>
@@ -155,7 +161,7 @@
     </div>
   </main>
   <footer class="shell">Creado por Álvaro GT y sus minions</footer>
-  <script src="/pie.js?v=20260930b"></script>
-  <script type="module" src="./app.js?v=20261120a"></script>
+  <script src="/pie.js?v=20261120b"></script>
+  <script type="module" src="./app.js?v=20261120b"></script>
 </body>
 </html>

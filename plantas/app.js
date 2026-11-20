@@ -9,8 +9,14 @@ import {
   textoProximo,
   plantaValida,
   camposPlanta,
-} from './logic.mjs?v=20261120a';
-import { fetchTiempo } from '../go/tiempo.mjs?v=20261120a';
+  alertaRiego,
+  anioMadrid,
+  tareasPendientes,
+  mostrarAbono,
+  textoUltimoAbono,
+  textoProximoAbono,
+} from './logic.mjs?v=20261120b';
+import { fetchTiempo } from '../go/tiempo.mjs?v=20261120b';
 
 export const HOSTS = [
   'localhost',
@@ -34,6 +40,7 @@ let unsub = null;
 let plantas = [];
 let filtro = 'todas';
 let undos = new Map();
+let undosAbono = new Map();
 let tiempo = null;
 
 const $ = (sel) => document.querySelector(sel);
@@ -70,7 +77,7 @@ export async function loadFirebaseConfig() {
 }
 
 function esc(s) {
-  return String(s || '').replace(/[&<>"']/g, (c) => ({
+  return String(s || '').replace(/[&<>\"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
   }[c]));
 }
@@ -84,7 +91,7 @@ function fotoSrc(url) {
   if (!url) return url;
   if (/[?&]v=/.test(url)) return url;
   if (/^https:/i.test(url) || String(url).startsWith('/plantas/fotos/')) {
-    return `${url}${url.includes('?') ? '&' : '?'}v=20261120a`;
+    return `${url}${url.includes('?') ? '&' : '?'}v=20261120b`;
   }
   return url;
 }
@@ -95,6 +102,31 @@ function fotoHtml(p) {
     return `<img class="foto" src="${esc(fotoSrc(foto))}" alt="">`;
   }
   return `<div class="foto pixel" aria-hidden="true"></div>`;
+}
+
+function tareasHtml(p, now) {
+  return tareasPendientes(p, now).map((t) => {
+    const key = encodeURIComponent(t.texto);
+    return `<p class="aviso-tarea">Toca: ${esc(t.texto)}</p>
+      <button type="button" class="regar hecho" data-act="hecho" data-texto="${esc(key)}">Hecho este año</button>`;
+  }).join('');
+}
+
+function abonoHtml(p, now) {
+  if (!mostrarAbono(p, now)) return '';
+  const last = textoUltimoAbono(p, now);
+  const next = textoProximoAbono(p, now);
+  const pending = undosAbono.has(p.id);
+  return `<p class="meta abono">${esc(last)}${next ? ` · ${esc(next)}` : ''}</p>
+    <button type="button" class="regar abonar" data-act="abonar">Abonada</button>
+    <button type="button" class="undo" data-act="undo-abono" ${pending ? '' : 'hidden'}>deshacer abono</button>`;
+}
+
+function archivoHtml(p) {
+  if (p.archivada) {
+    return `<button type="button" class="regar archivo" data-act="recuperar">Recuperar</button>`;
+  }
+  return `<button type="button" class="regar archivo" data-act="archivar">Archivar</button>`;
 }
 
 function cardHtml(p, now, t) {
@@ -116,8 +148,11 @@ function cardHtml(p, now, t) {
       ${nota}
       ${regada ? `<p class="meta">${esc(regada)}</p>` : ''}
       ${next ? `<p class="meta">${esc(next)}</p>` : ''}
+      ${tareasHtml(p, now)}
       <button type="button" class="regar" data-act="regar">💧 Regada</button>
       <button type="button" class="undo" data-act="undo" ${pending ? '' : 'hidden'}>deshacer</button>
+      ${abonoHtml(p, now)}
+      ${archivoHtml(p)}
     </div>
   </article>`;
 }
@@ -130,10 +165,7 @@ export function renderList(list, zona, now, t) {
 
 function setAlertaAttr() {
   try {
-    const on = plantas.some((p) => {
-      const k = estado(p, undefined, tiempo);
-      return k === 'amarillo' || k === 'rojo';
-    });
+    const on = plantas.some((p) => alertaRiego(p, undefined, tiempo));
     document.documentElement.setAttribute('data-plantas-alerta', on ? '1' : '0');
   } catch {}
 }
@@ -173,17 +205,21 @@ async function houseAllowed() {
   }
 }
 
+async function patchPlanta(id, fields) {
+  const p = plantas.find((x) => x.id === id) || { id };
+  await fsApi.setDoc(fsApi.doc(db, 'plantas_casa', id), {
+    ...p,
+    ...fields,
+  }, { merge: true });
+}
+
 async function regar(id) {
   const p = plantas.find((x) => x.id === id);
   if (!p || !fsApi || !db) return;
   const prev = { ultimo_riego: p.ultimo_riego, historial: (p.historial || []).slice() };
   const now = fsApi.Timestamp.now();
   const hist = pushHistorial(prev.historial, now, 20);
-  await fsApi.setDoc(fsApi.doc(db, 'plantas_casa', id), {
-    ...p,
-    ultimo_riego: now,
-    historial: hist,
-  }, { merge: true });
+  await patchPlanta(id, { ultimo_riego: now, historial: hist });
   const t = setTimeout(() => {
     undos.delete(id);
     paint();
@@ -197,13 +233,59 @@ async function deshacer(id) {
   if (!u || !fsApi || !db) return;
   clearTimeout(u.t);
   undos.delete(id);
-  const p = plantas.find((x) => x.id === id) || { id };
-  await fsApi.setDoc(fsApi.doc(db, 'plantas_casa', id), {
-    ...p,
+  await patchPlanta(id, {
     ultimo_riego: u.prev.ultimo_riego || null,
     historial: u.prev.historial || [],
-  }, { merge: true });
+  });
   paint();
+}
+
+async function abonar(id) {
+  const p = plantas.find((x) => x.id === id);
+  if (!p || !fsApi || !db) return;
+  const prev = { ultimo_abono: p.ultimo_abono, historial_abono: (p.historial_abono || []).slice() };
+  const now = fsApi.Timestamp.now();
+  const hist = pushHistorial(prev.historial_abono, now, 20);
+  await patchPlanta(id, { ultimo_abono: now, historial_abono: hist });
+  const t = setTimeout(() => {
+    undosAbono.delete(id);
+    paint();
+  }, UNDO_MS);
+  undosAbono.set(id, { prev, t });
+  paint();
+}
+
+async function deshacerAbono(id) {
+  const u = undosAbono.get(id);
+  if (!u || !fsApi || !db) return;
+  clearTimeout(u.t);
+  undosAbono.delete(id);
+  await patchPlanta(id, {
+    ultimo_abono: u.prev.ultimo_abono || null,
+    historial_abono: u.prev.historial_abono || [],
+  });
+  paint();
+}
+
+async function marcarHecho(id, texto) {
+  const p = plantas.find((x) => x.id === id);
+  if (!p || !texto || !fsApi || !db) return;
+  const hecha = { ...(p.tarea_hecha || {}) };
+  hecha[texto] = anioMadrid(new Date());
+  await patchPlanta(id, { tarea_hecha: hecha });
+}
+
+async function archivar(id) {
+  const p = plantas.find((x) => x.id === id);
+  if (!p || p.archivada || !fsApi || !db) return;
+  const ok = window.confirm('¿La archivamos? No se borra ni la foto; solo se esconde.');
+  if (!ok) return;
+  await patchPlanta(id, { archivada: true, fecha_archivo: fsApi.Timestamp.now() });
+}
+
+async function recuperar(id) {
+  if (!fsApi || !db) return;
+  await patchPlanta(id, { archivada: false, fecha_archivo: null });
 }
 
 function uniqueId(nombre) {
@@ -395,8 +477,19 @@ function wireUi() {
     if (!btn) return;
     const card = btn.closest('[data-id]');
     if (!card) return;
-    if (btn.dataset.act === 'regar') void regar(card.dataset.id);
-    if (btn.dataset.act === 'undo') void deshacer(card.dataset.id);
+    const id = card.dataset.id;
+    const act = btn.dataset.act;
+    if (act === 'regar') void regar(id);
+    if (act === 'undo') void deshacer(id);
+    if (act === 'abonar') void abonar(id);
+    if (act === 'undo-abono') void deshacerAbono(id);
+    if (act === 'hecho') {
+      let texto = '';
+      try { texto = decodeURIComponent(btn.dataset.texto || ''); } catch { texto = btn.dataset.texto || ''; }
+      void marcarHecho(id, texto);
+    }
+    if (act === 'archivar') void archivar(id);
+    if (act === 'recuperar') void recuperar(id);
   });
   $('#btn-alta').addEventListener('click', () => {
     const box = $('#alta');

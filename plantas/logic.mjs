@@ -1,6 +1,7 @@
 export const TZ = 'Europe/Madrid';
 export const ZONAS = ['terraza', 'salon'];
 export const ORDEN = { rojo: 0, amarillo: 1, verde: 2, gris: 3 };
+export const UMBRAL_CALOR_C = 30;
 
 export function ymdMadrid(date) {
   return new Intl.DateTimeFormat('en-CA', {
@@ -9,6 +10,14 @@ export function ymdMadrid(date) {
     month: '2-digit',
     day: '2-digit',
   }).format(date || new Date());
+}
+
+export function mesMadrid(date) {
+  return Number(ymdMadrid(date).slice(5, 7));
+}
+
+export function anioMadrid(date) {
+  return Number(ymdMadrid(date).slice(0, 4));
 }
 
 export function addDaysYmd(ymd, n) {
@@ -27,8 +36,6 @@ export function daysBetweenYmd(fromYmd, toYmd) {
   const b = Date.UTC(y2, m2 - 1, d2);
   return Math.round((b - a) / 86400000);
 }
-
-export const UMBRAL_CALOR_C = 30;
 
 export function isVerano(date) {
   const ymd = ymdMadrid(date);
@@ -101,6 +108,12 @@ export function etiquetaEstado(kind) {
   return '';
 }
 
+export function alertaRiego(planta, now, tiempo) {
+  if (planta && planta.archivada) return false;
+  const k = estado(planta, now, tiempo);
+  return k === 'amarillo' || k === 'rojo';
+}
+
 export function ordenarPlantas(list, now, tiempo) {
   const when = now || new Date();
   return [...list].sort((a, b) => {
@@ -108,13 +121,20 @@ export function ordenarPlantas(list, now, tiempo) {
     const eb = estado(b, when, tiempo);
     const d = (ORDEN[ea] ?? 9) - (ORDEN[eb] ?? 9);
     if (d) return d;
-    return String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es');
+    const na = proximoRiego(a, when, tiempo);
+    const nb = proximoRiego(b, when, tiempo);
+    if (na && nb && na !== nb) return na < nb ? -1 : 1;
+    if (na && !nb) return -1;
+    if (!na && nb) return 1;
+    return String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es-ES');
   });
 }
 
 export function filtrarZona(list, zona) {
-  if (!zona || zona === 'todas') return list;
-  return list.filter((p) => p.zona === zona);
+  if (zona === 'archivadas') return list.filter((p) => p.archivada);
+  const vivas = list.filter((p) => !p.archivada);
+  if (!zona || zona === 'todas') return vivas;
+  return vivas.filter((p) => p.zona === zona);
 }
 
 export function slugId(nombre) {
@@ -138,10 +158,35 @@ export function zonaOk(zona) {
   return ZONAS.includes(zona);
 }
 
+function camposTareas(raw) {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((t) => {
+    if (!t || typeof t !== 'object') return null;
+    const texto = String(t.texto || '').trim();
+    const mes_desde = Number(t.mes_desde);
+    const mes_hasta = Number(t.mes_hasta);
+    if (!texto) return null;
+    if (!Number.isInteger(mes_desde) || mes_desde < 1 || mes_desde > 12) return null;
+    if (!Number.isInteger(mes_hasta) || mes_hasta < 1 || mes_hasta > 12) return null;
+    return { texto, mes_desde, mes_hasta };
+  }).filter(Boolean);
+}
+
+function camposHecha(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const out = {};
+  for (const [k, v] of Object.entries(raw)) {
+    const n = Number(v);
+    if (Number.isInteger(n)) out[k] = n;
+  }
+  return out;
+}
+
 export function camposPlanta(raw, id) {
   const zona = raw.zona === 'terraza' ? 'terraza' : raw.zona === 'salon' ? 'salon' : '';
   const verano = Number(raw.riego_verano_dias);
   const invierno = Number(raw.riego_invierno_dias);
+  const abono = Number(raw.abono_dias);
   return {
     id: String(id || raw.id || slugId(raw.nombre)),
     nombre: String(raw.nombre || '').trim(),
@@ -155,6 +200,13 @@ export function camposPlanta(raw, id) {
     consejo: String(raw.consejo || '').trim(),
     ultimo_riego: raw.ultimo_riego ?? null,
     historial: Array.isArray(raw.historial) ? raw.historial.slice(-20) : [],
+    tareas: camposTareas(raw.tareas),
+    tarea_hecha: camposHecha(raw.tarea_hecha),
+    abono_dias: Number.isFinite(abono) && abono >= 1 ? Math.trunc(abono) : null,
+    historial_abono: Array.isArray(raw.historial_abono) ? raw.historial_abono.slice(-20) : [],
+    ultimo_abono: raw.ultimo_abono ?? null,
+    archivada: raw.archivada === true || raw.archivada === 'true',
+    fecha_archivo: raw.fecha_archivo ?? null,
   };
 }
 
@@ -170,15 +222,82 @@ export function textoRegada(planta, now) {
   return `Regada hace ${n} días`;
 }
 
+export function textoRelativoRiego(left) {
+  if (left === 0) return 'Regar hoy';
+  if (left === 1) return 'mañana';
+  if (left > 1) return `en ${left} días`;
+  return '';
+}
+
 export function textoProximo(planta, now, tiempo) {
-  const next = proximoRiego(planta, now || new Date(), tiempo);
+  const when = now || new Date();
+  const next = proximoRiego(planta, when, tiempo);
   if (!next) return '';
-  const [y, m, d] = next.split('-').map(Number);
-  const label = new Intl.DateTimeFormat('es-ES', {
-    timeZone: 'UTC',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  }).format(new Date(Date.UTC(y, m - 1, d)));
-  return `Próximo riego: ${label}`;
+  const left = daysBetweenYmd(ymdMadrid(when), next);
+  return textoRelativoRiego(left);
+}
+
+export function mesEnRango(mes, desde, hasta) {
+  const m = Number(mes);
+  const a = Number(desde);
+  const b = Number(hasta);
+  if (!Number.isInteger(m) || m < 1 || m > 12) return false;
+  if (!Number.isInteger(a) || a < 1 || a > 12) return false;
+  if (!Number.isInteger(b) || b < 1 || b > 12) return false;
+  if (a <= b) return m >= a && m <= b;
+  return m >= a || m <= b;
+}
+
+export function tareaPendiente(tarea, hecha, date) {
+  if (!tarea || !String(tarea.texto || '').trim()) return false;
+  const when = date || new Date();
+  if (!mesEnRango(mesMadrid(when), tarea.mes_desde, tarea.mes_hasta)) return false;
+  const yearDone = hecha && hecha[tarea.texto];
+  return Number(yearDone) !== anioMadrid(when);
+}
+
+export function tareasPendientes(planta, date) {
+  const tareas = Array.isArray(planta.tareas) ? planta.tareas : [];
+  const hecha = planta.tarea_hecha && typeof planta.tarea_hecha === 'object' ? planta.tarea_hecha : {};
+  return tareas.filter((t) => tareaPendiente(t, hecha, date));
+}
+
+export function temporadaAbono(date) {
+  const m = mesMadrid(date);
+  return m >= 3 && m <= 9;
+}
+
+export function abonaPlanta(planta) {
+  const n = Number(planta && planta.abono_dias);
+  return Number.isFinite(n) && n >= 1;
+}
+
+export function mostrarAbono(planta, date) {
+  return abonaPlanta(planta) && temporadaAbono(date || new Date());
+}
+
+export function proximoAbono(planta, now) {
+  if (!abonaPlanta(planta)) return null;
+  const last = parseTs(planta.ultimo_abono);
+  const days = Math.trunc(Number(planta.abono_dias));
+  if (!last || days < 1) return null;
+  return addDaysYmd(ymdMadrid(last), days);
+}
+
+export function textoUltimoAbono(planta, now) {
+  const last = parseTs(planta.ultimo_abono);
+  if (!last) return 'Sin abonar aún';
+  const n = daysBetweenYmd(ymdMadrid(last), ymdMadrid(now || new Date()));
+  if (n <= 0) return 'Abonada hace 0 días';
+  return `Abonada hace ${n} días`;
+}
+
+export function textoProximoAbono(planta, now) {
+  const next = proximoAbono(planta, now || new Date());
+  if (!next) return '';
+  const left = daysBetweenYmd(ymdMadrid(now || new Date()), next);
+  if (left === 0) return 'Abonar hoy';
+  if (left === 1) return 'Abonar mañana';
+  if (left > 1) return `Abonar en ${left} días`;
+  return 'Toca abonar';
 }
