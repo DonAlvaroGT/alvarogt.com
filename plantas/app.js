@@ -9,8 +9,8 @@ import {
   textoProximo,
   plantaValida,
   camposPlanta,
-} from './logic.mjs?v=20261113a';
-import { fetchTiempo } from '../go/tiempo.mjs?v=20261113a';
+} from './logic.mjs?v=20261120a';
+import { fetchTiempo } from '../go/tiempo.mjs?v=20261120a';
 
 export const HOSTS = [
   'localhost',
@@ -84,7 +84,7 @@ function fotoSrc(url) {
   if (!url) return url;
   if (/[?&]v=/.test(url)) return url;
   if (/^https:/i.test(url) || String(url).startsWith('/plantas/fotos/')) {
-    return `${url}${url.includes('?') ? '&' : '?'}v=20261113a`;
+    return `${url}${url.includes('?') ? '&' : '?'}v=20261120a`;
   }
   return url;
 }

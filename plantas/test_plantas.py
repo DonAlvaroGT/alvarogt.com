@@ -37,6 +37,9 @@ class PlantasPageTests(unittest.TestCase):
             "Rosmarinus",
             "lavanda",
             "Lavandula",
+            "flor-de-pascua",
+            "Flor de Pascua",
+            "Euphorbia",
         ):
             self.assertNotIn(token, blob)
         self.assertIn("Sin sesión no hay plantas", HTML)

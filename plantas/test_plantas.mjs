@@ -112,7 +112,7 @@ test('html sin plantas ni semilla', () => {
   assert.doesNotMatch(app, /Tronco del Brasil/);
   assert.doesNotMatch(logic, /Tronco del Brasil/);
   for (const src of [html, app, logic]) {
-    assert.doesNotMatch(src, /cocotero|enebro|Gold Coast|Juniperus|romero|Rosmarinus|lavanda|Lavandula|Cocos nucifera/i);
+    assert.doesNotMatch(src, /cocotero|enebro|Gold Coast|Juniperus|romero|Rosmarinus|lavanda|Lavandula|Cocos nucifera|flor-de-pascua|Flor de Pascua|Euphorbia/i);
   }
   assert.match(html, /Creado por Álvaro GT y sus minions/);
   assert.match(app, /💧 Regada/);
