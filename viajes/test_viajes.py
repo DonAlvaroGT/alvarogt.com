@@ -43,13 +43,17 @@ class ViajesEmbeddedTests(unittest.TestCase):
         self.assertIn("grid-template-columns: 1.65fr .9fr", HTML)
         self.assertIn("article.day.hoy", HTML)
         self.assertIn("article.day.manana", HTML)
-        if "function compactDayCard" not in HTML:
-            self.skipTest("compactDayCard ya no está en el HTML")
-        self.assertIn("function panelLetter", HTML)
-        self.assertIn("function stripUrlPrecio", HTML)
-        self.assertIn("data-viajes-vista') === 'hoy'", HTML)
+        self.assertIn("function tripHitHtml", HTML)
+        self.assertIn('class="trip-hit-title"', HTML)
+        self.assertIn('class="trip-hit-who"', HTML)
+        self.assertIn("Sin viaje este día", HTML)
+        self.assertIn("function tripsCovering", HTML)
+        self.assertIn("dayCard('Hoy'", HTML)
+        self.assertIn("dayCard('Mañana'", HTML)
         self.assertIn("attributeFilter: ['data-viajes-vista']", HTML)
-        self.assertIn("https?:\\/\\/\\S+", HTML)
+        self.assertIn('html[data-viajes-vista="hoy"] article.day.hoy', HTML)
+        self.assertIn('html[data-viajes-vista="hoy"] article.day.manana', HTML)
+        self.assertNotIn("function compactDayCard", HTML)
         self.assertNotIn("run.app", HTML)
 
     def test_paleta_sale_del_json(self):

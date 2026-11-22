@@ -100,7 +100,7 @@ function fotoSrc(url) {
 function fotoHtml(p) {
   const foto = String(p.foto || '');
   if (/^(https:|data:image\/)/i.test(foto) || foto.startsWith('/plantas/fotos/')) {
-    return `<img class="foto" src="${esc(fotoSrc(foto))}" alt="">`;
+    return `<img class="foto" src="${esc(fotoSrc(foto))}" alt="${esc(p.nombre)}">`;
   }
   return `<div class="foto pixel" aria-hidden="true"></div>`;
 }
