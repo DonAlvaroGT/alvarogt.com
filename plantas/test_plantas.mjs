@@ -116,6 +116,12 @@ test('calor ≥30 usa verano aunque sea invierno; Open-Meteo falla → calendari
   assert.equal(p.riego_invierno_dias, 20);
 });
 
+test('fotoHtml alt es el nombre de la planta', () => {
+  const fn = app.slice(app.indexOf('function fotoHtml'), app.indexOf('function tareasHtml'));
+  assert.match(fn, /alt="\$\{esc\(p\.nombre\)\}"/);
+  assert.doesNotMatch(fn, /alt=""/);
+});
+
 test('html sin plantas ni semilla', () => {
   assert.match(html, /id="app"[^>]*hidden/);
   assert.match(html, /id="gate"/);

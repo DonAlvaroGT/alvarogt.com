@@ -22,6 +22,6 @@ jobs:
         run: node --test go/*.mjs tablon/*.test.mjs tablon/test/*.test.mjs casa/*.mjs mapa/*.mjs plantas/*.mjs
       - name: Run Python tests
         run: |
-          python3 -m unittest test_pie.py casa/test_casa.py mapa/test_mapa.py plantas/test_plantas.py
-          python3 -m unittest discover -s go -p 'test_*.py'
-          python3 -m unittest discover -s viajes -p 'test_*.py'
+          python3 -m unittest -v test_pie.py casa/test_casa.py mapa/test_mapa.py plantas/test_plantas.py
+          python3 -m unittest discover -v -s go -p 'test_*.py'
+          python3 -m unittest discover -v -s viajes -p 'test_*.py'
